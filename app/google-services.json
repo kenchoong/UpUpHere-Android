@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "868193400665",
+    "firebase_url": "https://upuphere-7732a.firebaseio.com",
+    "project_id": "upuphere-7732a",
+    "storage_bucket": "upuphere-7732a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:868193400665:android:a694010adb02cf32ad7e48",
+        "android_client_info": {
+          "package_name": "upuphere.com.upuphere"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "868193400665-v8deepffcp28lh3nrpvrlfhidkk4tkpk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "upuphere.com.upuphere",
+            "certificate_hash": "5a63535226321a03607acdf6736b1f048d219998"
+          }
+        },
+        {
+          "client_id": "868193400665-o2svpru1ucgombb78q6tfr8o670rasd8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgniBYCXzq9VFdKgkZsmzNrJ2IQUBYjS0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "868193400665-o2svpru1ucgombb78q6tfr8o670rasd8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

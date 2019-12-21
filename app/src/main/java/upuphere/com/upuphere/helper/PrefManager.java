@@ -1,0 +1,90 @@
+package upuphere.com.upuphere.helper;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+
+public class PrefManager {
+
+    private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
+    private Context _context;
+
+    private static final String PREF_NAME = "UpUpHere";
+
+    private static final String IS_FIRST_TIME_LAUNCH = "IsFirstTimeLaunch";
+    private static final String IS_LOGGED_IN = "IsLoggedIn";
+
+    private static final String USER_ID= "user_id";
+    private static final String USER_DEVICE_ID= "user_device_id";
+    private static final String USER_SESSION_ID= "user_session_id";
+    private static final String USER_ACCESS_TOKEN = "access_token";
+    private static final String USER_REFRESH_TOKEN = "refresh_token";
+    // shared pref mode
+    int PRIVATE_MODE = 0;
+
+    public PrefManager(Context context) {
+        this._context = context;
+        pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
+        editor = pref.edit();
+    }
+
+    public void setIsLoggedIn(boolean isLoggedIn){
+        editor.putBoolean(IS_LOGGED_IN,isLoggedIn);
+        editor.commit();
+    }
+
+    public boolean isLoggedIn(){
+        return pref.getBoolean(IS_LOGGED_IN,false);
+    }
+
+    public void setUserAccessToken(String accessToken){
+        editor.putString(USER_ACCESS_TOKEN,accessToken);
+        editor.commit();
+    }
+
+    public void setUserRefreshToken(String refreshToken){
+        editor.putString(USER_REFRESH_TOKEN,refreshToken);
+        editor.commit();
+    }
+
+    public String getUserAccessToken(){
+        return pref.getString(USER_ACCESS_TOKEN,null);
+    }
+
+    public String getUserRefreshToken(){
+        return pref.getString(USER_REFRESH_TOKEN,null);
+    }
+
+    public void setUserID(String userID){
+        editor.putString(USER_ID,userID);
+        editor.commit();
+    }
+
+    public String getUserId(){
+        return pref.getString(USER_ID,null);
+    }
+
+    public String getUserDeviceId(){
+        return pref.getString(USER_DEVICE_ID,null);
+    }
+
+    public void setUserDeviceId(String userDeviceId){
+        editor.putString(USER_DEVICE_ID,userDeviceId);
+        editor.commit();
+    }
+
+    public String getUserSessionId(){
+        return pref.getString(USER_SESSION_ID,null);
+    }
+
+    public void setUserSessionId(String userSessionId){
+        editor.putString(USER_SESSION_ID,userSessionId);
+        editor.commit();
+    }
+
+    public void removeAllSharedPrefrences(){
+        editor.clear();
+        editor.commit();
+    }
+
+}
