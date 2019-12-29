@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import upuphere.com.upuphere.Interface.CommonCallBack;
 import upuphere.com.upuphere.MainActivity;
 import upuphere.com.upuphere.R;
-import upuphere.com.upuphere.helper.ApiHelper;
+import upuphere.com.upuphere.libs.Authenticate;
 import upuphere.com.upuphere.helper.PrefManager;
 
 import android.content.Context;
@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void loginUser(Context mContext,String identityString, String passwordString) {
 
-        new ApiHelper().loginUser(mContext, identityString, passwordString, new CommonCallBack() {
+        Authenticate.login(mContext, identityString, passwordString, new CommonCallBack() {
             @Override
             public void success() {
                 prefManager.setIsLoggedIn(true);

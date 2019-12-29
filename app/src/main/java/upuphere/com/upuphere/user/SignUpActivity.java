@@ -5,7 +5,7 @@ import upuphere.com.upuphere.Interface.BoolCallBack;
 import upuphere.com.upuphere.Interface.CommonCallBack;
 import upuphere.com.upuphere.MainActivity;
 import upuphere.com.upuphere.R;
-import upuphere.com.upuphere.helper.ApiHelper;
+import upuphere.com.upuphere.libs.Authenticate;
 import upuphere.com.upuphere.helper.PrefManager;
 
 import android.content.Intent;
@@ -158,7 +158,7 @@ public class SignUpActivity extends AppCompatActivity{
 
     private void checkIfCredentialExisted(final String credential, final EditText fields){
         //call to server to check
-        new ApiHelper().checkDetailsExisted(credential, 222,new BoolCallBack() {
+        Authenticate.checkDetailsExisted(getApplicationContext(),credential, 222,new BoolCallBack() {
             @Override
             public void success(boolean existed) {
                 if(existed){
@@ -182,8 +182,7 @@ public class SignUpActivity extends AppCompatActivity{
 
     private void createUserAccount(String phoneNumber,String emailString, String username, String passwordString) {
         //send to server
-
-        new ApiHelper().signUpUser(getApplicationContext(), phoneNumber, emailString, username, passwordString, new CommonCallBack() {
+        Authenticate.signUp(getApplicationContext(), phoneNumber, emailString, username, passwordString, new CommonCallBack() {
             @Override
             public void success() {
                 prefManager.setIsLoggedIn(true);

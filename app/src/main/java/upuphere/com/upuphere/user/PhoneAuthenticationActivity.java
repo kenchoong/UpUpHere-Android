@@ -4,13 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import upuphere.com.upuphere.Interface.BoolCallBack;
 import upuphere.com.upuphere.R;
-import upuphere.com.upuphere.helper.ApiHelper;
+import upuphere.com.upuphere.libs.Authenticate;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,7 +23,6 @@ import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
@@ -145,7 +142,7 @@ public class PhoneAuthenticationActivity extends AppCompatActivity implements Vi
                 }
                 //startPhoneNumberVerification(phoneNumberField.getText().toString());
 
-                new ApiHelper().checkDetailsExisted(phoneNumberField.getText().toString(), 333, new BoolCallBack() {
+                Authenticate.checkDetailsExisted(getApplicationContext(),phoneNumberField.getText().toString(), 333, new BoolCallBack() {
                     @Override
                     public void success(boolean existed) {
                         if(existed){

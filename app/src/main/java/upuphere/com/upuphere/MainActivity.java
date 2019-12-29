@@ -2,7 +2,7 @@ package upuphere.com.upuphere;
 
 import androidx.appcompat.app.AppCompatActivity;
 import upuphere.com.upuphere.Interface.CommonCallBack;
-import upuphere.com.upuphere.helper.ApiHelper;
+import upuphere.com.upuphere.libs.Authenticate;
 import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.user.LoginActivity;
 
@@ -37,13 +37,12 @@ public class MainActivity extends AppCompatActivity {
 
 
                 String accessToken = prefManager.getUserAccessToken();
-                final String refreshToken = prefManager.getUserRefreshToken();
 
                 if(accessToken != null){
-                    new ApiHelper().revokedAccessToken(getApplicationContext(), accessToken, new CommonCallBack() {
+                    Authenticate.revokedAccessToken(getApplicationContext(), new CommonCallBack() {
                         @Override
                         public void success() {
-                            revokeRefreshToken(refreshToken);
+                            revokeRefreshToken();
                         }
 
                         @Override
@@ -57,8 +56,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void revokeRefreshToken(String refreshToken){
-        new ApiHelper().revokeRefreshToken(getApplicationContext(), refreshToken, new CommonCallBack() {
+    private void revokeRefreshToken(){
+        Authenticate.revokeRefreshToken(getApplicationContext(), new CommonCallBack() {
             @Override
             public void success() {
                 prefManager.removeAllSharedPrefrences();
