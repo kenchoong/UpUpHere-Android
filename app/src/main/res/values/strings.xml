@@ -19,4 +19,6 @@
     <string name="create_account_text">Create Account</string>
 
     <string name="logut_button_text">Logout</string>
+
+    <string name="add_group">Add</string>
 </resources>

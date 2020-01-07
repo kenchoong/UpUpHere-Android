@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#F44336</color>
+    <color name="colorPrimaryDark">#FF5252</color> <!--App bar use Primary color-->
+    <color name="colorAccent">#FFA726</color> <!--Also known as secondary color,all button use secondary color -->
+      <!-- For secondary color
+
+            - Floating action buttons
+            - Selection controls, like sliders and switches
+            - Highlighting selected text
+            - Progress bars
+            - Links and headlines-->
+    <color name="primaryColor">#f44336</color>
+    <color name="primaryLightColor">#ff7961</color>
+    <color name="primaryDarkColor">#ba000d</color>
+    <color name="secondaryColor">#ffa726</color>
+    <color name="secondaryLightColor">#ffd95b</color>
+    <color name="secondaryDarkColor">#c77800</color>
+    <color name="primaryTextColor">#ffffff</color>
+    <color name="secondaryTextColor">#000000</color>
+
+    <color name="background_color">#FFFFFF</color>
 </resources>
