@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">UpUpHere Android</string>
+    <string name="logo">Logo</string>
 
     <string name="login_hint">Email/Username/Phone Number</string>
     <string name="password_hint">Enter your password</string>
     <string name="login_button_text">Login</string>
-    <string name="direct_to_sign_up">Don\'t have account? Sign Up for Free</string>
+    <string name="direct_to_sign_up">Don\'t have account? Create account for Free</string>
 
     <string name="phone_number_hint">Enter your Phone Number</string>
     <string name="OTP_hint">Enter 6-digit number</string>
@@ -17,6 +18,7 @@
     <string name="set_password_hint">Set your password</string>
     <string name="reenter_password_hint">Re-Enter your password</string>
     <string name="create_account_text">Create Account</string>
+    <string name="redirect_sign_in">Have an account? Login</string>
 
     <string name="logut_button_text">Logout</string>
 

@@ -16,8 +16,9 @@
     <color name="secondaryColor">#ffa726</color>
     <color name="secondaryLightColor">#ffd95b</color>
     <color name="secondaryDarkColor">#c77800</color>
-    <color name="primaryTextColor">#ffffff</color>
+    <color name="primaryTextColor">#FFFFFF</color>
     <color name="secondaryTextColor">#000000</color>
 
     <color name="background_color">#FFFFFF</color>
+    <color name="redirect_color">#2196F3</color>
 </resources>

@@ -7,17 +7,20 @@
     tools:context=".user.LoginActivity">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:id="@+id/fieldContainer"
+        android:layout_width="318dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:orientation="vertical">
 
         <EditText
             android:id="@+id/identityField"
-            android:layout_width="272dp"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_margin="10dp"
             android:autofillHints=""
+            android:drawableStart="@drawable/ic_profile"
+            android:drawablePadding="10dp"
             android:ems="10"
             android:hint="@string/login_hint"
             android:inputType="textPersonName|phone|textEmailSubject"
@@ -25,9 +28,11 @@
 
         <EditText
             android:id="@+id/passwordField"
-            android:layout_width="271dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
+            android:drawableStart="@drawable/ic_password"
+            android:drawablePadding="10dp"
             android:ems="10"
             android:hint="@string/password_hint"
             android:importantForAutofill="no"
@@ -38,16 +43,38 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="@string/login_button_text" />
+            android:background="@color/colorAccent"
+            android:fontFamily="@font/open_sans"
+            android:text="@string/login_button_text"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/secondaryTextColor" />
 
         <TextView
             android:id="@+id/redirectText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
+            android:fontFamily="@font/open_sans"
             android:text="@string/direct_to_sign_up"
             android:textAlignment="center"
-            android:textColor="#2196F3" />
+            android:textColor="@color/redirect_color" />
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="121dp"
+        android:layout_height="108dp"
+        android:layout_above="@+id/fieldContainer"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="147dp"
+        android:layout_marginTop="134dp"
+        android:layout_marginEnd="142dp"
+        android:layout_marginBottom="4dp"
+        android:contentDescription="@string/logo"
+        app:srcCompat="@drawable/ic_logo" />
 
 </RelativeLayout>
