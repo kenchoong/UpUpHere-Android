@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_graph"
+    app:startDestination="@id/mainFragment">
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="upuphere.com.upuphere.fragment.MainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_mainFragment_to_createRoomFragment"
+            app:destination="@id/createRoomFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_roomFragment"
+            app:destination="@id/roomFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createRoomFragment"
+        android:name="upuphere.com.upuphere.ui.room.CreateRoomFragment"
+        android:label="fragment_create_room"
+        tools:layout="@layout/fragment_create_room" >
+        <action
+            android:id="@+id/action_createRoomFragment_to_roomFragment"
+            app:destination="@id/roomFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/roomFragment"
+        android:name="upuphere.com.upuphere.ui.room.DisplayRoomFragment"
+        android:label="fragment_room"
+        tools:layout="@layout/fragment_display_room" >
+        <action
+            android:id="@+id/action_roomFragment_to_commentFragment"
+            app:destination="@id/commentFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/commentFragment"
+        android:name="upuphere.com.upuphere.fragment.CommentFragment"
+        android:label="fragment_comment"
+        tools:layout="@layout/fragment_comment" />
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="upuphere.com.upuphere.ui.user.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_registration_graph"
+            app:destination="@id/registration_graph" />
+        <action
+            android:id="@+id/action_loginFragment_to_forgot_password_graph"
+            app:destination="@id/forgot_password_graph" />
+    </fragment>
+    <navigation
+        android:id="@+id/registration_graph"
+        app:startDestination="@id/phoneAuthFragment" >
+        <fragment
+            android:id="@+id/phoneAuthFragment"
+            android:name="upuphere.com.upuphere.ui.user.PhoneAuthFragment"
+            android:label="fragment_phone_auth"
+            tools:layout="@layout/fragment_phone_auth" >
+            <action
+                android:id="@+id/action_phoneAuthFragment_to_signUpFragment"
+                app:destination="@id/signUpFragment" />
+        </fragment>
+        <fragment
+            android:id="@+id/signUpFragment"
+            android:name="upuphere.com.upuphere.ui.user.SignUpFragment"
+            android:label="fragment_sign_up"
+            tools:layout="@layout/fragment_sign_up" >
+            <argument
+                android:name="phoneNumber"
+                app:argType="string"
+                app:nullable="true" />
+        </fragment>
+    </navigation>
+    <navigation
+        android:id="@+id/forgot_password_graph"
+        app:startDestination="@id/forgotPasswordFragment" >
+        <fragment
+            android:id="@+id/forgotPasswordFragment"
+            android:name="upuphere.com.upuphere.ui.user.ForgotPasswordFragment"
+            android:label="fragment_forgot_password"
+            tools:layout="@layout/fragment_forgot_password" >
+            <action
+                android:id="@+id/action_forgotPasswordFragment_to_resetPasswordFragment"
+                app:destination="@id/resetPasswordFragment" />
+        </fragment>
+        <fragment
+            android:id="@+id/resetPasswordFragment"
+            android:name="upuphere.com.upuphere.ui.user.ResetPasswordFragment"
+            android:label="fragment_reset_password"
+            tools:layout="@layout/fragment_reset_password" />
+    </navigation>
+</navigation>

@@ -1,57 +1,99 @@
-package upuphere.com.upuphere.user;
+package upuphere.com.upuphere.ui.user;
 
-import androidx.appcompat.app.AppCompatActivity;
-import upuphere.com.upuphere.Interface.BoolCallBack;
-import upuphere.com.upuphere.Interface.CommonCallBack;
-import upuphere.com.upuphere.MainActivity;
-import upuphere.com.upuphere.R;
-import upuphere.com.upuphere.libs.Authenticate;
-import upuphere.com.upuphere.helper.PrefManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class SignUpActivity extends AppCompatActivity{
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import upuphere.com.upuphere.Interface.BoolCallBack;
+import upuphere.com.upuphere.Interface.CommonCallBack;
+import upuphere.com.upuphere.R;
+import upuphere.com.upuphere.helper.PrefManager;
+import upuphere.com.upuphere.libs.Authenticate;
 
-    EditText emailField,usernameField,passwordField,reenterPasswordField;
-    Button createAccountButton;
-    PrefManager prefManager;
-    String phoneNumber = null;
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class SignUpFragment extends Fragment {
+
+    private EditText emailField,usernameField,passwordField,reenterPasswordField;
+    private PrefManager prefManager;
+    private String phoneNumber = null;
 
     private static final int EMAIL_FIELD = 1;
     private static final int USERNAME_FIELD = 2;
     private static final int PASSWORD_FIELD = 3;
     private static final int REENTER_PASSWORD_FIELD = 4;
 
-   //boolean isPasswordValid = ^(?=.{8,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$
+
+    public SignUpFragment() {
+        // Required empty public constructor
+    }
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        final View view1 = inflater.inflate(R.layout.fragment_sign_up, container, false);
+        Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
+        /*
+        Button button = view1.findViewById(R.id.next);
 
-        prefManager = new PrefManager(getApplicationContext());
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavController navController = Navigation.findNavController(view);
+                navController.navigate(R.id.mainFragment);
+            }
+        });
+        */
+        return view1;
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        if(getIntent().getExtras() != null){
-             phoneNumber= getIntent().getExtras().getString("phone_number");
-            Log.d("Phone Number",phoneNumber);
-        }
+        phoneNumber = SignUpFragmentArgs.fromBundle(Objects.requireNonNull(getArguments())).getPhoneNumber();
+        Log.d("PHONE_NUMBER",phoneNumber);
 
-        emailField = findViewById(R.id.emailField);
-        usernameField = findViewById(R.id.usernameField);
-        passwordField = findViewById(R.id.passwordField);
-        reenterPasswordField = findViewById(R.id.reenterPasswordField);
-        createAccountButton = findViewById(R.id.createAccountButton);
+        prefManager = new PrefManager(getActivity());
+
+        emailField = view.findViewById(R.id.emailField);
+        usernameField = view.findViewById(R.id.usernameField);
+        passwordField = view.findViewById(R.id.passwordField);
+        reenterPasswordField = view.findViewById(R.id.reenterPasswordField);
+        Button createAccountButton = view.findViewById(R.id.createAccountButton);
+        TextView redirectLoginText = view.findViewById(R.id.redirect_login_text);
+
+        redirectLoginText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavController navController = Navigation.findNavController(view);
+                navController.navigate(R.id.loginFragment);
+            }
+        });
 
         createAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +102,7 @@ public class SignUpActivity extends AppCompatActivity{
                 String username = usernameField.getText().toString();
                 String passwordString = passwordField.getText().toString();
 
-                createUserAccount(phoneNumber,emailString,passwordString,username);
+                createUserAccount(view,phoneNumber,emailString,passwordString,username);
             }
         });
 
@@ -155,10 +197,9 @@ public class SignUpActivity extends AppCompatActivity{
         }
     }
 
-
     private void checkIfCredentialExisted(final String credential, final EditText fields){
         //call to server to check
-        Authenticate.checkDetailsExisted(getApplicationContext(),credential, 222,new BoolCallBack() {
+        Authenticate.checkDetailsExisted(getContext(),credential, 222,new BoolCallBack() {
             @Override
             public void success(boolean existed) {
                 if(existed){
@@ -180,18 +221,21 @@ public class SignUpActivity extends AppCompatActivity{
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
-    private void createUserAccount(String phoneNumber,String emailString, String username, String passwordString) {
+    private void createUserAccount(final View view, String phoneNumber, String emailString, String username, String passwordString) {
         //send to server
-        Authenticate.signUp(getApplicationContext(), phoneNumber, emailString, username, passwordString, new CommonCallBack() {
+        Authenticate.signUp(getActivity(), phoneNumber, emailString, username, passwordString, new CommonCallBack() {
             @Override
             public void success() {
                 prefManager.setIsLoggedIn(true);
-                startActivity(new Intent(SignUpActivity.this,MainActivity.class));
+                //startActivity(new Intent(SignUpActivity.this, MainActivity.class));
+
+                NavController navController = Navigation.findNavController(view);
+                navController.navigate(R.id.mainFragment);
             }
 
             @Override
             public void showError(String error) {
-                Toast.makeText(getApplicationContext(),error,Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(),error,Toast.LENGTH_LONG).show();
             }
         });
 

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".user.LoginActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.user.LoginFragment">
 
     <LinearLayout
         android:id="@+id/fieldContainer"
         android:layout_width="318dp"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_gravity="center"
         android:orientation="vertical">
 
         <EditText
@@ -23,7 +23,7 @@
             android:drawablePadding="10dp"
             android:ems="10"
             android:hint="@string/login_hint"
-            android:inputType="textPersonName|phone|textEmailSubject"
+            android:inputType="text|textEmailSubject"
             tools:targetApi="o" />
 
         <EditText
@@ -77,4 +77,4 @@
         android:contentDescription="@string/logo"
         app:srcCompat="@drawable/ic_logo" />
 
-</RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

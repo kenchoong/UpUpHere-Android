@@ -1,16 +1,19 @@
-package upuphere.com.upuphere.user;
+package upuphere.com.upuphere.ui.user;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import upuphere.com.upuphere.Interface.BoolCallBack;
-import upuphere.com.upuphere.R;
-import upuphere.com.upuphere.libs.Authenticate;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -26,9 +29,19 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-public class PhoneAuthenticationActivity extends AppCompatActivity implements View.OnClickListener{
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
+import upuphere.com.upuphere.Interface.BoolCallBack;
+import upuphere.com.upuphere.R;
+import upuphere.com.upuphere.libs.Authenticate;
+
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class PhoneAuthFragment extends Fragment implements View.OnClickListener{
 
     private static final String TAG = "PhoneAuthActivity";
 
@@ -50,17 +63,42 @@ public class PhoneAuthenticationActivity extends AppCompatActivity implements Vi
 
     private FirebaseAuth mAuth;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_phone_authentication);
 
-        phoneNumberField = findViewById(R.id.phoneNumberField);
-        verificationField = findViewById(R.id.verificationField);
-        sendOTPbutton = findViewById(R.id.sendOTPbutton);
-        verifyButton = findViewById(R.id.verifyButton);
-        resendButton = findViewById(R.id.resendButton);
-        detailsTextView = findViewById(R.id.detailsTextView);
+    public PhoneAuthFragment() {
+        // Required empty public constructor
+    }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_phone_auth, container, false);
+        Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
+/*
+        Button button = view.findViewById(R.id.upto);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavDirections action = PhoneAuthFragmentDirections.actionPhoneAuthFragmentToSignUpFragment();
+                Navigation.findNavController(view).navigate(action);
+            }
+        });
+*/
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        phoneNumberField = view.findViewById(R.id.phoneNumberField);
+        verificationField = view.findViewById(R.id.verificationField);
+        sendOTPbutton = view.findViewById(R.id.sendOTPbutton);
+        verifyButton = view.findViewById(R.id.verifyButton);
+        resendButton = view.findViewById(R.id.resendButton);
+        detailsTextView = view.findViewById(R.id.detailsTextView);
 
         sendOTPbutton.setOnClickListener(this);
         verifyButton.setOnClickListener(this);
@@ -100,7 +138,7 @@ public class PhoneAuthenticationActivity extends AppCompatActivity implements Vi
                 } else if (e instanceof FirebaseTooManyRequestsException) {
                     // The SMS quota for the project has been exceeded
                     // [START_EXCLUDE]
-                    Snackbar.make(findViewById(android.R.id.content), "Quota exceeded.",
+                    Snackbar.make(view.findViewById(android.R.id.content), "Quota exceeded.",
                             Snackbar.LENGTH_SHORT).show();
                     // [END_EXCLUDE]
                 }
@@ -128,7 +166,6 @@ public class PhoneAuthenticationActivity extends AppCompatActivity implements Vi
                 // [END_EXCLUDE]
             }
         };
-
     }
 
     @Override
@@ -142,7 +179,7 @@ public class PhoneAuthenticationActivity extends AppCompatActivity implements Vi
                 }
                 //startPhoneNumberVerification(phoneNumberField.getText().toString());
 
-                Authenticate.checkDetailsExisted(getApplicationContext(),phoneNumberField.getText().toString(), 333, new BoolCallBack() {
+                Authenticate.checkDetailsExisted(getActivity(),phoneNumberField.getText().toString(), 333, new BoolCallBack() {
                     @Override
                     public void success(boolean existed) {
                         if(existed){
@@ -177,7 +214,7 @@ public class PhoneAuthenticationActivity extends AppCompatActivity implements Vi
 
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
         mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(Objects.requireNonNull(getActivity()), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
@@ -208,7 +245,7 @@ public class PhoneAuthenticationActivity extends AppCompatActivity implements Vi
                 phoneNumber,        // Phone number to verify
                 60,                 // Timeout duration
                 TimeUnit.SECONDS,   // Unit of timeout
-                this,               // Activity (for callback binding)
+                Objects.requireNonNull(getActivity()),               // Activity (for callback binding)
                 mCallbacks,         // OnVerificationStateChangedCallbacks
                 token);             // ForceResendingToken from callbacks
     }
@@ -226,7 +263,7 @@ public class PhoneAuthenticationActivity extends AppCompatActivity implements Vi
                 phoneNumber,        // Phone number to verify
                 60,                 // Timeout duration
                 TimeUnit.SECONDS,   // Unit of timeout
-                this,               // Activity (for callback binding)
+                Objects.requireNonNull(getActivity()),               // Activity (for callback binding)
                 mCallbacks);        // OnVerificationStateChangedCallbacks
 
 
@@ -250,7 +287,7 @@ public class PhoneAuthenticationActivity extends AppCompatActivity implements Vi
             case STATE_VERIFY_SUCCESS:
                 // go to next activity
                 detailsTextView.setText("Verify success");
-                proceedToSignUp(phoneNumberField.getText().toString());
+                proceedToSignUp(detailsTextView,phoneNumberField.getText().toString());
                 break;
             case STATE_VERIFY_FAILED:
                 disableViews(verifyButton);
@@ -261,15 +298,19 @@ public class PhoneAuthenticationActivity extends AppCompatActivity implements Vi
         }
     }
 
-    private void proceedToSignUp(String phoneNumberString) {
-        Intent intent = new Intent(getApplicationContext(),SignUpActivity.class);
-        intent.putExtra("phone_number",phoneNumberString);
-        startActivity(intent);
+    private void proceedToSignUp(View view,String phoneNumberString) {
+        //Intent intent = new Intent(getActivity(), SignUpActivity.class);
+        //intent.putExtra("phone_number",phoneNumberString);
+        //startActivity(intent);
+
+        NavDirections action = PhoneAuthFragmentDirections.actionPhoneAuthFragmentToSignUpFragment(phoneNumberString);
+        Navigation.findNavController(view).navigate(action);
+
     }
 
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
         updateUI(STATE_INITIALIZED);
     }

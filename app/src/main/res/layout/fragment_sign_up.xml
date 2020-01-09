@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".user.SignUpActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.user.SignUpFragment">
 
     <LinearLayout
         android:id="@+id/fieldContainer"
         android:layout_width="293dp"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_gravity="center"
         android:orientation="vertical">
 
         <EditText
@@ -86,11 +86,6 @@
         android:id="@+id/imageView2"
         android:layout_width="99dp"
         android:layout_height="89dp"
-        android:layout_above="@+id/fieldContainer"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_centerInParent="true"
         android:layout_marginStart="155dp"
         android:layout_marginTop="82dp"
         android:layout_marginEnd="157dp"
@@ -98,4 +93,4 @@
         android:contentDescription="@string/logo"
         app:srcCompat="@drawable/ic_logo" />
 
-</RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
