@@ -5,6 +5,10 @@ import android.content.SharedPreferences;
 
 public class PrefManager {
 
+    public SharedPreferences getPref() {
+        return pref;
+    }
+
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
     private Context _context;
@@ -12,13 +16,15 @@ public class PrefManager {
     private static final String PREF_NAME = "UpUpHere";
 
     private static final String IS_FIRST_TIME_LAUNCH = "IsFirstTimeLaunch";
-    private static final String IS_LOGGED_IN = "IsLoggedIn";
+    public static final String IS_LOGGED_IN = "IsLoggedIn";
 
     private static final String USER_ID= "user_id";
     private static final String USER_DEVICE_ID= "user_device_id";
     private static final String USER_SESSION_ID= "user_session_id";
     private static final String USER_ACCESS_TOKEN = "access_token";
     private static final String USER_REFRESH_TOKEN = "refresh_token";
+
+    private static final String USER_DETAILS_GSON = "user_details_gson";
     // shared pref mode
     int PRIVATE_MODE = 0;
 
@@ -85,6 +91,30 @@ public class PrefManager {
     public void removeAllSharedPrefrences(){
         editor.clear();
         editor.commit();
+    }
+
+    public String getUserDetailsObject(){
+        return pref.getString(USER_DETAILS_GSON,null);
+    }
+
+    public void setUserDetailsGson(String userDetailsGson){
+        editor.putString(USER_DETAILS_GSON,userDetailsGson);
+        editor.commit();
+    }
+
+    private SharedPreferenceBooleanLiveData sharedPreferenceLiveData;
+
+    public SharedPreferenceBooleanLiveData getSharedPrefs(){
+        return sharedPreferenceLiveData;
+    }
+
+    public void setSharedPreferences(String key, boolean value) {
+        SharedPreferences userDetails = _context.getSharedPreferences(PREF_NAME,
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = userDetails.edit();
+        editor.putBoolean(key, value);
+        editor.apply();
+        sharedPreferenceLiveData = new SharedPreferenceBooleanLiveData(userDetails,key,value);
     }
 
 }

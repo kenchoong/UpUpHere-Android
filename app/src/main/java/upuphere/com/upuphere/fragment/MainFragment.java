@@ -1,6 +1,6 @@
 package upuphere.com.upuphere.fragment;
 
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,13 +15,15 @@ import android.widget.Button;
 
 import java.util.Objects;
 
+import androidx.lifecycle.Observer;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import upuphere.com.upuphere.Interface.CommonCallBack;
 import upuphere.com.upuphere.R;
+import upuphere.com.upuphere.helper.SharedPreferenceBooleanLiveData;
 import upuphere.com.upuphere.helper.PrefManager;
-import upuphere.com.upuphere.libs.Authenticate;
+import upuphere.com.upuphere.repositories.UserRepo;
 
 
 public class MainFragment extends Fragment {
@@ -29,9 +31,12 @@ public class MainFragment extends Fragment {
     PrefManager prefManager;
     Button logoutButton;
 
+    UserRepo userRepo = UserRepo.getInstance();
     public MainFragment() {
         // Required empty public constructor
     }
+
+    SharedPreferenceBooleanLiveData sharedPreferenceBooleanLiveData;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,8 +49,6 @@ public class MainFragment extends Fragment {
         logoutButton = view.findViewById(R.id.logoutButton);
 
         prefManager = new PrefManager(getActivity());
-
-
 
         myButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,12 +74,13 @@ public class MainFragment extends Fragment {
                 prefManager.setIsLoggedIn(false);
 
                 NavController navController = Navigation.findNavController(view);
+                navController.popBackStack(R.id.mainFragment,true);
                 navController.navigate(R.id.loginFragment);
-            /*
+/*
                 String accessToken = prefManager.getUserAccessToken();
 
                 if(accessToken != null){
-                    Authenticate.revokedAccessToken(getActivity(), new CommonCallBack() {
+                    userRepo.revokedAccessToken(new CommonCallBack() {
                         @Override
                         public void success() {
                             revokeRefreshToken();
@@ -88,7 +92,7 @@ public class MainFragment extends Fragment {
                         }
                     });
                 }
-            */
+*/
             }
         });
 
@@ -96,17 +100,26 @@ public class MainFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if(!prefManager.isLoggedIn()){
-            NavController navController = Navigation.findNavController(view);
-            navController.navigate(R.id.loginFragment);
-        }
+        SharedPreferences sharedPreferences = new PrefManager(getActivity()).getPref();
+        SharedPreferenceBooleanLiveData sharedPreferenceBooleanLiveData = new SharedPreferenceBooleanLiveData(sharedPreferences,PrefManager.IS_LOGGED_IN,false);
+
+
+        sharedPreferenceBooleanLiveData.getBooleanLiveData(PrefManager.IS_LOGGED_IN,false).observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoggedIn) {
+                if(!isLoggedIn){
+                    NavController navController = Navigation.findNavController(view);
+                    navController.navigate(R.id.loginFragment);
+                }
+            }
+        });
     }
 
     private void revokeRefreshToken(){
-        Authenticate.revokeRefreshToken(getActivity(), new CommonCallBack() {
+        userRepo.revokeRefreshToken(new CommonCallBack() {
             @Override
             public void success() {
                 prefManager.removeAllSharedPrefrences();

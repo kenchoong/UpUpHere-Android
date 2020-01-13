@@ -47,7 +47,6 @@
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
         android:contentDescription="@string/add_group"
-        android:background="@color/secondaryColor"
         app:srcCompat="@drawable/ic_add_white"
         app:backgroundTint="@color/secondaryColor"
         app:layout_constraintBottom_toBottomOf="parent"

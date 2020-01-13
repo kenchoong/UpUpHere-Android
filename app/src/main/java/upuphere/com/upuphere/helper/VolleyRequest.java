@@ -9,6 +9,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,6 +17,9 @@ import org.json.JSONObject;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+
+import upuphere.com.upuphere.app.AppController;
+import upuphere.com.upuphere.models.UserModel;
 
 
 public class VolleyRequest {
@@ -38,7 +42,7 @@ public class VolleyRequest {
          return new JSONObject(params);
     }
 
-    public static JsonObjectRequest postJsonAccessRequestWithoutRetry(final Context mContext, String url, JSONObject params, final ResponseCallBack responseCallBack) {
+    public static JsonObjectRequest postJsonAccessRequestWithoutRetry(String url, JSONObject params, final ResponseCallBack responseCallBack) {
         JsonObjectRequest jsonObjectRequest =  new JsonObjectRequest(Request.Method.POST, url, params,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -55,7 +59,7 @@ public class VolleyRequest {
         }) {
             @Override
             public Map<String, String> getHeaders() {
-                return volleyAccessClient(mContext);
+                return volleyAccessClient();
             }
         };
 
@@ -67,7 +71,7 @@ public class VolleyRequest {
         return jsonObjectRequest;
     }
 
-    public static JsonObjectRequest postJsonRefreshRequestWithoutRetry(final Context mContext, String url, JSONObject params, final ResponseCallBack responseCallBack){
+    public static JsonObjectRequest postJsonRefreshRequestWithoutRetry(String url, JSONObject params, final ResponseCallBack responseCallBack){
         JsonObjectRequest jsonObjectRequest =  new JsonObjectRequest(Request.Method.POST, url, params,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -84,30 +88,47 @@ public class VolleyRequest {
         }) {
             @Override
             public Map<String, String> getHeaders() {
-                return volleyRefreshClient(mContext);
+                return volleyRefreshClient();
             }
         };
 
         jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                0,
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS * 2,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         return jsonObjectRequest;
     }
 
-    private static Map<String,String> volleyAccessClient(Context mContext){
-        String accessToken = new PrefManager(mContext).getUserAccessToken();
+    private static Map<String,String> volleyAccessClient(){
+        //String accessToken = new PrefManager(AppController.getContext()).getUserAccessToken();
+        //String userId = new Gson().fromJson(new PrefManager(AppController.getContext()).getUserDetailsObject())
+        Log.d("Login","Headers");
+
+        String accessToken = null;
+        String userDetails = new PrefManager(AppController.getContext()).getUserAccessToken();
+
+        if(userDetails != null) {
+            Gson gson = new Gson();
+            UserModel model = gson.fromJson(userDetails, UserModel.class);
+            accessToken = model.getAccessToken();
+        }
 
         Map<String, String> headers = new HashMap<>();
 
         headers.put("Content-Type","application/json");
-        headers.put("Authorization", "Bearer " + accessToken);
+
+        if (accessToken != null) {
+            headers.put("Authorization", "Bearer " + accessToken);
+        }
+
+        Log.d("Login",headers.toString());
         return headers;
     }
 
-    private static Map<String,String> volleyRefreshClient(Context mContext){
-        String refreshToken = new PrefManager(mContext).getUserRefreshToken();
+    private static Map<String,String> volleyRefreshClient(){
+        //String refreshToken = new PrefManager(AppController.getContext()).getUserRefreshToken();
+        String refreshToken = new Gson().fromJson(new PrefManager(AppController.getContext()).getUserDetailsObject(),UserModel.class).getRefreshToken();
 
         Map<String, String> headers = new HashMap<>();
 

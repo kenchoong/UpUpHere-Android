@@ -50,6 +50,9 @@
         <action
             android:id="@+id/action_loginFragment_to_forgot_password_graph"
             app:destination="@id/forgot_password_graph" />
+        <action
+            android:id="@+id/actionMain"
+            app:destination="@id/mainFragment" />
     </fragment>
     <navigation
         android:id="@+id/registration_graph"
@@ -61,7 +64,9 @@
             tools:layout="@layout/fragment_phone_auth" >
             <action
                 android:id="@+id/action_phoneAuthFragment_to_signUpFragment"
-                app:destination="@id/signUpFragment" />
+                app:destination="@id/signUpFragment"
+                app:popUpTo="@id/signUpFragment"
+                app:popUpToInclusive="true"/>
         </fragment>
         <fragment
             android:id="@+id/signUpFragment"
