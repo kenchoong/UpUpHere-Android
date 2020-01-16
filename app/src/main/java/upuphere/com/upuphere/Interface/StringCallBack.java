@@ -2,7 +2,7 @@ package upuphere.com.upuphere.Interface;
 
 public interface StringCallBack {
 
-    void success();
+    void success(String item);
 
-    void showError();
+    void showError(String error);
 }

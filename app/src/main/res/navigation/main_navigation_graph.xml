@@ -6,7 +6,7 @@
     app:startDestination="@id/mainFragment">
     <fragment
         android:id="@+id/mainFragment"
-        android:name="upuphere.com.upuphere.fragment.MainFragment"
+        android:name="upuphere.com.upuphere.MainFragment"
         android:label="fragment_main"
         tools:layout="@layout/fragment_main" >
         <action
@@ -97,4 +97,9 @@
             android:label="fragment_reset_password"
             tools:layout="@layout/fragment_reset_password" />
     </navigation>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="upuphere.com.upuphere.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
 </navigation>
