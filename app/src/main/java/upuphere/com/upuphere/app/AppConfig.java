@@ -6,6 +6,8 @@ public class AppConfig {
 
     private static String BASE_URL = "http://127.0.0.1:5000";
 
+    public static String PHOTO_ENDPOINT = BASE_URL +"/media/photos";
+
     public static String URL_LOGIN = BASE_URL + "/api/auth/login";
 
     public static String URL_SIGN_UP = BASE_URL + "/api/auth/signup";
@@ -17,4 +19,6 @@ public class AppConfig {
     public static String URL_LOGOUT_ACCESS_TOKEN = BASE_URL + "/api/auth/logout/access";
 
     public static String URL_LOGOUT_REFRESH_TOKEN = BASE_URL + "/api/auth/logout/refresh";
+
+    public static String URL_GET_ROOM_LIST = BASE_URL + "/api/rooms";
 }

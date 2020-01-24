@@ -3,11 +3,13 @@ package upuphere.com.upuphere.helper;
 import android.content.Context;
 import android.util.Log;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.gson.JsonObject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -95,6 +97,31 @@ public class VolleyRequest {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         return jsonObjectRequest;
+    }
+
+    public static JsonObjectRequest getJsonAccessRequestWithoutRetry(String url, final ResponseCallBack responseCallBack){
+
+        return new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("onResponse",response.toString());
+                responseCallBack.onSuccess(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("onErrorResponse",error.toString());
+                responseCallBack.onError(parseVolleyError(error));
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type","application/json");
+
+                return headers;
+            }
+        };
     }
 
     private static Map<String,String> volleyAccessClient(){

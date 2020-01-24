@@ -33,6 +33,9 @@
         <action
             android:id="@+id/action_roomFragment_to_commentFragment"
             app:destination="@id/commentFragment" />
+        <argument
+            android:name="roomId"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/commentFragment"

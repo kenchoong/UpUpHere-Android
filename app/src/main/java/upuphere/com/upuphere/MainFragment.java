@@ -1,6 +1,7 @@
 package upuphere.com.upuphere;
 
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,11 +10,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.Toast;
 
+import java.util.List;
 import java.util.Objects;
 
 import androidx.lifecycle.Observer;
@@ -21,19 +24,28 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import upuphere.com.upuphere.adapter.RoomAdapter;
 import upuphere.com.upuphere.databinding.FragmentMainBinding;
 import upuphere.com.upuphere.helper.SharedPreferenceBooleanLiveData;
 import upuphere.com.upuphere.helper.PrefManager;
+import upuphere.com.upuphere.helper.SpacingItemDecoration;
+import upuphere.com.upuphere.models.AllRooms;
 import upuphere.com.upuphere.viewmodel.MainViewModel;
 
 
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterListener{
     public MainFragment() {
         // Required empty public constructor
     }
 
-    MainViewModel mainViewModel;
-
+    private MainViewModel mainViewModel;
+    private FragmentMainBinding binding;
+    private RecyclerView recyclerView;
+    private RoomAdapter roomAdapter;
+    private View view;
 
 
     @Override
@@ -41,9 +53,9 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).show();
         // Inflate the layout for this fragment
-        FragmentMainBinding binding = DataBindingUtil.inflate(inflater,R.layout.fragment_main,container,false);
+        binding = DataBindingUtil.inflate(inflater,R.layout.fragment_main,container,false);
         mainViewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel.class);
-        View view = binding.getRoot();
+        view = binding.getRoot();
         binding.setViewmodel(mainViewModel);
 
         return view;
@@ -79,5 +91,42 @@ public class MainFragment extends Fragment {
                 }
             }
         });
+
+        initRecyclerView();
+
+        getRoomList();
+    }
+
+
+    private void initRecyclerView() {
+        recyclerView = binding.roomRecyclerView;
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
+        recyclerView.addItemDecoration(new SpacingItemDecoration(3, dpToPx(4), true));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setNestedScrollingEnabled(false);
+        roomAdapter = new RoomAdapter(this);
+        recyclerView.setAdapter(roomAdapter);
+
+    }
+
+    private void getRoomList(){
+        mainViewModel.getRoomList().observe(getViewLifecycleOwner(), new Observer<List<AllRooms>>() {
+            @Override
+            public void onChanged(List<AllRooms> rooms) {
+                roomAdapter.setRoomList(rooms);
+            }
+        });
+    }
+
+    @Override
+    public void onRoomClicked(AllRooms room) {
+        Toast.makeText(getActivity(),room.getId(),Toast.LENGTH_SHORT).show();
+        NavDirections action = MainFragmentDirections.actionMainFragmentToRoomFragment(room.getId());
+        Navigation.findNavController(view).navigate(action);
+    }
+
+    private int dpToPx(int dp) {
+        Resources r = getResources();
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
     }
 }

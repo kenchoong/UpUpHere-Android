@@ -42,4 +42,6 @@
 
     <string name="profile">Profile</string>
     <string name="logout">Logout</string>
+
+    <string name="content_description">Image</string>
 </resources>

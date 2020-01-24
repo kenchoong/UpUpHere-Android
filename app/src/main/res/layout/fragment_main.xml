@@ -16,6 +16,11 @@
         android:layout_height="match_parent"
         tools:context=".MainFragment">
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/roomRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:onClick="@{viewmodel::onFabClick}"
             android:id="@+id/fab"
