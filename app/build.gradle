@@ -53,7 +53,11 @@ dependencies {
     implementation 'com.android.volley:volley:1.1.0'
     implementation 'com.google.code.gson:gson:2.8.5'
 
+    //image stuff
+    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
 
+    implementation 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
 
 
 }

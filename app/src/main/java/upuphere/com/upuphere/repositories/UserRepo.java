@@ -6,6 +6,7 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.Gson;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import upuphere.com.upuphere.Interface.AuthListener;
 import upuphere.com.upuphere.Interface.BoolCallBack;
 import upuphere.com.upuphere.Interface.CommonCallBack;
+import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.app.AppController;
 import upuphere.com.upuphere.helper.PrefManager;
@@ -192,5 +194,29 @@ public class UserRepo{
 
         AppController.getInstance().addToRequestQueue(request);
 
+    }
+
+    public void getRefreshAccessToken(final StringCallBack callBack){
+        JsonObjectRequest request = VolleyRequest.postJsonRefreshRequestWithoutRetry(AppConfig.URL_GET_REFRESH_ACCESS_TOKEN, null, new VolleyRequest.ResponseCallBack() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                //get the access token,save it in the shared preferences
+                try {
+                    String accessToken = response.getString("access_token");
+                    new PrefManager(AppController.getContext()).setUserAccessToken(accessToken);
+
+                    callBack.success(accessToken);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+
+            }
+        });
+
+        AppController.getInstance().addToRequestQueue(request);
     }
 }

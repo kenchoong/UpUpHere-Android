@@ -9,7 +9,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import upuphere.com.upuphere.app.AppController;
-import upuphere.com.upuphere.models.UserModel;
 
 
 public class VolleyRequest {
@@ -71,7 +70,7 @@ public class VolleyRequest {
         return jsonObjectRequest;
     }
 
-    public static JsonObjectRequest postJsonRefreshRequestWithoutRetry(String url, JSONObject params, final ResponseCallBack responseCallBack){
+    public static JsonObjectRequest postJsonRefreshRequestWithoutRetry(final String url, JSONObject params, final ResponseCallBack responseCallBack){
         JsonObjectRequest jsonObjectRequest =  new JsonObjectRequest(Request.Method.POST, url, params,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -100,19 +99,37 @@ public class VolleyRequest {
         return jsonObjectRequest;
     }
 
+    public static JsonObjectRequest getJsonAccessRequestWithoutRetry(String url, final ResponseCallBack responseCallBack){
+
+        return new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("onResponse",response.toString());
+                responseCallBack.onSuccess(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("onErrorResponse",error.toString());
+                responseCallBack.onError(parseVolleyError(error));
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type","application/json");
+
+                return headers;
+            }
+        };
+    }
+
     private static Map<String,String> volleyAccessClient(){
         //String accessToken = new PrefManager(AppController.getContext()).getUserAccessToken();
         //String userId = new Gson().fromJson(new PrefManager(AppController.getContext()).getUserDetailsObject())
         Log.d("Login","Headers");
 
-        String accessToken = null;
-        String userDetails = new PrefManager(AppController.getContext()).getUserAccessToken();
-
-        if(userDetails != null) {
-            Gson gson = new Gson();
-            UserModel model = gson.fromJson(userDetails, UserModel.class);
-            accessToken = model.getAccessToken();
-        }
+        String accessToken = new PrefManager(AppController.getContext()).getUserAccessToken();
 
         Map<String, String> headers = new HashMap<>();
 
@@ -128,7 +145,7 @@ public class VolleyRequest {
 
     private static Map<String,String> volleyRefreshClient(){
         //String refreshToken = new PrefManager(AppController.getContext()).getUserRefreshToken();
-        String refreshToken = new Gson().fromJson(new PrefManager(AppController.getContext()).getUserDetailsObject(),UserModel.class).getRefreshToken();
+        String refreshToken = new PrefManager(AppController.getContext()).getUserRefreshToken();
 
         Map<String, String> headers = new HashMap<>();
 
@@ -151,6 +168,8 @@ public class VolleyRequest {
                     //Log.d("error message",message);
                     return message;
                 }
+
+
             }else{
                 Log.d("JSON error","is null");
                 return "Error message not specified";
