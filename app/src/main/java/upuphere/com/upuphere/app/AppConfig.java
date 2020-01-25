@@ -21,4 +21,6 @@ public class AppConfig {
     public static String URL_LOGOUT_REFRESH_TOKEN = BASE_URL + "/api/auth/logout/refresh";
 
     public static String URL_GET_ROOM_LIST = BASE_URL + "/api/rooms";
+
+    public static String URL_GET_POST_IN_SPECIFIC_ROOM = BASE_URL + "/api/posts/room/";
 }

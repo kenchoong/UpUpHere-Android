@@ -11,7 +11,8 @@
         tools:layout="@layout/fragment_main">
         <action
             android:id="@+id/action_mainFragment_to_createRoomFragment"
-            app:destination="@id/createRoomFragment" />
+            app:destination="@id/createRoomFragment"
+            app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_mainFragment_to_roomFragment"
             app:destination="@id/roomFragment" />
@@ -28,14 +29,16 @@
     <fragment
         android:id="@+id/roomFragment"
         android:name="upuphere.com.upuphere.ui.room.DisplayRoomFragment"
-        android:label="fragment_room"
-        tools:layout="@layout/fragment_display_room" >
+        tools:layout="@layout/fragment_display_room">
         <action
             android:id="@+id/action_roomFragment_to_commentFragment"
             app:destination="@id/commentFragment" />
         <argument
-            android:name="roomId"
-            app:argType="string" />
+            android:name="room"
+            app:argType="upuphere.com.upuphere.models.AllRooms" />
+        <action
+            android:id="@+id/action_roomFragment_to_createPostFragment"
+            app:destination="@id/createPostFragment" />
     </fragment>
     <fragment
         android:id="@+id/commentFragment"
@@ -105,4 +108,9 @@
         android:name="upuphere.com.upuphere.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/createPostFragment"
+        android:name="upuphere.com.upuphere.ui.room.CreatePostFragment"
+        android:label="fragment_create_post"
+        tools:layout="@layout/fragment_create_post" />
 </navigation>
