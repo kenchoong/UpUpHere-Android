@@ -1,11 +1,14 @@
 package upuphere.com.upuphere.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import androidx.databinding.BaseObservable;
 
-public class AllRooms extends BaseObservable {
+public class AllRooms extends BaseObservable implements Parcelable {
 
     @SerializedName("_id")
     @Expose
@@ -107,4 +110,13 @@ public class AllRooms extends BaseObservable {
         this.activeStatus = activeStatus;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+
+    }
 }

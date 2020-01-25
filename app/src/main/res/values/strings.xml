@@ -43,5 +43,9 @@
     <string name="profile">Profile</string>
     <string name="logout">Logout</string>
 
+    <string name="up_vote">UpVote</string>
+    <string name="comment">Comment</string>
+    <string name="share">Share</string>
+
     <string name="content_description">Image</string>
 </resources>

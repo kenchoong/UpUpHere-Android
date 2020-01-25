@@ -64,7 +64,7 @@ public class CreateRoomFragment extends Fragment {
             public void onChanged(CreateRoomViewModel.CreateRoomState createRoomState) {
                 switch (createRoomState){
                     case EXIT_CREATE_ROOM_PROCESS:
-                        navController.popBackStack();
+                        navController.navigateUp();
                         break;
                 }
             }
