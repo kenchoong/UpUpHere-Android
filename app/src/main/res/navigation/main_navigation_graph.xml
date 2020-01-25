@@ -7,8 +7,8 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="upuphere.com.upuphere.MainFragment"
-        android:label="fragment_main"
-        tools:layout="@layout/fragment_main" >
+        android:label="UpUpHere"
+        tools:layout="@layout/fragment_main">
         <action
             android:id="@+id/action_mainFragment_to_createRoomFragment"
             app:destination="@id/createRoomFragment" />
