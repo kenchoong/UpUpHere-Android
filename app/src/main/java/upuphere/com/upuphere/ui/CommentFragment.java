@@ -1,4 +1,4 @@
-package upuphere.com.upuphere.fragment;
+package upuphere.com.upuphere.ui;
 
 
 import android.os.Bundle;

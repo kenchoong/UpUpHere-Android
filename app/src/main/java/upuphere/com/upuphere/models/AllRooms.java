@@ -38,6 +38,35 @@ public class AllRooms extends BaseObservable implements Parcelable {
     @Expose
     private Boolean activeStatus;
 
+    public AllRooms(Parcel in) {
+        id = in.readString();
+        cls = in.readString();
+        roomPublicId = in.readString();
+        roomName = in.readString();
+        roomProfileImage = in.readString();
+        roomDescription = in.readString();
+        createdBy = in.readString();
+        createdAt = in.readString();
+        byte tmpActiveStatus = in.readByte();
+        activeStatus = tmpActiveStatus == 0 ? null : tmpActiveStatus == 1;
+    }
+
+    public static final Creator<AllRooms> CREATOR = new Creator<AllRooms>() {
+        @Override
+        public AllRooms createFromParcel(Parcel in) {
+            return new AllRooms(in);
+        }
+
+        @Override
+        public AllRooms[] newArray(int size) {
+            return new AllRooms[size];
+        }
+    };
+
+    public AllRooms() {
+
+    }
+
     public String getId() {
         return id;
     }
@@ -117,6 +146,14 @@ public class AllRooms extends BaseObservable implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-
+        parcel.writeString(id);
+        parcel.writeString(cls);
+        parcel.writeString(roomPublicId);
+        parcel.writeString(roomName);
+        parcel.writeString(roomProfileImage);
+        parcel.writeString(roomDescription);
+        parcel.writeString(createdBy);
+        parcel.writeString(createdAt);
+        parcel.writeByte((byte) (activeStatus == null ? 0 : activeStatus ? 1 : 2));
     }
 }

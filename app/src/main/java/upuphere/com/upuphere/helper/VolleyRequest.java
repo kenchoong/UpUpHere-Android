@@ -124,7 +124,7 @@ public class VolleyRequest {
         };
     }
 
-    private static Map<String,String> volleyAccessClient(){
+    public static Map<String,String> volleyAccessClient(){
         //String accessToken = new PrefManager(AppController.getContext()).getUserAccessToken();
         //String userId = new Gson().fromJson(new PrefManager(AppController.getContext()).getUserDetailsObject())
         Log.d("Login","Headers");
