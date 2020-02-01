@@ -57,7 +57,11 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.10.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
 
+    // Time label
     implementation 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
+
+    //permission
+    implementation 'com.master.android:permissionhelper:2.1'
 
 
 }

@@ -23,4 +23,6 @@ public class AppConfig {
     public static String URL_GET_ROOM_LIST = BASE_URL + "/api/rooms";
 
     public static String URL_GET_POST_IN_SPECIFIC_ROOM = BASE_URL + "/api/posts/room/";
+
+    public static String URL_CREATE_ROOM = BASE_URL + "/api/rooms";
 }

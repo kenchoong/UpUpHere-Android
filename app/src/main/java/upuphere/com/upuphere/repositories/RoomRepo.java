@@ -1,19 +1,32 @@
 package upuphere.com.upuphere.repositories;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import androidx.lifecycle.MutableLiveData;
+import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.app.AppController;
 import upuphere.com.upuphere.helper.PrefManager;
+import upuphere.com.upuphere.helper.VolleyMultipartRequest;
 import upuphere.com.upuphere.helper.VolleyRequest;
 import upuphere.com.upuphere.models.AllRooms;
 import upuphere.com.upuphere.models.Post;
@@ -76,6 +89,61 @@ public class RoomRepo {
         AppController.getInstance().addToRequestQueue(request);
 
         return postMutableLiveData;
+    }
+
+    private byte[] getFileDataFromDrawable(Bitmap bitmap) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 80, byteArrayOutputStream);
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    public void createRoom(String roomName, final Bitmap bitmap, final StringCallBack stringCallBack) {
+
+        String[] key = new String[]{"room_name"};
+        String[] values = new String[]{roomName};
+        final JSONObject param = VolleyRequest.getParams(key, values);
+        Log.d("CREATE ROOM",param.toString());
+
+        VolleyMultipartRequest request = new VolleyMultipartRequest(Request.Method.POST, AppConfig.URL_CREATE_ROOM, new Response.Listener<NetworkResponse>() {
+            @Override
+            public void onResponse(NetworkResponse response) {
+                try {
+                    JSONObject obj = new JSONObject(new String(response.data));
+                    Log.d("CREATE ROOM",obj.toString());
+                    stringCallBack.success(obj.getString("room_id"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("CREATE ROOM","ERROR OCCURRED ");
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("data", param.toString());
+                return params;
+            }
+
+            @Override
+            protected Map<String, DataPart> getByteData() throws AuthFailureError {
+                Map<String, DataPart> params = new HashMap<>();
+                long imagename = System.currentTimeMillis();
+                params.put("room_image_file", new DataPart(imagename + ".png", getFileDataFromDrawable(bitmap)));
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return VolleyRequest.volleyAccessClient();
+            }
+        };
+
+        AppController.getInstance().addToRequestQueue(request);
     }
 
 }
