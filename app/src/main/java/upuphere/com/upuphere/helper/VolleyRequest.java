@@ -1,10 +1,12 @@
 package upuphere.com.upuphere.helper;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -14,10 +16,12 @@ import com.google.gson.JsonObject;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.app.AppController;
 
 
@@ -120,6 +124,54 @@ public class VolleyRequest {
                 headers.put("Content-Type","application/json");
 
                 return headers;
+            }
+        };
+    }
+
+    private static byte[] getFileDataFromDrawable(Bitmap bitmap) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 80, byteArrayOutputStream);
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    public static VolleyMultipartRequest postMultipartAccessRequest(String url, final JSONObject param, final Bitmap bitmap, final String fileKey, final ResponseCallBack responseCallBack){
+        return new VolleyMultipartRequest(Request.Method.POST, url, new Response.Listener<NetworkResponse>() {
+            @Override
+            public void onResponse(NetworkResponse response) {
+                try {
+                    JSONObject obj = new JSONObject(new String(response.data));
+                    Log.d("CREATE ROOM",obj.toString());
+                    responseCallBack.onSuccess(obj);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("CREATE ROOM","ERROR OCCURRED ");
+                responseCallBack.onError(parseVolleyError(error));
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("data", param.toString());
+                return params;
+            }
+
+            @Override
+            protected Map<String, DataPart> getByteData() throws AuthFailureError {
+                Map<String, DataPart> params = new HashMap<>();
+                long imagename = System.currentTimeMillis();
+                params.put(fileKey, new DataPart(imagename + ".png", getFileDataFromDrawable(bitmap)));
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return VolleyRequest.volleyAccessClient();
             }
         };
     }

@@ -12,14 +12,19 @@ import upuphere.com.upuphere.repositories.RoomRepo;
 
 public class DisplayRoomViewModel extends ViewModel {
 
-    public enum DisplayRoomFragmentState{
-        MOVE_TO_CREATE_POST,
+    public interface DisplayRoomInterface{
+        void onFabClick();
+    }
+    private DisplayRoomInterface displayRoomInterface;
+
+    public void setDisplayRoomInterface(DisplayRoomInterface mInterface){
+        this.displayRoomInterface = mInterface;
     }
 
-    public MutableLiveData<DisplayRoomFragmentState> displayRoomFragmentState =  new MutableLiveData<>();
 
     public void onFabClick(View view){
-        displayRoomFragmentState.setValue(DisplayRoomFragmentState.MOVE_TO_CREATE_POST);
+        //displayRoomFragmentState.setValue(DisplayRoomFragmentState.MOVE_TO_CREATE_POST);
+        displayRoomInterface.onFabClick();
     }
 
     public LiveData<List<Post>> getAllPostInRoom(String roomId){

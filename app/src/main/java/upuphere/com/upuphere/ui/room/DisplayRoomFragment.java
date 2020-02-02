@@ -48,7 +48,7 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
     private DisplayRoomViewModel viewModel;
     private RecyclerView recyclerView;
     private PostAdapter postAdapter;
-    private String roomId;
+    public String roomId;
     private FragmentDisplayRoomBinding binding;
     String roomName;
 
@@ -78,14 +78,11 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel.displayRoomFragmentState.observe(getViewLifecycleOwner(), new Observer<DisplayRoomViewModel.DisplayRoomFragmentState>() {
+        viewModel.setDisplayRoomInterface(new DisplayRoomViewModel.DisplayRoomInterface() {
             @Override
-            public void onChanged(DisplayRoomViewModel.DisplayRoomFragmentState displayRoomFragmentState) {
-                switch (displayRoomFragmentState){
-                    case MOVE_TO_CREATE_POST:
-                        NavDirections action = DisplayRoomFragmentDirections.actionRoomFragmentToCreatePostFragment();
-                        Navigation.findNavController(view).navigate(action);
-                }
+            public void onFabClick() {
+                NavDirections action = DisplayRoomFragmentDirections.actionRoomFragmentToCreatePostFragment(roomId);
+                Navigation.findNavController(view).navigate(action);
             }
         });
 

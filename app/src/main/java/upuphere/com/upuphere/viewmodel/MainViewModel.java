@@ -11,14 +11,17 @@ import upuphere.com.upuphere.repositories.RoomRepo;
 
 public class MainViewModel extends ViewModel {
 
-    public enum MainFragmentState{
-        MOVE_TO_CREATE_A_ROOM,
+    public interface MainFragmentInterface{
+        void onFabClick();
+    }
+    private MainFragmentInterface mainFragmentInterface;
+
+    public void setMainFragmentInterface(MainFragmentInterface mInterface){
+        this.mainFragmentInterface = mInterface;
     }
 
-    public MutableLiveData<MainFragmentState> mainFragmentState =  new MutableLiveData<>();
-
     public void onFabClick(View view){
-        mainFragmentState.setValue(MainFragmentState.MOVE_TO_CREATE_A_ROOM);
+        mainFragmentInterface.onFabClick();
     }
 
     public LiveData<List<AllRooms>> getRoomList(){

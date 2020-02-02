@@ -98,50 +98,25 @@ public class RoomRepo {
     }
 
     public void createRoom(String roomName, final Bitmap bitmap, final StringCallBack stringCallBack) {
+        String fileKey = "room_image_file";
 
         String[] key = new String[]{"room_name"};
         String[] values = new String[]{roomName};
-        final JSONObject param = VolleyRequest.getParams(key, values);
-        Log.d("CREATE ROOM",param.toString());
-
-        VolleyMultipartRequest request = new VolleyMultipartRequest(Request.Method.POST, AppConfig.URL_CREATE_ROOM, new Response.Listener<NetworkResponse>() {
+        JSONObject params = VolleyRequest.getParams(key,values);
+        VolleyMultipartRequest request = VolleyRequest.postMultipartAccessRequest(AppConfig.URL_CREATE_ROOM, params, bitmap,fileKey, new VolleyRequest.ResponseCallBack() {
             @Override
-            public void onResponse(NetworkResponse response) {
+            public void onSuccess(JSONObject response) {
                 try {
-                    JSONObject obj = new JSONObject(new String(response.data));
-                    Log.d("CREATE ROOM",obj.toString());
-                    stringCallBack.success(obj.getString("room_id"));
+                    stringCallBack.success(response.getString("room_id"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
             }
-        }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("CREATE ROOM","ERROR OCCURRED ");
+            public void onError(String error) {
+                stringCallBack.showError(error);
             }
-        }){
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                params.put("data", param.toString());
-                return params;
-            }
-
-            @Override
-            protected Map<String, DataPart> getByteData() throws AuthFailureError {
-                Map<String, DataPart> params = new HashMap<>();
-                long imagename = System.currentTimeMillis();
-                params.put("room_image_file", new DataPart(imagename + ".png", getFileDataFromDrawable(bitmap)));
-                return params;
-            }
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                return VolleyRequest.volleyAccessClient();
-            }
-        };
+        });
 
         AppController.getInstance().addToRequestQueue(request);
     }

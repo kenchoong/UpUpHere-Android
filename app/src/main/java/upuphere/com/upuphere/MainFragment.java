@@ -79,16 +79,11 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
             }
         });
 
-
-        mainViewModel.mainFragmentState.observe(getViewLifecycleOwner(), new Observer<MainViewModel.MainFragmentState>() {
+        mainViewModel.setMainFragmentInterface(new MainViewModel.MainFragmentInterface() {
             @Override
-            public void onChanged(MainViewModel.MainFragmentState mainFragmentState) {
-                switch (mainFragmentState){
-                    case MOVE_TO_CREATE_A_ROOM:
-                        NavDirections action = MainFragmentDirections.actionMainFragmentToCreateRoomFragment();
-                        Navigation.findNavController(view).navigate(action);
-                        break;
-                }
+            public void onFabClick() {
+                NavDirections action = MainFragmentDirections.actionMainFragmentToCreateRoomFragment();
+                Navigation.findNavController(view).navigate(action);
             }
         });
 
