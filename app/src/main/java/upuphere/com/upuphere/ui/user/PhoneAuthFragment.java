@@ -4,6 +4,7 @@ package upuphere.com.upuphere.ui.user;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +25,7 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.databinding.FragmentPhoneAuthBinding;
+import upuphere.com.upuphere.viewmodel.LoginViewModel;
 import upuphere.com.upuphere.viewmodel.PhoneAuthViewModel;
 
 /**
@@ -36,6 +38,7 @@ public class PhoneAuthFragment extends Fragment{
 
     private PhoneAuthViewModel phoneAuthViewModel;
     private FragmentPhoneAuthBinding phoneAuthBinding;
+    private LoginViewModel loginViewModel;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -46,6 +49,7 @@ public class PhoneAuthFragment extends Fragment{
 
         phoneAuthBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_phone_auth,container,false);
         phoneAuthViewModel = ViewModelProviders.of(requireActivity()).get(PhoneAuthViewModel.class);
+        loginViewModel = ViewModelProviders.of(requireActivity()).get(LoginViewModel.class);
         View view = phoneAuthBinding.getRoot();
         phoneAuthBinding.setViewModel(phoneAuthViewModel);
         return view;
@@ -102,6 +106,14 @@ public class PhoneAuthFragment extends Fragment{
                         Toast.makeText(getActivity(), "Verification field empty", Toast.LENGTH_SHORT).show();
                         break;
                 }
+            }
+        });
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                loginViewModel.backToLogin();
+                Navigation.findNavController(view).navigateUp();
             }
         });
     }

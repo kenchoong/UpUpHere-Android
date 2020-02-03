@@ -45,9 +45,6 @@ public class LoginFragment extends Fragment {
         // Required empty public constructor
     }
 
-    EditText identityField,passwordField;
-    Button loginButton;
-    TextView redirectText;
     PrefManager prefManager;
 
     LoginViewModel viewModel;
@@ -62,9 +59,7 @@ public class LoginFragment extends Fragment {
         Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
 
         prefManager = new PrefManager(getActivity());
-
-
-
+        
         FragmentLoginBinding binding = DataBindingUtil.inflate(inflater,R.layout.fragment_login,container,false);
         viewModel = ViewModelProviders.of(requireActivity()).get(LoginViewModel.class);
         View view = binding.getRoot();
@@ -116,6 +111,14 @@ public class LoginFragment extends Fragment {
                     case MOVE_TO_REGISTER:
                         NavDirections action = LoginFragmentDirections.actionLoginFragmentToRegistrationGraph();
                         navController.navigate(action);
+                        break;
+                    case BACK_TO_LOGIN:
+                        Log.d("LOGIN","BACK TO LOGIN");
+                        break;
+
+                    case FORGOT_PASSWORD:
+                        NavDirections action1 = LoginFragmentDirections.actionLoginFragmentToForgotPasswordGraph();
+                        navController.navigate(action1);
                         break;
                 }
             }
