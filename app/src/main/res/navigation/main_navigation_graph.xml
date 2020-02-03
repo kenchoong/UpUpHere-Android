@@ -114,8 +114,15 @@
     <fragment
         android:id="@+id/createPostFragment"
         android:name="upuphere.com.upuphere.ui.room.CreatePostFragment"
-        android:label="fragment_create_post"
-        tools:layout="@layout/fragment_create_post" />
+        android:label="Share your thought"
+        tools:layout="@layout/fragment_create_post">
+        <action
+            android:id="@+id/action_createPostFragment_to_displayPhotoFragment"
+            app:destination="@id/displayPhotoFragment" />
+        <argument
+            android:name="roomId"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/displayPhotoFragment"
         android:name="upuphere.com.upuphere.fragment.DisplayPhotoFragment"
@@ -123,5 +130,8 @@
         <argument
             android:name="bitmap"
             app:argType="android.graphics.Bitmap" />
+        <argument
+            android:name="originFragment"
+            app:argType="integer" />
     </fragment>
 </navigation>

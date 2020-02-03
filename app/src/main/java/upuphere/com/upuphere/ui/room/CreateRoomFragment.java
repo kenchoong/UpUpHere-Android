@@ -39,6 +39,7 @@ import androidx.navigation.Navigation;
 import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.databinding.FragmentCreateRoomBinding;
+import upuphere.com.upuphere.fragment.DisplayPhotoFragment;
 import upuphere.com.upuphere.fragment.PhotoBottomSheetDialogFragment;
 import upuphere.com.upuphere.helper.DecodeToken;
 import upuphere.com.upuphere.helper.PrefManager;
@@ -49,7 +50,7 @@ import upuphere.com.upuphere.viewmodel.CreateRoomViewModel;
 import static android.app.Activity.RESULT_OK;
 
 
-public class CreateRoomFragment extends Fragment implements PhotoBottomSheetDialogFragment.OptionClickListener {
+public class CreateRoomFragment extends Fragment implements CreateRoomViewModel.CreateRoomInterface {
 
     public static final String TAG = CreateRoomFragment.class.getSimpleName();
 
@@ -85,27 +86,8 @@ public class CreateRoomFragment extends Fragment implements PhotoBottomSheetDial
         super.onViewCreated(view, savedInstanceState);
 
         final NavController navController = Navigation.findNavController(view);
-        viewModel.createRoomState.observe(getViewLifecycleOwner(), new Observer<CreateRoomViewModel.CreateRoomState>() {
-            @Override
-            public void onChanged(CreateRoomViewModel.CreateRoomState createRoomState) {
-                switch (createRoomState){
-                    case EXIT_CREATE_ROOM_PROCESS:
-                        navController.navigateUp();
-                        break;
-                    case SHOW_PHOTO_BOTTOM_SHEET:
-                        showBottomSheet();
-                        break;
-                    case DISPLAY_CHOOSEN_IMAGE:
-                        Log.d("STATE IN CREATE ROOM","STILL IN CHOOSEN IMAGE");
-                        NavDirections action = CreateRoomFragmentDirections.actionCreateRoomFragmentToDisplayPhotoFragment(selectedPhoto);
-                        Navigation.findNavController(view).navigate(action);
-                        break;
-                    case BACK_TO_CREATE_ROOM:
-                        Log.d("STATE IN CREATE ROOM","BACK TO CREATE ROOM");
-                        break;
-                }
-            }
-        });
+
+        viewModel.setCreatePostStateInterface(this);
 
         viewModel.getSelectedPhoto().observe(getViewLifecycleOwner(), new Observer<Bitmap>() {
             @Override
@@ -130,7 +112,8 @@ public class CreateRoomFragment extends Fragment implements PhotoBottomSheetDial
                     public void handleOnBackPressed() {
                         //todo:: when click back,back to main fragment
                         Log.d("Back","Back button pressed");
-                        viewModel.exitCreateRoom();
+                        //viewModel.exitCreateRoom();
+                        navController.navigateUp();
                     }
                 });
     }
@@ -159,6 +142,9 @@ public class CreateRoomFragment extends Fragment implements PhotoBottomSheetDial
                             AllRooms rooms = new AllRooms();
                             rooms.setId(roomId);
                             rooms.setRoomName(viewModel.roomName);
+
+                            binding.roomNameField.setText("");
+                            viewModel.getSelectedPhoto().setValue(null);
 
                             NavDirections action = CreateRoomFragmentDirections.actionCreateRoomFragmentToRoomFragment(rooms);
                             Navigation.findNavController(rootView).navigate(action);
@@ -224,7 +210,24 @@ public class CreateRoomFragment extends Fragment implements PhotoBottomSheetDial
     private void showBottomSheet(){
         photoBottomSheetDialogFragment = PhotoBottomSheetDialogFragment.newInstance();
         photoBottomSheetDialogFragment.show(Objects.requireNonNull(getFragmentManager()),PhotoBottomSheetDialogFragment.TAG);
-        photoBottomSheetDialogFragment.setOptionClickListener(this);
+        photoBottomSheetDialogFragment.setOptionClickListener(new PhotoBottomSheetDialogFragment.OptionClickListener() {
+            @Override
+            public void onTakePhoto() {
+                photoBottomSheetDialogFragment.dismiss();
+                requestPermission(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},CAMERA_PROCESS);
+            }
+
+            @Override
+            public void onChooseFromAlbum() {
+                photoBottomSheetDialogFragment.dismiss();
+                requestPermission(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},GALLERY_PROCESS);
+            }
+
+            @Override
+            public void onCancel() {
+                photoBottomSheetDialogFragment.dismiss();
+            }
+        });
     }
 
 
@@ -272,23 +275,15 @@ public class CreateRoomFragment extends Fragment implements PhotoBottomSheetDial
         }
     }
 
+
     @Override
-    public void onTakePhoto() {
-        //here go to camera take photo
-        photoBottomSheetDialogFragment.dismiss();
-        requestPermission(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},CAMERA_PROCESS);
+    public void onChosenImageClick() {
+        NavDirections action = CreateRoomFragmentDirections.actionCreateRoomFragmentToDisplayPhotoFragment(selectedPhoto, DisplayPhotoFragment.ORIGIN_CREATE_ROOM_FRAGMENT);
+        Navigation.findNavController(rootView).navigate(action);
     }
 
     @Override
-    public void onChooseFromAlbum() {
-        photoBottomSheetDialogFragment.dismiss();
-        requestPermission(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},GALLERY_PROCESS);
+    public void onChooseImage() {
+        showBottomSheet();
     }
-
-    @Override
-    public void onCancel() {
-        photoBottomSheetDialogFragment.dismiss();
-    }
-
-
 }

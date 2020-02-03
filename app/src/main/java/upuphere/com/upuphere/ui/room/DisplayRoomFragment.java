@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
+import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,6 +32,7 @@ import upuphere.com.upuphere.MainActivity;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.adapter.PostAdapter;
 import upuphere.com.upuphere.databinding.FragmentDisplayRoomBinding;
+import upuphere.com.upuphere.fragment.DisplayPhotoFragmentArgs;
 import upuphere.com.upuphere.models.AllRooms;
 import upuphere.com.upuphere.models.Post;
 import upuphere.com.upuphere.viewmodel.DisplayRoomViewModel;
@@ -48,9 +51,11 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
     private DisplayRoomViewModel viewModel;
     private RecyclerView recyclerView;
     private PostAdapter postAdapter;
-    private String roomId;
+    public String roomId;
     private FragmentDisplayRoomBinding binding;
     String roomName;
+
+    List<Post> fetchedPost = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -78,14 +83,11 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel.displayRoomFragmentState.observe(getViewLifecycleOwner(), new Observer<DisplayRoomViewModel.DisplayRoomFragmentState>() {
+        viewModel.setDisplayRoomInterface(new DisplayRoomViewModel.DisplayRoomInterface() {
             @Override
-            public void onChanged(DisplayRoomViewModel.DisplayRoomFragmentState displayRoomFragmentState) {
-                switch (displayRoomFragmentState){
-                    case MOVE_TO_CREATE_POST:
-                        NavDirections action = DisplayRoomFragmentDirections.actionRoomFragmentToCreatePostFragment();
-                        Navigation.findNavController(view).navigate(action);
-                }
+            public void onFabClick() {
+                NavDirections action = DisplayRoomFragmentDirections.actionRoomFragmentToCreatePostFragment(roomId);
+                Navigation.findNavController(view).navigate(action);
             }
         });
 
@@ -105,6 +107,7 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
         viewModel.getAllPostInRoom(roomId).observe(getViewLifecycleOwner(), new Observer<List<Post>>() {
             @Override
             public void onChanged(List<Post> posts) {
+                fetchedPost.addAll(posts);
                 postAdapter.setPost(posts);
             }
         });
@@ -113,6 +116,12 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
     @Override
     public void onCommentClicked(Post post) {
         Toast.makeText(getActivity(),post.getId(),Toast.LENGTH_SHORT).show();
+
+        //NavDirections action = DisplayRoomFragmentDirections.actionRoomFragmentToCommentFragment(post.getId(),fetchedPost);
+        Bundle bundle = new Bundle();
+        bundle.putString("postId",post.getId());
+        bundle.putParcelableArrayList("fetched_post", (ArrayList<? extends Parcelable>) fetchedPost);
+        Navigation.findNavController(rootView).navigate(R.id.commentFragment,bundle);
     }
 
     @Override

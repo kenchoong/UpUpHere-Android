@@ -13,34 +13,26 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import upuphere.com.upuphere.fragment.PhotoBottomSheetDialogFragment;
 
-public class CreateRoomViewModel extends ViewModel {
+public class CreatePostViewModel extends ViewModel {
 
-    @BindingAdapter({"bitmap"})
-    public static void loadImage(ImageView view, Bitmap bitmap){
-        Glide.with(view.getContext())
-                .load(bitmap)
-                .into(view);
-    }
-
-    public String roomName;
     public String statusText;
 
-    public interface CreateRoomInterface{
+    public interface CreatePostInterface{
         void onChosenImageClick();
         void onChooseImage();
     }
 
-    private CreateRoomInterface roomInterface;
+    private CreatePostInterface postInterface;
 
-    public void setCreatePostStateInterface(CreateRoomInterface stateInterface){
-        this.roomInterface = stateInterface;
+    public void setCreatePostStateInterface(CreatePostInterface stateInterface){
+        this.postInterface = stateInterface;
     }
 
 
     public void onImageClick(View view){
         Log.d("IMAGE CLICK","CHOOSE IMAGE IS CLICKED");
         //createRoomState.setValue(CreateRoomState.SHOW_PHOTO_BOTTOM_SHEET);
-        roomInterface.onChooseImage();
+        postInterface.onChooseImage();
     }
 
     public MutableLiveData<Bitmap> selectedPhoto;
@@ -53,7 +45,8 @@ public class CreateRoomViewModel extends ViewModel {
     }
 
     public void onClickImageChosen(View view){
-        roomInterface.onChosenImageClick();
+        postInterface.onChosenImageClick();
     }
 
 }
+

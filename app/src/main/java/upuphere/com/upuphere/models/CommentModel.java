@@ -3,17 +3,21 @@ package upuphere.com.upuphere.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Comment {
+
+public class CommentModel{
 
     @SerializedName("_cls")
     @Expose
     private String cls;
+
     @SerializedName("text_comment")
     @Expose
     private String textComment;
+
     @SerializedName("user")
     @Expose
     private String user;
+
     @SerializedName("created_at")
     @Expose
     private String createdAt;

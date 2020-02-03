@@ -4,6 +4,8 @@ public class AppConfig {
 
     public static String PLATFORM = "Android";
 
+    public static String MEDIA_IS_PHOTO ="111";
+
     private static String BASE_URL = "http://127.0.0.1:5000";
 
     public static String PHOTO_ENDPOINT = BASE_URL +"/media/photos";
@@ -25,4 +27,8 @@ public class AppConfig {
     public static String URL_GET_POST_IN_SPECIFIC_ROOM = BASE_URL + "/api/posts/room/";
 
     public static String URL_CREATE_ROOM = BASE_URL + "/api/rooms";
+
+    public static String URL_CREATE_POST_TO_ROOM = BASE_URL + "/api/posts/room";
+
+    public static String URL_CREATE_COMMENT = BASE_URL + "/api/comment";
 }

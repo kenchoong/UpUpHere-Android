@@ -1,11 +1,14 @@
 package upuphere.com.upuphere.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Post {
+public class Post implements Parcelable {
 
     /**
      * {
@@ -49,13 +52,35 @@ public class Post {
     private String inRoom;
     @SerializedName("comment")
     @Expose
-    private List<Comment> comment = null;
+    private List<CommentModel> comment = null;
     @SerializedName("created_at")
     @Expose
     private String createdAt;
     @SerializedName("image_path")
     @Expose
     private String imagePath;
+
+    protected Post(Parcel in) {
+        id = in.readString();
+        cls = in.readString();
+        postTitle = in.readString();
+        author = in.readString();
+        inRoom = in.readString();
+        createdAt = in.readString();
+        imagePath = in.readString();
+    }
+
+    public static final Creator<Post> CREATOR = new Creator<Post>() {
+        @Override
+        public Post createFromParcel(Parcel in) {
+            return new Post(in);
+        }
+
+        @Override
+        public Post[] newArray(int size) {
+            return new Post[size];
+        }
+    };
 
     public String getId() {
         return id;
@@ -97,11 +122,11 @@ public class Post {
         this.inRoom = inRoom;
     }
 
-    public List<Comment> getComment() {
+    public List<CommentModel> getComment() {
         return comment;
     }
 
-    public void setComment(List<Comment> comment) {
+    public void setComment(List<CommentModel> comment) {
         this.comment = comment;
     }
 
@@ -119,5 +144,21 @@ public class Post {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeString(cls);
+        parcel.writeString(postTitle);
+        parcel.writeString(author);
+        parcel.writeString(inRoom);
+        parcel.writeString(createdAt);
+        parcel.writeString(imagePath);
     }
 }

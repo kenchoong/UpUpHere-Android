@@ -1,14 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.room.CreatePostFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <data>
+        <variable
+            name="viewmodel"
+            type="upuphere.com.upuphere.viewmodel.CreatePostViewModel" />
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/root_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        tools:context=".ui.room.CreatePostFragment">
 
-</FrameLayout>
+        <EditText
+            android:id="@+id/statusField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@null"
+            android:ems="10"
+            android:hint="@string/crete_post_hint"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:text="@={viewmodel.statusText}" />
+
+        <ImageView
+            android:id="@+id/chooseImageButton"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_below="@id/statusField"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="40dp"
+            app:srcCompat="@drawable/ic_image"
+            android:contentDescription="@string/content_description"
+            android:onClick="@{viewmodel::onImageClick}"/>
+
+        <ImageView
+            android:id="@+id/chosenImageShown"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_below="@id/statusField"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="40dp"
+            android:visibility="gone"
+            tools:srcCompat="@tools:sample/avatars"
+            android:contentDescription="@string/content_description"
+            android:onClick="@{viewmodel::onClickImageChosen}"/>
+
+    </RelativeLayout>
+
+</layout>
