@@ -73,10 +73,10 @@ public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.PostViewHolde
     @Override
     public int getItemCount() {
         if (post != null) {
-            Log.d("post SIZE",String.valueOf(post.size()));
+            //Log.d("post SIZE",String.valueOf(post.size()));
             return post.size();
         } else {
-            Log.d("post SIZE","0");
+            //Log.d("post SIZE","0");
             return 0;
         }
     }

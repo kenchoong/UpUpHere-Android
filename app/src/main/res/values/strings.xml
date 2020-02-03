@@ -58,6 +58,7 @@
     <string name="create">CREATE</string>
     <string name="delete">Delete</string>
     <string name="post">POST</string>
+    <string name="comment_hint">Comment...</string>
 
     <string name="delete_this_photo">Delete this photo?</string>
     <string name="crete_post_hint">What\'s in your mind?</string>

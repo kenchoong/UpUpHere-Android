@@ -181,6 +181,9 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
                         public void success(String item) {
                             Toast.makeText(getActivity(),"Post successfully created",Toast.LENGTH_LONG).show();
 
+                            binding.statusField.setText("");
+                            viewModel.getSelectedPhoto().setValue(null);
+
                             Navigation.findNavController(rootView).navigateUp();
                         }
 

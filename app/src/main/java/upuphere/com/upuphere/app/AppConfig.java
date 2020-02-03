@@ -29,4 +29,6 @@ public class AppConfig {
     public static String URL_CREATE_ROOM = BASE_URL + "/api/rooms";
 
     public static String URL_CREATE_POST_TO_ROOM = BASE_URL + "/api/posts/room";
+
+    public static String URL_CREATE_COMMENT = BASE_URL + "/api/comment";
 }

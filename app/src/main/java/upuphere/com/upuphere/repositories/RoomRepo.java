@@ -15,24 +15,19 @@ import com.google.gson.JsonObject;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 import androidx.lifecycle.MutableLiveData;
 import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.app.AppController;
-import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.helper.VolleyMultipartRequest;
 import upuphere.com.upuphere.helper.VolleyRequest;
 import upuphere.com.upuphere.models.AllRooms;
 import upuphere.com.upuphere.models.Post;
 import upuphere.com.upuphere.models.PostModel;
 import upuphere.com.upuphere.models.RoomModel;
-import upuphere.com.upuphere.models.UserModel;
 
 public class RoomRepo {
 
@@ -91,11 +86,6 @@ public class RoomRepo {
         return postMutableLiveData;
     }
 
-    private byte[] getFileDataFromDrawable(Bitmap bitmap) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 80, byteArrayOutputStream);
-        return byteArrayOutputStream.toByteArray();
-    }
 
     public void createRoom(String roomName, final Bitmap bitmap, final StringCallBack stringCallBack) {
         String fileKey = "room_image_file";

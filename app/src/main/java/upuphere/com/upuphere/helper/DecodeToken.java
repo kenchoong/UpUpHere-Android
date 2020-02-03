@@ -53,7 +53,7 @@ public class DecodeToken {
             mListener.onTokenAllInvalid();
         }
         else if(!jwtTokenStillValid(accessToken) && jwtTokenStillValid(refreshToken)){
-            Log.d("REFRESH TOKEN VALID","GET THE ACCESS TOKEN");
+            //Log.d("REFRESH TOKEN VALID","GET THE ACCESS TOKEN");
             //get the new access token
             UserRepo.getInstance().getRefreshAccessToken(new StringCallBack() {
                 @Override
@@ -75,8 +75,8 @@ public class DecodeToken {
 
     public static Boolean jwtTokenStillValid(String JWTEncoded) {
         String[] split = JWTEncoded.split("\\.");
-        Log.e(TAG, "Header: " + getJson(split[0]));
-        Log.e(TAG, "Body: " + getJson(split[1]));
+        //Log.e(TAG, "Header: " + getJson(split[0]));
+        //Log.e(TAG, "Body: " + getJson(split[1]));
         return getJson(split[1]);
     }
 
@@ -91,7 +91,7 @@ public class DecodeToken {
             DecodeToken exp = gson.fromJson(str_dec,DecodeToken.class);
             expstring = exp.getExp();
 
-            Log.d("EXP",String.valueOf(expstring));
+            //Log.d("EXP",String.valueOf(expstring));
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

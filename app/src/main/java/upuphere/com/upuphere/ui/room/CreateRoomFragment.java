@@ -143,6 +143,9 @@ public class CreateRoomFragment extends Fragment implements CreateRoomViewModel.
                             rooms.setId(roomId);
                             rooms.setRoomName(viewModel.roomName);
 
+                            binding.roomNameField.setText("");
+                            viewModel.getSelectedPhoto().setValue(null);
+
                             NavDirections action = CreateRoomFragmentDirections.actionCreateRoomFragmentToRoomFragment(rooms);
                             Navigation.findNavController(rootView).navigate(action);
 
