@@ -3,6 +3,7 @@ package upuphere.com.upuphere.ui.user;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +27,7 @@ import upuphere.com.upuphere.databinding.FragmentSignUpBinding;
 
 import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.helper.SharedPreferenceBooleanLiveData;
+import upuphere.com.upuphere.viewmodel.LoginViewModel;
 import upuphere.com.upuphere.viewmodel.SignUpViewModel;
 
 /**
@@ -40,7 +42,9 @@ public class SignUpFragment extends Fragment {
     }
 
     private SignUpViewModel signUpViewModel;
+    LoginViewModel loginViewModel;
     private FragmentSignUpBinding binding;
+    View rootView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -49,15 +53,24 @@ public class SignUpFragment extends Fragment {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_sign_up, container, false);
         signUpViewModel = ViewModelProviders.of(requireActivity()).get(SignUpViewModel.class);
+        loginViewModel = ViewModelProviders.of(requireActivity()).get(LoginViewModel.class);
 
-        View view = binding.getRoot();
+        rootView = binding.getRoot();
         binding.setViewModel(signUpViewModel);
-        return view;
+        return rootView;
     }
 
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        signUpViewModel.setSignUpInterface(new SignUpViewModel.SignUpInterface() {
+            @Override
+            public void onBackToLogin() {
+                loginViewModel.backToLogin();
+                Navigation.findNavController(rootView).navigate(R.id.loginFragment);
+            }
+        });
 
         phoneNumber = Objects.requireNonNull(getArguments()).getString("phone_number");
         Log.d("PHONE_NUMBER", Objects.requireNonNull(phoneNumber));
@@ -68,8 +81,6 @@ public class SignUpFragment extends Fragment {
             @Override
             public void onChanged(SignUpViewModel.SignUpState signUpState) {
                 switch (signUpState) {
-                    case REDIRECT_LOGIN:
-                        break;
                     case SIGN_UP_SUCCESS:
                         SharedPreferences sharedPreferences = new PrefManager(getActivity()).getPref();
                         SharedPreferenceBooleanLiveData sharedPreferenceBooleanLiveData = new SharedPreferenceBooleanLiveData(sharedPreferences,PrefManager.IS_LOGGED_IN,false);
@@ -118,6 +129,12 @@ public class SignUpFragment extends Fragment {
         });
 
 
+        requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+
+            }
+        });
 
     }
 }

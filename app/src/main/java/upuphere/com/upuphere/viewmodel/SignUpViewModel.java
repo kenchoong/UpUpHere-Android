@@ -38,10 +38,19 @@ public class SignUpViewModel extends ViewModel {
 
     public String email,username,password,confirmPassword;
 
+    public void setSignUpInterface(SignUpInterface signUpInterface) {
+        this.signUpInterface = signUpInterface;
+    }
+
+    private SignUpInterface signUpInterface;
+
+    public interface SignUpInterface{
+        void onBackToLogin();
+    }
 
 
     public void OnClickRedirectLoginText(View view){
-        signUpState.setValue(SignUpState.REDIRECT_LOGIN);
+        signUpInterface.onBackToLogin();
     }
 
     public void OnClickCreateAccountButton(View view){

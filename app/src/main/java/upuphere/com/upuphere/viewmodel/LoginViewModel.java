@@ -26,13 +26,19 @@ public class LoginViewModel extends AndroidViewModel{
         UNAUTHENTICATED,
         AUTHENTICATED,
         INVALID_AUTHENTICATED,
-        MOVE_TO_REGISTER
+        MOVE_TO_REGISTER,
+        BACK_TO_LOGIN,
+        FORGOT_PASSWORD
     }
 
     public MutableLiveData<AuthenticateState> authenticateState =  new MutableLiveData<>();
 
     public void refuseAuthentication(){
         authenticateState.setValue(AuthenticateState.UNAUTHENTICATED);
+    }
+
+    public void backToLogin(){
+        authenticateState.setValue(AuthenticateState.BACK_TO_LOGIN);
     }
 
     public void onLoginButtonClick(View view){
@@ -54,6 +60,10 @@ public class LoginViewModel extends AndroidViewModel{
 
     public void onRedirectTextClick(View view){
         authenticateState.setValue(AuthenticateState.MOVE_TO_REGISTER);
+    }
+
+    public void onForgotPassword(View view){
+        authenticateState.setValue(AuthenticateState.FORGOT_PASSWORD);
     }
 
 
