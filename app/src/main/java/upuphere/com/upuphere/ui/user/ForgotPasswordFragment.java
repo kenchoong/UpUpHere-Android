@@ -87,6 +87,13 @@ public class ForgotPasswordFragment extends Fragment implements ForgotPasswordVi
     }
 
     @Override
+    public void onUsingPhoneInstead() {
+        Bundle args = new Bundle();
+        args.putInt("previous_fragment_code",PhoneAuthFragment.FROM_FORGOT_PASSWORD);
+        Navigation.findNavController(rootView).navigate(R.id.phoneAuthFragment,args);
+    }
+
+    @Override
     public void onInvalidEmail() {
         binding.email.setError("Invalid Email");
         disableSendButton();

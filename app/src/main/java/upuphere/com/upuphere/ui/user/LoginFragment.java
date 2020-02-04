@@ -109,15 +109,17 @@ public class LoginFragment extends Fragment {
                         Log.d("LOGIN","UNAUTHENTICATED");
                         break;
                     case MOVE_TO_REGISTER:
-                        NavDirections action = LoginFragmentDirections.actionLoginFragmentToRegistrationGraph();
-                        navController.navigate(action);
+                        //NavDirections action = LoginFragmentDirections.actionLoginFragmentToRegistrationGraph();
+                        Bundle args = new Bundle();
+                        args.putInt("previous_fragment_code",PhoneAuthFragment.FROM_LOGIN_FRAGMENT);
+                        navController.navigate(R.id.phoneAuthFragment,args);
                         break;
                     case BACK_TO_LOGIN:
                         Log.d("LOGIN","BACK TO LOGIN");
                         break;
 
                     case FORGOT_PASSWORD:
-                        NavDirections action1 = LoginFragmentDirections.actionLoginFragmentToForgotPasswordGraph();
+                        NavDirections action1 = LoginFragmentDirections.actionLoginFragmentToForgotPasswordFragment();
                         navController.navigate(action1);
                         break;
                 }

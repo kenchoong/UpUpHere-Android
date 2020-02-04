@@ -72,4 +72,5 @@
     <string name="email_not_registered">Email is not registered</string>
     <string name="unknown_error">Unknown error</string>
     <string name="password_reset_email_sent">Password reset email sent! Please check your email.</string>
+    <string name="use_phone_to_reset_password">Use phone number instead?</string>
 </resources>

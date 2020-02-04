@@ -1,7 +1,6 @@
 package upuphere.com.upuphere.ui.user;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
@@ -21,7 +20,6 @@ import java.util.Objects;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.databinding.FragmentPhoneAuthBinding;
@@ -39,6 +37,10 @@ public class PhoneAuthFragment extends Fragment{
     private PhoneAuthViewModel phoneAuthViewModel;
     private FragmentPhoneAuthBinding phoneAuthBinding;
     private LoginViewModel loginViewModel;
+    View rootView;
+
+    public static final int FROM_LOGIN_FRAGMENT = 111;
+    public static final int FROM_FORGOT_PASSWORD = 222;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -50,14 +52,19 @@ public class PhoneAuthFragment extends Fragment{
         phoneAuthBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_phone_auth,container,false);
         phoneAuthViewModel = ViewModelProviders.of(requireActivity()).get(PhoneAuthViewModel.class);
         loginViewModel = ViewModelProviders.of(requireActivity()).get(LoginViewModel.class);
-        View view = phoneAuthBinding.getRoot();
+        rootView = phoneAuthBinding.getRoot();
         phoneAuthBinding.setViewModel(phoneAuthViewModel);
-        return view;
+        return rootView;
     }
 
+    int previousFragmentCode;
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        if (getArguments() != null) {
+            previousFragmentCode = getArguments().getInt("previous_fragment_code");
+        }
 
         phoneAuthViewModel.phoneAuthState.observe(getViewLifecycleOwner(), new Observer<PhoneAuthViewModel.PhoneAuthenticationState>() {
             @Override
@@ -95,7 +102,7 @@ public class PhoneAuthFragment extends Fragment{
                     case STATE_VERIFY_SUCCESS:
                         // go to next activity
                         phoneAuthBinding.detailsTextView.setText("Verify success");
-                        proceedToSignUp(view, phoneAuthViewModel.phoneNumber);
+                        proceedToNextStep(phoneAuthViewModel.phoneNumber, previousFragmentCode);
                         break;
                     case STATE_VERIFY_FAILED:
                         disableViews(phoneAuthBinding.verifyButton);
@@ -125,13 +132,19 @@ public class PhoneAuthFragment extends Fragment{
     }
 
 
-    private void proceedToSignUp(View view,String phoneNumberString) {
-
-        NavDirections action = PhoneAuthFragmentDirections.actionPhoneAuthFragmentToSignUpFragment(phoneNumberString);
+    private void proceedToNextStep(String phoneNumberString,int previousFragmentCode) {
         Bundle args = new Bundle();
-        args.putString("phone_number",phoneNumberString);
-        Navigation.findNavController(view).navigate(R.id.signUpFragment,args);
+        args.putString("phone_number", phoneNumberString);
 
+        switch (previousFragmentCode){
+            case FROM_LOGIN_FRAGMENT:
+                Navigation.findNavController(rootView).navigate(R.id.signUpFragment, args);
+                break;
+            case FROM_FORGOT_PASSWORD:
+                Navigation.findNavController(rootView).navigate(R.id.resetPasswordFragment,args);
+                break;
+
+        }
     }
 
     private void enableViews(View... views) {

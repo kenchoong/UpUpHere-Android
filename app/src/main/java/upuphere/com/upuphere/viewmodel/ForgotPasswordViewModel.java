@@ -28,6 +28,7 @@ public class ForgotPasswordViewModel extends ViewModel {
        void onEmailSent();
        void onError();
        void onInvalidEmail();
+       void onUsingPhoneInstead();
     }
 
     public void setForgotPassInterface(ForgotPassInterface forgotPassInterface) {
@@ -68,6 +69,10 @@ public class ForgotPasswordViewModel extends ViewModel {
         }else{
             forgotPassInterface.onInvalidEmail();
         }
+    }
+
+    public void onUsingPhoneToReset(View view){
+        forgotPassInterface.onUsingPhoneInstead();
     }
 
     public void afterEmailChanged(Editable e){
