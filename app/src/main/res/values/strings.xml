@@ -68,4 +68,8 @@
     <string name="reset_password_instruction">Enter email address of your account</string>
     <string name="your_email">Your email</string>
     <string name="reset_password_button">Send a password reset link</string>
+
+    <string name="email_not_registered">Email is not registered</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="password_reset_email_sent">Password reset email sent! Please check your email.</string>
 </resources>
