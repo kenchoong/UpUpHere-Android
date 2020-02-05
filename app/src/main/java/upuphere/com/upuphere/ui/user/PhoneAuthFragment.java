@@ -20,6 +20,7 @@ import java.util.Objects;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.databinding.FragmentPhoneAuthBinding;
@@ -78,7 +79,12 @@ public class PhoneAuthFragment extends Fragment{
                         phoneAuthBinding.phoneNumberField.setError("Invalid Phone Number");
                         break;
                     case PHONE_NUMBER_REGISTERED:
-                        phoneAuthBinding.phoneNumberField.setError("Phone Number already registered");
+                        if(previousFragmentCode == FROM_FORGOT_PASSWORD){
+                            phoneAuthViewModel.phoneAuthState.setValue(PhoneAuthViewModel.PhoneAuthenticationState.PHONE_NUMBER_OK);
+                        }
+                        else if(previousFragmentCode == FROM_LOGIN_FRAGMENT) {
+                            phoneAuthBinding.phoneNumberField.setError("Phone Number already registered");
+                        }
                         break;
 
                     case PHONE_NUMBER_OK:
@@ -135,13 +141,15 @@ public class PhoneAuthFragment extends Fragment{
     private void proceedToNextStep(String phoneNumberString,int previousFragmentCode) {
         Bundle args = new Bundle();
         args.putString("phone_number", phoneNumberString);
+        NavOptions options = new
+                NavOptions.Builder().setPopUpTo(R.id.phoneAuthFragment, true).build();
 
         switch (previousFragmentCode){
             case FROM_LOGIN_FRAGMENT:
-                Navigation.findNavController(rootView).navigate(R.id.signUpFragment, args);
+                Navigation.findNavController(rootView).navigate(R.id.signUpFragment, args,options);
                 break;
             case FROM_FORGOT_PASSWORD:
-                Navigation.findNavController(rootView).navigate(R.id.resetPasswordFragment,args);
+                Navigation.findNavController(rootView).navigate(R.id.resetPasswordFragment,args,options);
                 break;
 
         }

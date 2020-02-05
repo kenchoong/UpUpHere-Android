@@ -124,5 +124,15 @@
         android:id="@+id/resetPasswordFragment"
         android:name="upuphere.com.upuphere.ui.user.ResetPasswordFragment"
         android:label="fragment_reset_password"
-        tools:layout="@layout/fragment_reset_password" />
+        tools:layout="@layout/fragment_reset_password" >
+        <argument
+            android:name="phone_number"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_resetPasswordFragment_to_loginFragment2"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@+id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

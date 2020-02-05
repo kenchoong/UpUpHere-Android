@@ -68,7 +68,7 @@ public class SignUpFragment extends Fragment {
             @Override
             public void onBackToLogin() {
                 loginViewModel.backToLogin();
-                Navigation.findNavController(rootView).navigate(R.id.loginFragment);
+                Navigation.findNavController(view).navigate(R.id.loginFragment);
             }
         });
 
@@ -132,7 +132,7 @@ public class SignUpFragment extends Fragment {
         requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-
+                signUpViewModel.signUpInterface.onBackToLogin();
             }
         });
 

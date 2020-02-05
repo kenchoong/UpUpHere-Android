@@ -42,7 +42,7 @@ public class SignUpViewModel extends ViewModel {
         this.signUpInterface = signUpInterface;
     }
 
-    private SignUpInterface signUpInterface;
+    public SignUpInterface signUpInterface;
 
     public interface SignUpInterface{
         void onBackToLogin();

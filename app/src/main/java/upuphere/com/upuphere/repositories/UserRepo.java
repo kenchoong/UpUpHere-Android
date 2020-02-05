@@ -178,6 +178,31 @@ public class UserRepo{
         AppController.getInstance().addToRequestQueue(request);
     }
 
+    public void updateUserPassword(String phoneNumber, String password, final StringCallBack callBack){
+        String[] keys = new String[]{"identity","password"};
+        String[] values = new String[]{phoneNumber,password};
+        JSONObject params = VolleyRequest.getParams(keys,values);
+
+        JsonObjectRequest request = VolleyRequest.putJsonAccessRequestWithoutRetry(AppConfig.URL_RESET_PASSWORD, params, new VolleyRequest.ResponseCallBack() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                Log.d("RESET PASSWORD",response.toString());
+                try {
+                    callBack.success(response.getString("response"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                callBack.showError(error);
+            }
+        });
+
+        AppController.getInstance().addToRequestQueue(request);
+    }
+
     public void revokeRefreshToken(final CommonCallBack callBack){
 
         JsonObjectRequest request = VolleyRequest.postJsonRefreshRequestWithoutRetry(AppConfig.URL_LOGOUT_REFRESH_TOKEN, null, new VolleyRequest.ResponseCallBack() {
