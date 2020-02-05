@@ -16,6 +16,8 @@ public class AppConfig {
 
     public static String URL_COMPARE_DETAILS = BASE_URL + "/api/auth/compare";
 
+    public static String URL_RESET_PASSWORD = BASE_URL + "/api/auth/reset_password";
+
     public static String URL_GET_REFRESH_ACCESS_TOKEN = BASE_URL + "/api/auth/token/refresh";
 
     public static String URL_LOGOUT_ACCESS_TOKEN = BASE_URL + "/api/auth/logout/access";
@@ -31,4 +33,6 @@ public class AppConfig {
     public static String URL_CREATE_POST_TO_ROOM = BASE_URL + "/api/posts/room";
 
     public static String URL_CREATE_COMMENT = BASE_URL + "/api/comment";
+
+
 }
