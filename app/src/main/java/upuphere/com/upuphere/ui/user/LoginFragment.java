@@ -90,10 +90,10 @@ public class LoginFragment extends Fragment {
                         SharedPreferences sharedPreferences = new PrefManager(getActivity()).getPref();
                         SharedPreferenceBooleanLiveData sharedPreferenceBooleanLiveData = new SharedPreferenceBooleanLiveData(sharedPreferences,PrefManager.IS_LOGGED_IN,false);
 
-
                         sharedPreferenceBooleanLiveData.getBooleanLiveData(PrefManager.IS_LOGGED_IN,false).observe(getViewLifecycleOwner(), new Observer<Boolean>() {
                             @Override
                             public void onChanged(Boolean isLoggedIn) {
+                                Log.d("LOGIN 1",String.valueOf(isLoggedIn));
                                 if(isLoggedIn){
                                     NavController navController = Navigation.findNavController(view);
                                     navController.popBackStack(R.id.loginFragment,true);

@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,10 +69,10 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
         SharedPreferences sharedPreferences = new PrefManager(getActivity()).getPref();
         SharedPreferenceBooleanLiveData sharedPreferenceBooleanLiveData = new SharedPreferenceBooleanLiveData(sharedPreferences,PrefManager.IS_LOGGED_IN,false);
 
-
         sharedPreferenceBooleanLiveData.getBooleanLiveData(PrefManager.IS_LOGGED_IN,false).observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean isLoggedIn) {
+                Log.d("LOGIN 2",String.valueOf(isLoggedIn));
                 if(!isLoggedIn){
                     NavController navController = Navigation.findNavController(view);
                     navController.navigate(R.id.loginFragment);

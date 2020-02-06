@@ -147,9 +147,9 @@ public class SignUpViewModel extends ViewModel {
         });
     }
 
-    public void createUserAccount(String phoneNumber, String emailString, String username, String passwordString) {
+    public void createUserAccount(String phoneNumber, String emailString, String username, String passwordString, String firebaseToken) {
         //send to server
-        userRepo.signUp(phoneNumber, emailString, username, passwordString, new CommonCallBack() {
+        userRepo.signUp(phoneNumber, emailString, username, passwordString,firebaseToken, new CommonCallBack() {
             @Override
             public void success() {
                 signUpState.setValue(SignUpState.SIGN_UP_SUCCESS);
