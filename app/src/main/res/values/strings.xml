@@ -81,4 +81,13 @@
 
     <string name="successfully_reset_password">Successfully reset password</string>
     <string name="failed_reset_password">Failed to reset password.Try again later</string>
+
+    <string name="verify_phone_number">First,let us confirm your phone number</string>
+    <string name="verify_phone_number_reason">In order to avoid spam and give you the best service,please confirm your identity</string>
+    <string name="forgot_password_instruction">Enter phone number of your account</string>
+    <string name="continue_process">Continue</string>
+    <string name="phone_number_registered">Phone number already registered.Login instead?</string>
+    <string name="phone_number_not_registered">Phone number not existed.Please enter the correct phone number</string>
+    <string name="try_again">Try again</string>
+    <string name="login_instead">Login instead?</string>
 </resources>

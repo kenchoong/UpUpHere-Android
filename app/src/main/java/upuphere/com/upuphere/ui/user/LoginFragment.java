@@ -111,9 +111,12 @@ public class LoginFragment extends Fragment {
                     case MOVE_TO_REGISTER:
                         viewModel.backToLogin();
                         //NavDirections action = LoginFragmentDirections.actionLoginFragmentToRegistrationGraph();
-                        Bundle args = new Bundle();
-                        args.putInt("previous_fragment_code",PhoneAuthFragment.FROM_LOGIN_FRAGMENT);
-                        navController.navigate(R.id.phoneAuthFragment,args);
+                        //Bundle args = new Bundle();
+                        //args.putInt("previous_fragment_code",PhoneAuthFragment.FROM_LOGIN_FRAGMENT);
+                        //navController.navigate(R.id.phoneAuthFragment,args);
+
+                        NavDirections directions = LoginFragmentDirections.actionLoginFragmentToPhoneAuthFragment2(PhoneAuthFragment2.FROM_LOGIN_FRAGMENT);
+                        navController.navigate(directions);
                         break;
                     case BACK_TO_LOGIN:
                         Log.d("LOGIN","BACK TO LOGIN");

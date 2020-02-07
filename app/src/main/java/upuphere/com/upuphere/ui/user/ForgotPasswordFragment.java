@@ -88,9 +88,11 @@ public class ForgotPasswordFragment extends Fragment implements ForgotPasswordVi
 
     @Override
     public void onUsingPhoneInstead() {
-        Bundle args = new Bundle();
-        args.putInt("previous_fragment_code",PhoneAuthFragment.FROM_FORGOT_PASSWORD);
-        Navigation.findNavController(rootView).navigate(R.id.phoneAuthFragment,args);
+        //Bundle args = new Bundle();
+        //args.putInt("previous_fragment_code",PhoneAuthFragment.FROM_FORGOT_PASSWORD);
+        //Navigation.findNavController(rootView).navigate(R.id.phoneAuthFragment,args);
+        NavDirections directions = ForgotPasswordFragmentDirections.actionForgotPasswordFragmentToPhoneAuthFragment2(PhoneAuthFragment2.FROM_FORGOT_PASSWORD);
+        Navigation.findNavController(rootView).navigate(directions);
     }
 
     @Override

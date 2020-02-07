@@ -75,7 +75,7 @@ public class SignUpFragment extends Fragment {
             @Override
             public void onBackToLogin() {
                 loginViewModel.backToLogin();
-                Navigation.findNavController(view).navigate(R.id.loginFragment);
+                Navigation.findNavController(rootView).navigate(R.id.loginFragment);
             }
         });
 
