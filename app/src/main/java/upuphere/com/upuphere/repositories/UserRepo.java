@@ -1,9 +1,16 @@
 package upuphere.com.upuphere.repositories;
 
+import android.app.Activity;
+import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -11,6 +18,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
 import upuphere.com.upuphere.Interface.AuthListener;
 import upuphere.com.upuphere.Interface.BoolCallBack;
 import upuphere.com.upuphere.Interface.CommonCallBack;
@@ -70,10 +78,28 @@ public class UserRepo{
         AppController.getInstance().addToRequestQueue(request);
     }
 
-    public void signUp(String phoneNumber, String email, String password, String username, final CommonCallBack callBack){
+    public void requestTokenFromFirebase(Activity activity, final StringCallBack stringCallBack){
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(activity, new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                String newToken = instanceIdResult.getToken();
+                Log.d("new token",newToken);
 
-        String[] keys = new String[]{"email","username","password","phone_number","device_type"};
-        String[] values = new String[]{"abcdsasdd2","eaddsasdfc3","geaasds4h","asaasdsdwer45d",AppConfig.PLATFORM};
+                stringCallBack.success(newToken);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                e.printStackTrace();
+                stringCallBack.showError("request token failed");
+            }
+        });
+    }
+
+    public void signUp(String phoneNumber, String email, String username, String password,String firebaseToken, final CommonCallBack callBack){
+
+        String[] keys = new String[]{"email","username","password","phone_number","firebase_token","device_type"};
+        String[] values = new String[]{"adasdaasdadsa","eaddsasdfc3","geaasds4h","asaasdsdwer45d","firebase_token",AppConfig.PLATFORM};
         JSONObject params = VolleyRequest.getParams(keys,values);
 
         JsonObjectRequest jsonReq = VolleyRequest.postJsonAccessRequestWithoutRetry(AppConfig.URL_SIGN_UP, params, new VolleyRequest.ResponseCallBack() {
@@ -157,6 +183,35 @@ public class UserRepo{
         });
         AppController.getInstance().addToRequestQueue(jsonReq);
 
+    }
+
+    public void updateFirebaseTokenToServer(Context mContext, final String newToken){
+
+        final PrefManager prefManager = new PrefManager(mContext);
+        String accessToken = prefManager.getUserAccessToken();
+
+        String[] key = new String[]{"firebase_token"};
+        String[] value = new String[]{newToken};
+        JSONObject params = VolleyRequest.getParams(key,value);
+
+        if(!TextUtils.isEmpty(accessToken)){
+            JsonObjectRequest request = VolleyRequest.putJsonRequestWithAccessToken(AppConfig.URL_UPDATE_USER_DETAILS, params, new VolleyRequest.ResponseCallBack() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    Log.d("Update token","Successful");
+                    prefManager.setFirebaseToken(newToken);
+                }
+
+                @Override
+                public void onError(String error) {
+
+                }
+            });
+
+            AppController.getInstance().addToRequestQueue(request);
+        }else{
+            Log.d("New user","No need update token");
+        }
     }
 
     public void revokedAccessToken(final CommonCallBack callBack){

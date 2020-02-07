@@ -90,10 +90,10 @@ public class LoginFragment extends Fragment {
                         SharedPreferences sharedPreferences = new PrefManager(getActivity()).getPref();
                         SharedPreferenceBooleanLiveData sharedPreferenceBooleanLiveData = new SharedPreferenceBooleanLiveData(sharedPreferences,PrefManager.IS_LOGGED_IN,false);
 
-
                         sharedPreferenceBooleanLiveData.getBooleanLiveData(PrefManager.IS_LOGGED_IN,false).observe(getViewLifecycleOwner(), new Observer<Boolean>() {
                             @Override
                             public void onChanged(Boolean isLoggedIn) {
+                                Log.d("LOGIN 1",String.valueOf(isLoggedIn));
                                 if(isLoggedIn){
                                     NavController navController = Navigation.findNavController(view);
                                     navController.popBackStack(R.id.loginFragment,true);
@@ -111,9 +111,12 @@ public class LoginFragment extends Fragment {
                     case MOVE_TO_REGISTER:
                         viewModel.backToLogin();
                         //NavDirections action = LoginFragmentDirections.actionLoginFragmentToRegistrationGraph();
-                        Bundle args = new Bundle();
-                        args.putInt("previous_fragment_code",PhoneAuthFragment.FROM_LOGIN_FRAGMENT);
-                        navController.navigate(R.id.phoneAuthFragment,args);
+                        //Bundle args = new Bundle();
+                        //args.putInt("previous_fragment_code",PhoneAuthFragment.FROM_LOGIN_FRAGMENT);
+                        //navController.navigate(R.id.phoneAuthFragment,args);
+
+                        NavDirections directions = LoginFragmentDirections.actionLoginFragmentToPhoneAuthFragment2(PhoneAuthFragment2.FROM_LOGIN_FRAGMENT);
+                        navController.navigate(directions);
                         break;
                     case BACK_TO_LOGIN:
                         Log.d("LOGIN","BACK TO LOGIN");

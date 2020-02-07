@@ -10,6 +10,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import androidx.appcompat.widget.Toolbar;
@@ -20,7 +21,11 @@ import upuphere.com.upuphere.helper.DecodeToken;
 import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.repositories.UserRepo;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.io.UnsupportedEncodingException;
 
@@ -29,14 +34,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public DrawerLayout drawerLayout;
     public NavController navController;
     public NavigationView navigationView;
+    PrefManager prefManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        prefManager= new PrefManager(this);
+
         setupNavigation();
 
+        requestFirebaseToken();
+    }
+
+    private void requestFirebaseToken() {
+        String myFirebaseToken = prefManager.getFirebaseToken();
+
+        if(TextUtils.isEmpty(myFirebaseToken)){
+           UserRepo.getInstance().requestTokenFromFirebase(this, new StringCallBack() {
+               @Override
+               public void success(String newToken) {
+                   prefManager.setFirebaseToken(newToken);
+               }
+
+               @Override
+               public void showError(String error) {
+                   Log.d("Firebase error",error);
+               }
+           });
+        }
     }
 
     private void setupNavigation() {
@@ -92,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    PrefManager prefManager;
+
     private void logoutUser() {
         prefManager = new PrefManager(this);
 

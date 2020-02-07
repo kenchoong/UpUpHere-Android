@@ -10,11 +10,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.Objects;
 
@@ -22,11 +27,13 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.databinding.FragmentSignUpBinding;
 
 import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.helper.SharedPreferenceBooleanLiveData;
+import upuphere.com.upuphere.repositories.UserRepo;
 import upuphere.com.upuphere.viewmodel.LoginViewModel;
 import upuphere.com.upuphere.viewmodel.SignUpViewModel;
 
@@ -68,7 +75,7 @@ public class SignUpFragment extends Fragment {
             @Override
             public void onBackToLogin() {
                 loginViewModel.backToLogin();
-                Navigation.findNavController(view).navigate(R.id.loginFragment);
+                Navigation.findNavController(rootView).navigate(R.id.loginFragment);
             }
         });
 
@@ -101,7 +108,21 @@ public class SignUpFragment extends Fragment {
                         Log.d("sign up error", "some error");
                         break;
                     case START_CREATE_ACCOUNT:
-                        signUpViewModel.createUserAccount(phoneNumber, signUpViewModel.email, signUpViewModel.username, signUpViewModel.password);
+                        String firebaseToken = prefManager.getFirebaseToken();
+                        signUpViewModel.createUserAccount(phoneNumber, signUpViewModel.email, signUpViewModel.username, signUpViewModel.password, firebaseToken);
+                        if(TextUtils.isEmpty(firebaseToken)){
+                            UserRepo.getInstance().requestTokenFromFirebase(getActivity(), new StringCallBack() {
+                                @Override
+                                public void success(String newToken) {
+                                    signUpViewModel.createUserAccount(phoneNumber, signUpViewModel.email, signUpViewModel.username, signUpViewModel.password, newToken);
+                                }
+
+                                @Override
+                                public void showError(String error) {
+                                    Log.d("Firebase error",error);
+                                }
+                            });
+                        }
                         break;
                     case PASSWORD_DOESNT_MATCH:
                         binding.reenterPasswordField.setError("Password not match");

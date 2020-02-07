@@ -25,6 +25,8 @@ public class PrefManager {
     private static final String USER_REFRESH_TOKEN = "refresh_token";
 
     private static final String USER_DETAILS_GSON = "user_details_gson";
+
+    private static final String FIREBASE_TOKEN = "firebase_token";
     // shared pref mode
     int PRIVATE_MODE = 0;
 
@@ -99,6 +101,15 @@ public class PrefManager {
 
     public void setUserDetailsGson(String userDetailsGson){
         editor.putString(USER_DETAILS_GSON,userDetailsGson);
+        editor.commit();
+    }
+
+    public String getFirebaseToken(){
+        return pref.getString(FIREBASE_TOKEN,null);
+    }
+
+    public void setFirebaseToken(String myFirebaseToken){
+        editor.putString(FIREBASE_TOKEN,myFirebaseToken);
         editor.commit();
     }
 

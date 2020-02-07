@@ -34,5 +34,7 @@ public class AppConfig {
 
     public static String URL_CREATE_COMMENT = BASE_URL + "/api/comment";
 
+    public static String URL_UPDATE_USER_DETAILS = BASE_URL + "/api/user/update";
+
 
 }
