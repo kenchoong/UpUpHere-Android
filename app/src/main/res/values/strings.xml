@@ -90,4 +90,9 @@
     <string name="phone_number_not_registered">Phone number not existed.Please enter the correct phone number</string>
     <string name="try_again">Try again</string>
     <string name="login_instead">Login instead?</string>
+
+    <string name="default_notification_channel_id">DISCOUNT AND DEALS</string>
+    <string name="discussion_channel">Discussion You Join</string>
+    <string name="fcm_message">FCM TESTING</string>
+
 </resources>

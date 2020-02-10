@@ -46,7 +46,7 @@ public class UserRepo{
     public void loginUser(String identity, String password, final AuthListener authListener){
         Log.d("Login called","called");
         String[] keys = new String[]{"identity","password","device_type"};
-        String[] values = new String[]{"abcd","geh", AppConfig.PLATFORM};
+        String[] values = new String[]{identity,password, AppConfig.PLATFORM};
 
         JSONObject params = VolleyRequest.getParams(keys,values);
 
@@ -99,7 +99,7 @@ public class UserRepo{
     public void signUp(String phoneNumber, String email, String username, String password,String firebaseToken, final CommonCallBack callBack){
 
         String[] keys = new String[]{"email","username","password","phone_number","firebase_token","device_type"};
-        String[] values = new String[]{"adasdaasdadsa","eaddsasdfc3","geaasds4h","asaasdsdwer45d","firebase_token",AppConfig.PLATFORM};
+        String[] values = new String[]{email,username,password,phoneNumber,firebaseToken,AppConfig.PLATFORM};
         JSONObject params = VolleyRequest.getParams(keys,values);
 
         JsonObjectRequest jsonReq = VolleyRequest.postJsonAccessRequestWithoutRetry(AppConfig.URL_SIGN_UP, params, new VolleyRequest.ResponseCallBack() {
