@@ -1,7 +1,9 @@
 package upuphere.com.upuphere.app;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -9,13 +11,19 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
 import upuphere.com.upuphere.BuildConfig;
 
-public class AppController extends Application {
+public class AppController extends Application implements LifecycleObserver {
 
     public static final String TAG = AppController.class.getSimpleName();
 
@@ -29,6 +37,8 @@ public class AppController extends Application {
         super.onCreate();
         mInstance = this;
         mContext = this;
+
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
         /*
         UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
         JodaTimeAndroid.init(this);
@@ -55,6 +65,17 @@ public class AppController extends Application {
                 });
 
          */
+    }
+
+    public static boolean isAppInForeground = false;
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    public void onAppBackgrouded(){
+        isAppInForeground = false;
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    public  void onAppForegrounded(){
+        isAppInForeground = true;
     }
 
     public static Context getContext(){

@@ -4,20 +4,29 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
+
 import androidx.appcompat.widget.Toolbar;
 import upuphere.com.upuphere.Interface.CommonCallBack;
 import upuphere.com.upuphere.Interface.StringCallBack;
+import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.app.AppController;
 import upuphere.com.upuphere.helper.DecodeToken;
+import upuphere.com.upuphere.helper.NotificationUtils;
 import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.repositories.UserRepo;
 
@@ -28,6 +37,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -35,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public NavController navController;
     public NavigationView navigationView;
     PrefManager prefManager;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +57,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupNavigation();
 
         requestFirebaseToken();
+
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                 if (Objects.equals(intent.getAction(), AppConfig.PUSH_NOTIFICATION)) {
+                    // new push notification is received
+
+                    String message = intent.getStringExtra("message");
+                    String postId = intent.getStringExtra("post_id");
+
+                    Log.d("MAIN ACTIVITY", message);
+                    Log.d("MAIN ACTIVITY", postId);
+                }
+            }
+        };
     }
 
     private void requestFirebaseToken() {
@@ -177,5 +204,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,new IntentFilter(AppConfig.PUSH_NOTIFICATION));
+
+        NotificationUtils.clearNotifications(this);
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        super.onPause();
     }
 }
