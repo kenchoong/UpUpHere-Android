@@ -3,7 +3,10 @@ package upuphere.com.upuphere;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.MenuCompat;
+import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -17,7 +20,10 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -28,7 +34,9 @@ import upuphere.com.upuphere.app.AppController;
 import upuphere.com.upuphere.helper.DecodeToken;
 import upuphere.com.upuphere.helper.NotificationUtils;
 import upuphere.com.upuphere.helper.PrefManager;
+import upuphere.com.upuphere.models.NotificationModel;
 import upuphere.com.upuphere.repositories.UserRepo;
+import upuphere.com.upuphere.viewmodel.NotificationViewModel;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -41,10 +49,12 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     public DrawerLayout drawerLayout;
     public NavController navController;
     public NavigationView navigationView;
     PrefManager prefManager;
+
     private BroadcastReceiver mRegistrationBroadcastReceiver;
 
     @Override
@@ -58,21 +68,57 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         requestFirebaseToken();
 
+        final NotificationViewModel viewModel = ViewModelProviders.of(this).get(NotificationViewModel.class);
+
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
 
-                 if (Objects.equals(intent.getAction(), AppConfig.PUSH_NOTIFICATION)) {
+                if (Objects.equals(intent.getAction(), AppConfig.PUSH_NOTIFICATION)) {
                     // new push notification is received
 
                     String message = intent.getStringExtra("message");
                     String postId = intent.getStringExtra("post_id");
+                    String timeStamp = intent.getStringExtra("timestamp");
 
-                    Log.d("MAIN ACTIVITY", message);
-                    Log.d("MAIN ACTIVITY", postId);
+                    assert message != null;
+                    NotificationModel notification = new NotificationModel(message,timeStamp,postId);
+
+                    viewModel.addNewNotificationInLocalDb(notification);
+
+                    Log.d("MAIN fragment 12345 **", message);
+                    Log.d("MAIN fragment 12345 **", postId);
+
+
                 }
             }
         };
+
+        //TODO :: HERE GOT PROBLEM
+        if (getIntent().getExtras() != null) {
+            for (String key : getIntent().getExtras().keySet()) {
+                Object value = getIntent().getExtras().get(key);
+                Log.d(TAG, "Key: " + key + " Value: " + value);
+            }
+        }
+
+        if(getIntent().getStringExtra("post_id") != null){
+            String message = getIntent().getStringExtra("message");
+            String timestamp = getIntent().getStringExtra("timestamp");
+            String post_id = getIntent().getStringExtra("post_id");
+
+            Log.d("Main activity",message);
+
+            NotificationModel notification = new NotificationModel(message,timestamp,post_id);
+            viewModel.deleteNotification(notification);
+
+            Bundle args = new Bundle();
+            args.putString("postId",post_id);
+            navController.navigate(R.id.singlePostFragment,args);
+        }else{
+            Log.d("Main activity","Intent extra is null");
+        }
+        //navController.navigate(R.id.singlePostFragment);
     }
 
     private void requestFirebaseToken() {
@@ -120,6 +166,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,new IntentFilter(AppConfig.PUSH_NOTIFICATION));
+
+        NotificationUtils.clearNotifications(this);
+    }
+
+    @Override
+    public void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        super.onPause();
     }
 
 
@@ -206,18 +267,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,new IntentFilter(AppConfig.PUSH_NOTIFICATION));
-
-        NotificationUtils.clearNotifications(this);
-    }
-
-    @Override
-    protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-        super.onPause();
-    }
 }

@@ -64,6 +64,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
     }
 
+
+
     private void handleDataMessage(JSONObject json) {
         // todo:: parse the data inside the json
 
@@ -75,16 +77,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             JSONObject payload = data.getJSONObject("payload");
             String postId = payload.getString("post_id");
 
+            //pass to Main Fragment to save in local database
+            Intent pushNotification = new Intent(AppConfig.PUSH_NOTIFICATION);
+            pushNotification.putExtra("message",message);
+            pushNotification.putExtra("post_id", postId);
+            pushNotification.putExtra("timestamp",timeStamp);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
+
             if(AppController.isAppInForeground){
                 // app in Foreground
                 Log.d(TAG, "App in foreground" + "YES");
-
-                //pass to MainActivity
-                Intent pushNotification = new Intent(AppConfig.PUSH_NOTIFICATION);
-                pushNotification.putExtra("message",message);
-                pushNotification.putExtra("post_id", postId);
-                LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-
                 new NotificationUtils(getApplicationContext()).playNotificationSound();
 
             }else{
@@ -96,6 +98,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
                 resultIntent.putExtra("message", message);
+                resultIntent.putExtra("post_id",postId);
+                resultIntent.putExtra("timestamp",timeStamp);
 
                 showTextNotification(getApplicationContext(),title,message,channelId,channelName,timeStamp,resultIntent);
             }
