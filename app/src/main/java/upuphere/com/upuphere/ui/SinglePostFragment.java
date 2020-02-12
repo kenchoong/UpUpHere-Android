@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,8 @@ public class SinglePostFragment extends Fragment {
 
         if (getArguments() != null) {
             postId = SinglePostFragmentArgs.fromBundle(getArguments()).getPostId();
+
+            Log.d("SINGLEPOSTFRAGMENT *" ,postId);
         }
     }
 }

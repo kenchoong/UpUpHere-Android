@@ -18,6 +18,7 @@ import org.json.JSONObject;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import upuphere.com.upuphere.MainActivity;
 import upuphere.com.upuphere.R;
@@ -25,7 +26,9 @@ import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.app.AppController;
 import upuphere.com.upuphere.helper.NotificationUtils;
 import upuphere.com.upuphere.helper.PrefManager;
+import upuphere.com.upuphere.models.NotificationModel;
 import upuphere.com.upuphere.repositories.UserRepo;
+import upuphere.com.upuphere.viewmodel.NotificationViewModel;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -77,12 +80,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             JSONObject payload = data.getJSONObject("payload");
             String postId = payload.getString("post_id");
 
-            //pass to Main Fragment to save in local database
-            Intent pushNotification = new Intent(AppConfig.PUSH_NOTIFICATION);
-            pushNotification.putExtra("message",message);
-            pushNotification.putExtra("post_id", postId);
-            pushNotification.putExtra("timestamp",timeStamp);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
+            NotificationModel model = new NotificationModel(message,timeStamp,postId);
+            NotificationViewModel viewModel = new NotificationViewModel(getApplication());
+            viewModel.addNewNotificationInLocalDb(model);
 
             if(AppController.isAppInForeground){
                 // app in Foreground
