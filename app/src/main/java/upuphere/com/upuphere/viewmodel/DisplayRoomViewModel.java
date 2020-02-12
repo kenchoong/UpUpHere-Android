@@ -1,16 +1,26 @@
 package upuphere.com.upuphere.viewmodel;
 
+import android.app.Application;
 import android.view.View;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import upuphere.com.upuphere.models.Post;
+import upuphere.com.upuphere.models.RoomModel;
 import upuphere.com.upuphere.repositories.RoomRepo;
 
-public class DisplayRoomViewModel extends ViewModel {
+public class DisplayRoomViewModel extends AndroidViewModel {
+    private RoomRepo roomRepo;
+
+    public DisplayRoomViewModel(@NonNull Application application) {
+        super(application);
+        roomRepo = new RoomRepo(application);
+    }
 
     public interface DisplayRoomInterface{
         void onFabClick();
@@ -28,7 +38,7 @@ public class DisplayRoomViewModel extends ViewModel {
     }
 
     public LiveData<List<Post>> getAllPostInRoom(String roomId){
-        return RoomRepo.getInstance().getAllPostWithRoomId(roomId);
+        return roomRepo.getAllPostWithRoomId(roomId);
     }
 
 }

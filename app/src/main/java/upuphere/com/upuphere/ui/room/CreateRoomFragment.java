@@ -134,7 +134,22 @@ public class CreateRoomFragment extends Fragment implements CreateRoomViewModel.
                 @Override
                 public void onTokenValid() {
                     Log.d("ACCESS TOKEN","VALID");
-                    RoomRepo.getInstance().createRoom(viewModel.roomName, photo, new StringCallBack() {
+                    viewModel.createRoom(viewModel.roomName, photo, new CreateRoomViewModel.CreateRoomListener() {
+                        @Override
+                        public void onCreatedRoom(AllRooms rooms) {
+
+                            if(rooms != null){
+                                binding.roomNameField.setText("");
+                                viewModel.getSelectedPhoto().setValue(null);
+
+                                NavDirections action = CreateRoomFragmentDirections.actionCreateRoomFragmentToRoomFragment(rooms);
+                                Navigation.findNavController(rootView).navigate(action);
+                            }
+                        }
+                    });
+
+                    /*
+                    new RoomRepo(getApp).createRoom(viewModel.roomName, photo, new StringCallBack() {
                         @Override
                         public void success(String roomId) {
                             Log.d("CREATE ROOM",roomId);
@@ -156,6 +171,8 @@ public class CreateRoomFragment extends Fragment implements CreateRoomViewModel.
 
                         }
                     });
+
+                     */
                 }
 
                 @Override
