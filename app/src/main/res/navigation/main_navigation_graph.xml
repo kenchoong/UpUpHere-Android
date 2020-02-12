@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_mainFragment_to_roomFragment"
             app:destination="@id/roomFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_notificationFragment"
+            app:destination="@id/notificationFragment" />
     </fragment>
     <fragment
         android:id="@+id/createRoomFragment"
@@ -157,5 +160,23 @@
         <action
             android:id="@+id/action_phoneAuthFragment2_to_signUpFragment"
             app:destination="@id/signUpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/notificationFragment"
+        android:name="upuphere.com.upuphere.ui.NotificationFragment"
+        android:label="Notification"
+        tools:layout="@layout/fragment_notification" >
+        <action
+            android:id="@+id/action_notificationFragment_to_singlePostFragment"
+            app:destination="@id/singlePostFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/singlePostFragment"
+        android:name="upuphere.com.upuphere.ui.SinglePostFragment"
+        android:label="fragment_single_post"
+        tools:layout="@layout/fragment_single_post" >
+        <argument
+            android:name="postId"
+            app:argType="string" />
     </fragment>
 </navigation>

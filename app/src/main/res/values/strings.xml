@@ -95,4 +95,6 @@
     <string name="discussion_channel">Discussion You Join</string>
     <string name="fcm_message">FCM TESTING</string>
 
+    <string name="notification">Notification</string>
+
 </resources>

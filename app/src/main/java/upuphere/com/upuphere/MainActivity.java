@@ -3,7 +3,10 @@ package upuphere.com.upuphere;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.MenuCompat;
+import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -17,7 +20,10 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -28,7 +34,9 @@ import upuphere.com.upuphere.app.AppController;
 import upuphere.com.upuphere.helper.DecodeToken;
 import upuphere.com.upuphere.helper.NotificationUtils;
 import upuphere.com.upuphere.helper.PrefManager;
+import upuphere.com.upuphere.models.NotificationModel;
 import upuphere.com.upuphere.repositories.UserRepo;
+import upuphere.com.upuphere.viewmodel.NotificationViewModel;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -41,11 +49,14 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     public DrawerLayout drawerLayout;
     public NavController navController;
     public NavigationView navigationView;
     PrefManager prefManager;
-    private BroadcastReceiver mRegistrationBroadcastReceiver;
+
+    //private BroadcastReceiver mRegistrationBroadcastReceiver;
+    NotificationViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,21 +69,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         requestFirebaseToken();
 
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-
-                 if (Objects.equals(intent.getAction(), AppConfig.PUSH_NOTIFICATION)) {
-                    // new push notification is received
-
-                    String message = intent.getStringExtra("message");
-                    String postId = intent.getStringExtra("post_id");
-
-                    Log.d("MAIN ACTIVITY", message);
-                    Log.d("MAIN ACTIVITY", postId);
-                }
-            }
-        };
+        viewModel = ViewModelProviders.of(this).get(NotificationViewModel.class);
     }
 
     private void requestFirebaseToken() {
@@ -122,6 +119,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+
+        Log.i(TAG, "onNewIntent() called.");
+        if (intent != null && intent.getExtras() != null && intent.getExtras().size() > 0) {
+            Log.d(TAG, "Received extras in onNewIntent()");
+
+            String message = intent.getStringExtra("message");
+            String timestamp = intent.getStringExtra("timestamp");
+            String post_id = intent.getStringExtra("post_id");
+
+            NotificationModel notification = new NotificationModel(message,timestamp,post_id);
+            viewModel.deleteNotification(notification);
+
+            Bundle args = new Bundle();
+            args.putString("postId",post_id);
+            navController.navigate(R.id.singlePostFragment,args);
+        }
+    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -206,18 +224,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,new IntentFilter(AppConfig.PUSH_NOTIFICATION));
-
-        NotificationUtils.clearNotifications(this);
-    }
-
-    @Override
-    protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-        super.onPause();
-    }
 }

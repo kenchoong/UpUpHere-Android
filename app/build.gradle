@@ -62,6 +62,11 @@ dependencies {
     //permission
     implementation 'com.master.android:permissionhelper:2.1'
 
+    // room
+    def room_version = "2.2.3"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+
     // firebase
     implementation 'com.google.firebase:firebase-messaging:20.1.0'
     implementation 'com.google.firebase:firebase-auth:19.2.0'

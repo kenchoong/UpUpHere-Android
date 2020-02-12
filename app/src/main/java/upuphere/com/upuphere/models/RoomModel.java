@@ -20,28 +20,6 @@ import upuphere.com.upuphere.app.AppConfig;
 
 public class RoomModel{
 
-    @BindingAdapter({"roomImageUrl"})
-    public static void loadImage(ImageView view,String url){
-        Glide.with(view.getContext())
-                .load(AppConfig.PHOTO_ENDPOINT+url)
-                .into(view);
-    }
-
-    @BindingAdapter({"timeAgo"})
-    public static void setTimeAgo(TextView textView ,String createdAt){
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        Date convertedDate = new Date();
-        try{
-            convertedDate = formatter.parse(createdAt);
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        PrettyTime p =new PrettyTime();
-        String datetime= p.format(convertedDate);
-        textView.setText(datetime);
-    }
-
     @SerializedName("all_rooms")
     @Expose
     private List<AllRooms> allRooms = null;
