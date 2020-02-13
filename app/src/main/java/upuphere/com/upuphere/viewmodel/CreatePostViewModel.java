@@ -1,5 +1,6 @@
 package upuphere.com.upuphere.viewmodel;
 
+import android.app.Application;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.View;
@@ -8,14 +9,25 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
+import androidx.annotation.NonNull;
 import androidx.databinding.BindingAdapter;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import upuphere.com.upuphere.Interface.StringCallBack;
+import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.fragment.PhotoBottomSheetDialogFragment;
+import upuphere.com.upuphere.repositories.PostRepo;
 
-public class CreatePostViewModel extends ViewModel {
+public class CreatePostViewModel extends AndroidViewModel {
 
     public String statusText;
+    PostRepo postRepo;
+
+    public CreatePostViewModel(@NonNull Application application) {
+        super(application);
+        postRepo = new PostRepo(application);
+    }
 
     public interface CreatePostInterface{
         void onChosenImageClick();
@@ -46,6 +58,21 @@ public class CreatePostViewModel extends ViewModel {
 
     public void onClickImageChosen(View view){
         postInterface.onChosenImageClick();
+    }
+
+    public void createPost(String roomId, String statusText, Bitmap bitmap,String mediaType, final StringCallBack callBack){
+        postRepo.createPost(roomId, statusText, bitmap, mediaType, new StringCallBack() {
+            @Override
+            public void success(String item) {
+                callBack.success(item);
+            }
+
+            @Override
+            public void showError(String error) {
+                callBack.showError(error);
+            }
+        });
+
     }
 
 }

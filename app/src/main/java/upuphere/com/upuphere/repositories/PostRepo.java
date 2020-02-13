@@ -1,35 +1,40 @@
 package upuphere.com.upuphere.repositories;
 
+import android.app.Application;
 import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.lifecycle.MutableLiveData;
 import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.app.AppController;
+import upuphere.com.upuphere.database.PostDao;
+import upuphere.com.upuphere.database.UpUpHereDatabase;
 import upuphere.com.upuphere.helper.VolleyMultipartRequest;
 import upuphere.com.upuphere.helper.VolleyRequest;
 import upuphere.com.upuphere.models.CommentModel;
 import upuphere.com.upuphere.models.Post;
+import upuphere.com.upuphere.models.PostModel;
 
 public class PostRepo {
 
     private MutableLiveData<List<CommentModel>> commentMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<Post>> postMutableLiveData = new MutableLiveData<>();
 
-    private static PostRepo instance;
+    private PostDao postDao;
 
-    public static PostRepo getInstance(){
-        if(instance == null){
-            instance = new PostRepo();
-        }
-        return instance;
+    public PostRepo(Application application){
+        UpUpHereDatabase db = UpUpHereDatabase.getDatabase(application);
+        postDao = db.postDao();
     }
 
     public void createPost(String roomId, String statusText, Bitmap bitmap,String mediaType, final StringCallBack callBack){
@@ -60,6 +65,65 @@ public class PostRepo {
         });
 
         AppController.getInstance().addToRequestQueue(request);
+    }
+
+
+    public MutableLiveData<List<Post>> getAllPostWithRoomId(final String roomId){
+
+        if(AppController.getInstance().internetConnectionAvailable()){
+
+            String url = AppConfig.URL_GET_POST_IN_SPECIFIC_ROOM + roomId;
+
+            JsonObjectRequest request = VolleyRequest.getJsonAccessRequestWithoutRetry(url, new VolleyRequest.ResponseCallBack() {
+                @Override
+                public void onSuccess(JSONObject response) {
+
+                    Gson gson = new Gson();
+                    PostModel postModel = gson.fromJson(response.toString(), PostModel.class);
+
+                    insertNewFetchPostOfARoomIntoLocalDb(postModel.getPost());
+                    postMutableLiveData.setValue(postModel.getPost());
+                }
+
+                @Override
+                public void onError(String error) {
+                    Log.d("GET POST IN ROOM",error);
+                    getPostByRoomIdFromLocalDb(roomId);
+                }
+            });
+            AppController.getInstance().addToRequestQueue(request);
+
+
+        }else{
+            getPostByRoomIdFromLocalDb(roomId);
+        }
+
+        return postMutableLiveData;
+    }
+
+    public void setPostMutableLiveDataToNull(){
+        List<Post> postList = new ArrayList<>();
+        postMutableLiveData.setValue(postList);
+    }
+
+    private void getPostByRoomIdFromLocalDb(final String roomId){
+        UpUpHereDatabase.databaseWriteExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("POST DAO", String.valueOf(postDao.getPostByRoomIdInLocalDb(roomId).size()));
+                postMutableLiveData.postValue(postDao.getPostByRoomIdInLocalDb(roomId));
+            }
+        });
+    }
+
+    private void insertNewFetchPostOfARoomIntoLocalDb(final List<Post> postListInRoomFromNetwork){
+        UpUpHereDatabase.databaseWriteExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                postDao.deleteAll();
+                postDao.insert(postListInRoomFromNetwork);
+            }
+        });
     }
 
     public MutableLiveData<List<CommentModel>> getCommentMutableLiveData(List<Post> posts, String postId){

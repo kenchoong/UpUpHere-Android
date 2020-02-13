@@ -9,16 +9,20 @@ import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import upuphere.com.upuphere.models.AllRooms;
 import upuphere.com.upuphere.models.NotificationModel;
+import upuphere.com.upuphere.models.Post;
 
 @Database(entities = {AllRooms.class,
-                    NotificationModel.class}, version = 1,exportSchema = false)
+                    NotificationModel.class, Post.class}, version = 1,exportSchema = false)
+@TypeConverters({Converters.class})
 public abstract class UpUpHereDatabase extends RoomDatabase {
 
     public abstract NotificationDao notificationDao();
     public abstract RoomDao roomDao();
+    public abstract PostDao postDao();
 
     private static volatile UpUpHereDatabase  INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;

@@ -12,14 +12,15 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import upuphere.com.upuphere.models.Post;
 import upuphere.com.upuphere.models.RoomModel;
+import upuphere.com.upuphere.repositories.PostRepo;
 import upuphere.com.upuphere.repositories.RoomRepo;
 
 public class DisplayRoomViewModel extends AndroidViewModel {
-    private RoomRepo roomRepo;
+    private PostRepo postRepo;
 
     public DisplayRoomViewModel(@NonNull Application application) {
         super(application);
-        roomRepo = new RoomRepo(application);
+        postRepo = new PostRepo(application);
     }
 
     public interface DisplayRoomInterface{
@@ -38,7 +39,11 @@ public class DisplayRoomViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<Post>> getAllPostInRoom(String roomId){
-        return roomRepo.getAllPostWithRoomId(roomId);
+        return postRepo.getAllPostWithRoomId(roomId);
+    }
+
+    public void setPostListToBlank(){
+        postRepo.setPostMutableLiveDataToNull();
     }
 
 }

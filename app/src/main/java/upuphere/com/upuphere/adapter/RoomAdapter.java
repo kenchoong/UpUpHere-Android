@@ -65,10 +65,10 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     public int getItemCount() {
 
         if (roomList != null) {
-            Log.d("Room SIZE",String.valueOf(roomList.size()));
+            //Log.d("Room SIZE",String.valueOf(roomList.size()));
             return roomList.size();
         } else {
-            Log.d("Room SIZE","0");
+            //Log.d("Room SIZE","0");
             return 0;
         }
     }
