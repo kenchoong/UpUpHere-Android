@@ -27,6 +27,7 @@ import androidx.lifecycle.MutableLiveData;
 import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.app.AppController;
+import upuphere.com.upuphere.database.PostDao;
 import upuphere.com.upuphere.database.RoomDao;
 import upuphere.com.upuphere.database.UpUpHereDatabase;
 import upuphere.com.upuphere.helper.VolleyMultipartRequest;
@@ -40,10 +41,9 @@ public class RoomRepo {
 
     private static RoomRepo instance;
     private MutableLiveData<List<AllRooms>> roomMutableLiveData = new MutableLiveData<>();
-    private MutableLiveData<List<Post>> postMutableLiveData = new MutableLiveData<>();
-    private RoomDao roomDao;
-    private List<AllRooms> roomsListFromLocalDb = new ArrayList<>();
 
+    private RoomDao roomDao;
+    //private List<AllRooms> roomsListFromLocalDb = new ArrayList<>();
 
     public RoomRepo(Application application){
         UpUpHereDatabase db = UpUpHereDatabase.getDatabase(application);
@@ -67,32 +67,29 @@ public class RoomRepo {
                 @Override
                 public void onError(String error) {
                     Log.d("GET ROOM ERROR",error);
-                    roomMutableLiveData.setValue(getAllRoomFromLocalDB());
+                    getAllRoomFromLocalDB();
                 }
             });
 
             AppController.getInstance().addToRequestQueue(request);
         }else{
-            roomMutableLiveData.setValue(getAllRoomFromLocalDB());
+            getAllRoomFromLocalDB();
         }
 
         return roomMutableLiveData;
     }
 
 
-    private List<AllRooms> getAllRoomFromLocalDB(){
+    private void getAllRoomFromLocalDB(){
 
         UpUpHereDatabase.databaseWriteExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 Log.d("ROOM DAO", String.valueOf(roomDao.getAllRoomInLocalDb().size()));
-                roomsListFromLocalDb.clear();
-                roomsListFromLocalDb.addAll(roomDao.getAllRoomInLocalDb());
+                roomMutableLiveData.postValue(roomDao.getAllRoomInLocalDb());
 
             }
         });
-
-        return roomsListFromLocalDb;
     }
 
     private void insertNewFetchRoomIntoLocalDb(final List<AllRooms> roomList){
@@ -103,29 +100,6 @@ public class RoomRepo {
                 roomDao.insert(roomList);
             }
         });
-    }
-
-    public MutableLiveData<List<Post>> getAllPostWithRoomId(String roomId){
-        String url = AppConfig.URL_GET_POST_IN_SPECIFIC_ROOM + roomId;
-
-        JsonObjectRequest request = VolleyRequest.getJsonAccessRequestWithoutRetry(url, new VolleyRequest.ResponseCallBack() {
-            @Override
-            public void onSuccess(JSONObject response) {
-
-                Gson gson = new Gson();
-                PostModel postModel = gson.fromJson(response.toString(), PostModel.class);
-                postMutableLiveData.setValue(postModel.getPost());
-            }
-
-            @Override
-            public void onError(String error) {
-                Log.d("GET POST IN ROOM",error);
-            }
-        });
-
-        AppController.getInstance().addToRequestQueue(request);
-
-        return postMutableLiveData;
     }
 
 

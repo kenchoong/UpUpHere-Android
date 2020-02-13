@@ -175,7 +175,7 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
                     Toast.makeText(getActivity(),"EVERYTHING IS OK",Toast.LENGTH_LONG).show();
 
                     //todo:: MAKE API call
-                    PostRepo.getInstance().createPost(roomId, viewModel.statusText, photo, AppConfig.MEDIA_IS_PHOTO,
+                    viewModel.createPost(roomId, viewModel.statusText, photo, AppConfig.MEDIA_IS_PHOTO,
                     new StringCallBack() {
                         @Override
                         public void success(String item) {

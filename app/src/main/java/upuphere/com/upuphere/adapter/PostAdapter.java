@@ -25,6 +25,7 @@ public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.PostViewHolde
     }
 
     public void setPost(List<Post> postList){
+        //Log.d("POST HERE","GET CALLED");
         this.post = postList;
         notifyDataSetChanged();
     }

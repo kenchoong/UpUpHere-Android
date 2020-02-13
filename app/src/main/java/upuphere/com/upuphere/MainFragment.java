@@ -112,7 +112,14 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
 
         setUpSwipeRefreshLayout();
 
-        getRoomList();
+        mSwipeRreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRreshLayout.setRefreshing(true);
+                getRoomList();
+            }
+        });
+
     }
 
     private void initRecyclerView() {
@@ -127,11 +134,11 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
     }
 
     private void getRoomList(){
-        mSwipeRreshLayout.setRefreshing(false);
         mainViewModel.getRoomList().observe(getViewLifecycleOwner(), new Observer<List<AllRooms>>() {
             @Override
             public void onChanged(List<AllRooms> rooms) {
                 roomAdapter.setRoomList(rooms);
+                mSwipeRreshLayout.setRefreshing(false);
             }
         });
     }
@@ -141,19 +148,10 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
         mSwipeRreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                mSwipeRreshLayout.setRefreshing(true);
                 getRoomList();
             }
         });
-
-        // show loader and fetch messages
-        mSwipeRreshLayout.post(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        getRoomList();
-                    }
-                }
-        );
     }
 
     @Override

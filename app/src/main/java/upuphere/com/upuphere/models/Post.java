@@ -7,7 +7,14 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
+import java.util.Objects;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "post_table")
 public class Post implements Parcelable {
 
     /**
@@ -34,34 +41,53 @@ public class Post implements Parcelable {
      * }
      * */
 
-
+    @NonNull
+    @PrimaryKey
     @SerializedName("_id")
     @Expose
-    private String id;
+    private String id = "";
+
+    @ColumnInfo(name = "_cls")
     @SerializedName("_cls")
     @Expose
     private String cls;
+
+    @ColumnInfo(name = "post_title")
     @SerializedName("post_title")
     @Expose
     private String postTitle;
+
+    @ColumnInfo(name = "author")
     @SerializedName("author")
     @Expose
     private String author;
+
+    @ColumnInfo(name = "in_room")
     @SerializedName("in_room")
     @Expose
     private String inRoom;
+
+    @ColumnInfo(name="comment")
     @SerializedName("comment")
     @Expose
     private List<CommentModel> comment = null;
+
+    @ColumnInfo(name = "created_at")
     @SerializedName("created_at")
     @Expose
     private String createdAt;
+
+    @ColumnInfo(name = "image_path")
     @SerializedName("image_path")
     @Expose
     private String imagePath;
 
+    public Post(){
+
+    }
+
     protected Post(Parcel in) {
-        id = in.readString();
+        id = Objects.requireNonNull(in.readString());
         cls = in.readString();
         postTitle = in.readString();
         author = in.readString();
@@ -82,11 +108,12 @@ public class Post implements Parcelable {
         }
     };
 
+    @NonNull
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(@NonNull String id) {
         this.id = id;
     }
 

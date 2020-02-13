@@ -118,7 +118,7 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
         comment.setTextComment(commentViewModel.commentText);
         comment.setUser(new PrefManager(getActivity()).getUserId());
         comment.setCreatedAt(date);
-        PostRepo.getInstance().appenNewCommentToMutableLiveData(postList,postId,comment);
+        commentViewModel.appendNewCommentToMutableLiveData(postList,postId,comment);
     }
 
     private void sendCommentToServer() {
@@ -126,19 +126,7 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
         decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
             @Override
             public void onTokenValid() {
-                PostRepo.getInstance().createComment(postId, commentViewModel.commentText, new StringCallBack() {
-                    @Override
-                    public void success(String item) {
-                        Log.d("COMMENT",item);
-
-
-                    }
-
-                    @Override
-                    public void showError(String error) {
-
-                    }
-                });
+                commentViewModel.createComment(postId, commentViewModel.commentText);
             }
 
             @Override

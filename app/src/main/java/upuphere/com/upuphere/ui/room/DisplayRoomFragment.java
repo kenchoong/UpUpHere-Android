@@ -4,6 +4,7 @@ package upuphere.com.upuphere.ui.room;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,9 +29,11 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import upuphere.com.upuphere.MainActivity;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.adapter.PostAdapter;
+import upuphere.com.upuphere.app.AppController;
 import upuphere.com.upuphere.databinding.FragmentDisplayRoomBinding;
 import upuphere.com.upuphere.fragment.DisplayPhotoFragmentArgs;
 import upuphere.com.upuphere.models.AllRooms;
@@ -75,7 +78,6 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
         rootView = binding.getRoot();
         binding.setModel(viewModel);
 
-
         return rootView;
     }
 
@@ -93,7 +95,27 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
 
         initializeRecyclerView();
 
-        getPostInRoom();
+        setUpSwipeRefreshLayout();
+
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(true);
+                getPostInRoom();
+            }
+        });
+    }
+
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private void setUpSwipeRefreshLayout() {
+        mSwipeRefreshLayout = binding.swipeRefreshLayout;
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mSwipeRefreshLayout.setRefreshing(true);
+                getPostInRoom();
+            }
+        });
     }
 
     private void initializeRecyclerView() {
@@ -109,6 +131,7 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
             public void onChanged(List<Post> posts) {
                 fetchedPost.addAll(posts);
                 postAdapter.setPost(posts);
+                mSwipeRefreshLayout.setRefreshing(false);
             }
         });
     }
@@ -127,5 +150,12 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
     @Override
     public void onShareClicked(Post post) {
         Toast.makeText(getActivity(), post.getAuthor(), Toast.LENGTH_SHORT).show();
+    }
+
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        viewModel.setPostListToBlank();
     }
 }
