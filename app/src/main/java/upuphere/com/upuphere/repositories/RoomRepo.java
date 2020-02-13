@@ -44,13 +44,6 @@ public class RoomRepo {
     private RoomDao roomDao;
     private List<AllRooms> roomsListFromLocalDb = new ArrayList<>();
 
-    /*
-    public static RoomRepo getInstance(){
-        if(instance == null){
-            instance = new RoomRepo();
-        }
-        return instance;
-    }*/
 
     public RoomRepo(Application application){
         UpUpHereDatabase db = UpUpHereDatabase.getDatabase(application);
@@ -87,15 +80,13 @@ public class RoomRepo {
     }
 
 
-
-    public List<AllRooms> getAllRoomFromLocalDB(){
+    private List<AllRooms> getAllRoomFromLocalDB(){
 
         UpUpHereDatabase.databaseWriteExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 Log.d("ROOM DAO", String.valueOf(roomDao.getAllRoomInLocalDb().size()));
-                //roomMutableLiveData.setValue(roomDao.getAllRoomInLocalDb());
-
+                roomsListFromLocalDb.clear();
                 roomsListFromLocalDb.addAll(roomDao.getAllRoomInLocalDb());
 
             }
@@ -104,15 +95,14 @@ public class RoomRepo {
         return roomsListFromLocalDb;
     }
 
-    public void insertNewFetchRoomIntoLocalDb(List<AllRooms> roomList){
-        for(final AllRooms room : roomList){
-            UpUpHereDatabase.databaseWriteExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    roomDao.insert(room);
-                }
-            });
-        }
+    private void insertNewFetchRoomIntoLocalDb(final List<AllRooms> roomList){
+        UpUpHereDatabase.databaseWriteExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                roomDao.deleteAll();
+                roomDao.insert(roomList);
+            }
+        });
     }
 
     public MutableLiveData<List<Post>> getAllPostWithRoomId(String roomId){

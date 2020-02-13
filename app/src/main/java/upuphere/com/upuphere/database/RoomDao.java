@@ -13,7 +13,10 @@ import upuphere.com.upuphere.models.AllRooms;
 public interface RoomDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(AllRooms rooms);
+    void insert(List<AllRooms> rooms);
+
+    @Query("DELETE FROM room_table")
+    void deleteAll();
 
     @Query("SELECT * FROM room_table ORDER BY created_at DESC")
     List<AllRooms> getAllRoomInLocalDb();
