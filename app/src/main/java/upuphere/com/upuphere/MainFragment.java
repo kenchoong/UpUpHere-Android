@@ -39,6 +39,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import upuphere.com.upuphere.adapter.RoomAdapter;
 import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.databinding.FragmentMainBinding;
@@ -63,6 +64,7 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
     private RoomAdapter roomAdapter;
     private View view;
     private NotificationViewModel notificationViewModel;
+    SwipeRefreshLayout mSwipeRreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -108,9 +110,9 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
 
         initRecyclerView();
 
+        setUpSwipeRefreshLayout();
+
         getRoomList();
-
-
     }
 
     private void initRecyclerView() {
@@ -125,12 +127,33 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
     }
 
     private void getRoomList(){
+        mSwipeRreshLayout.setRefreshing(false);
         mainViewModel.getRoomList().observe(getViewLifecycleOwner(), new Observer<List<AllRooms>>() {
             @Override
             public void onChanged(List<AllRooms> rooms) {
                 roomAdapter.setRoomList(rooms);
             }
         });
+    }
+
+    private void setUpSwipeRefreshLayout(){
+        mSwipeRreshLayout = binding.swipeRefreshLayout;
+        mSwipeRreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getRoomList();
+            }
+        });
+
+        // show loader and fetch messages
+        mSwipeRreshLayout.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        getRoomList();
+                    }
+                }
+        );
     }
 
     @Override

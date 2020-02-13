@@ -6,40 +6,65 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import androidx.databinding.BaseObservable;
+import java.util.Objects;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.BaseObservable;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "room_table")
 public class AllRooms extends BaseObservable implements Parcelable {
 
+    @NonNull
+    @PrimaryKey
     @SerializedName("_id")
     @Expose
-    private String id;
+    private String id = "";
+
+    @ColumnInfo(name = "_cls")
     @SerializedName("_cls")
     @Expose
     private String cls;
+
+    @ColumnInfo(name = "room_public_id")
     @SerializedName("room_public_id")
     @Expose
     private String roomPublicId;
+
+    @ColumnInfo(name = "room_name")
     @SerializedName("room_name")
     @Expose
     private String roomName;
+
+    @ColumnInfo(name = "room_profile_image")
     @SerializedName("room_profile_image")
     @Expose
     private String roomProfileImage;
+
+    @ColumnInfo(name = "room_description")
     @SerializedName("room_description")
     @Expose
     private String roomDescription;
+
+    @ColumnInfo(name = "created_by")
     @SerializedName("created_by")
     @Expose
     private String createdBy;
+
+    @ColumnInfo(name = "created_at")
     @SerializedName("created_at")
     @Expose
     private String createdAt;
+
+    @ColumnInfo(name = "active_status")
     @SerializedName("active_status")
     @Expose
     private Boolean activeStatus;
 
     public AllRooms(Parcel in) {
-        id = in.readString();
+        id = Objects.requireNonNull(in.readString());
         cls = in.readString();
         roomPublicId = in.readString();
         roomName = in.readString();
@@ -67,11 +92,12 @@ public class AllRooms extends BaseObservable implements Parcelable {
 
     }
 
+    @NonNull
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(@NonNull String id) {
         this.id = id;
     }
 

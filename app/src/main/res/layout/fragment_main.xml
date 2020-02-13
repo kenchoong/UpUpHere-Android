@@ -16,23 +16,30 @@
         android:layout_height="match_parent"
         tools:context=".MainFragment">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/roomRecyclerView"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/roomRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:onClick="@{viewmodel::onFabClick}"
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
             android:layout_margin="16dp"
             android:contentDescription="@string/add_group"
-            app:srcCompat="@drawable/ic_add_white"
+            android:onClick="@{viewmodel::onFabClick}"
             app:backgroundTint="@color/secondaryColor"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_add_white" />
 
     </FrameLayout>
 
