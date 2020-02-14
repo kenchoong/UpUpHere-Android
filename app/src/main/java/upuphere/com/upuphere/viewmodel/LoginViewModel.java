@@ -16,7 +16,6 @@ public class LoginViewModel extends AndroidViewModel{
 
     public String identityString;
     public String passwordString;
-    public ProgressBar progressBar;
 
     UserRepo userRepo = UserRepo.getInstance();
 
@@ -49,7 +48,7 @@ public class LoginViewModel extends AndroidViewModel{
     }
 
     public MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
-    public MutableLiveData<String> status = new MutableLiveData<>();
+    public MutableLiveData<String> status = new MutableLiveData<>("");
 
     private void setIsLoading(boolean isLoadingOrNot){
         isLoading.setValue(isLoadingOrNot);

@@ -36,6 +36,17 @@ public class SignUpViewModel extends ViewModel {
 
     public MutableLiveData<SignUpState> signUpState = new MutableLiveData<>();
 
+    public MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    public MutableLiveData<String> status = new MutableLiveData<>("");
+
+    private void setIsLoading(boolean isLoadingOrNot){
+        isLoading.setValue(isLoadingOrNot);
+    }
+
+    public MutableLiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
+
     public String email,username,password,confirmPassword;
 
     public void setSignUpInterface(SignUpInterface signUpInterface) {
@@ -148,16 +159,20 @@ public class SignUpViewModel extends ViewModel {
     }
 
     public void createUserAccount(String phoneNumber, String emailString, String username, String passwordString, String firebaseToken) {
+        setIsLoading(true);
         //send to server
         userRepo.signUp(phoneNumber, emailString, username, passwordString,firebaseToken, new CommonCallBack() {
             @Override
             public void success() {
                 signUpState.setValue(SignUpState.SIGN_UP_SUCCESS);
+                setIsLoading(false);
             }
 
             @Override
             public void showError(String error) {
                 signUpState.setValue(SignUpState.SIGN_UP_ERROR);
+                setIsLoading(false);
+                status.setValue("Error when creating account,please try again later");
             }
         });
     }

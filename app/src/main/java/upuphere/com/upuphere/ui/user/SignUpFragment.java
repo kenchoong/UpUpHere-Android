@@ -79,6 +79,10 @@ public class SignUpFragment extends Fragment {
             }
         });
 
+        initProgressBar();
+
+        observeSignUpStatus();
+
         phoneNumber = Objects.requireNonNull(getArguments()).getString("phone_number");
         Log.d("PHONE_NUMBER", Objects.requireNonNull(phoneNumber));
 
@@ -157,6 +161,39 @@ public class SignUpFragment extends Fragment {
             }
         });
 
+    }
+
+    private void initProgressBar() {
+        signUpViewModel.isLoading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoading) {
+                if(isLoading){
+                    if(binding.signUpStatus.getVisibility() == View.VISIBLE){
+                        binding.signUpStatus.setVisibility(View.GONE);
+                    }
+
+                    binding.progressBar.setVisibility(View.VISIBLE);
+                }
+                else{
+                    binding.progressBar.setVisibility(View.GONE);
+                }
+            }
+        });
+
+    }
+
+    private void observeSignUpStatus() {
+        signUpViewModel.status.observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String status) {
+                if(!TextUtils.isEmpty(status)){
+                    binding.signUpStatus.setVisibility(View.VISIBLE);
+                    binding.signUpStatus.setText(status);
+                }else{
+                    binding.signUpStatus.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 }
 
