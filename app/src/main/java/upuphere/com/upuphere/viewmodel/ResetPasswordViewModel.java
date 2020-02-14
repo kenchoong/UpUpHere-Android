@@ -2,6 +2,7 @@ package upuphere.com.upuphere.viewmodel;
 
 import android.view.View;
 
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import upuphere.com.upuphere.repositories.UserRepo;
 import upuphere.com.upuphere.ui.user.ResetPasswordFragment;
@@ -21,6 +22,17 @@ public class ResetPasswordViewModel extends ViewModel {
 
     public void setOnResetPasswordListener(ResetPasswordViewModel.onResetPasswordListener onResetPasswordListener) {
         this.onResetPasswordListener = onResetPasswordListener;
+    }
+
+    public MutableLiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
+
+    public MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    public MutableLiveData<String> status = new MutableLiveData<>("");
+
+    public void setIsLoading(boolean isLoadingOrNot){
+        isLoading.setValue(isLoadingOrNot);
     }
 
 
