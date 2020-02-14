@@ -216,4 +216,9 @@ public class PhoneAuthFragment2 extends Fragment {
     }
 
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
+    }
 }

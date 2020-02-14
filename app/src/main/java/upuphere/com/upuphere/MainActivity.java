@@ -58,10 +58,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //private BroadcastReceiver mRegistrationBroadcastReceiver;
     NotificationViewModel viewModel;
 
+    Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        toolbar = findViewById(R.id.mainToolbar);
+        setSupportActionBar(toolbar);
 
         prefManager= new PrefManager(this);
 
@@ -100,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout);
 
-        NavigationUI.setupWithNavController(navigationView, navController);
+        NavigationUI.setupWithNavController(toolbar,navController,drawerLayout);
 
         navigationView.setNavigationItemSelectedListener(this);
     }
