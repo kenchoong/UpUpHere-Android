@@ -2,6 +2,7 @@ package upuphere.com.upuphere.viewmodel;
 
 import android.app.Application;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -55,23 +56,35 @@ public class CreateRoomViewModel extends AndroidViewModel {
 
     public void createRoom(final String roomName, Bitmap photo, final CreateRoomListener listener){
         setIsLoading(true);
-        roomRepo.createRoom(roomName, photo, new StringCallBack() {
-            @Override
-            public void success(String id) {
-                setIsLoading(false);
-                AllRooms room = new AllRooms();
-                room.setId(id);
-                room.setRoomName(roomName);
 
-                listener.onCreatedRoom(room);
-            }
+        if(TextUtils.isEmpty(roomName)){
+            setIsLoading(false);
+            setStatus("Please enter a room name");
+        }
+        else if(photo == null){
+            setIsLoading(false);
+            setStatus("A room must contain a photo");
+        }
+        else {
+            roomRepo.createRoom(roomName, photo, new StringCallBack() {
+                @Override
+                public void success(String id) {
+                    setIsLoading(false);
+                    AllRooms room = new AllRooms();
+                    room.setId(id);
+                    room.setRoomName(roomName);
 
-            @Override
-            public void showError(String error) {
-                setIsLoading(false);
-                listener.onCreatedRoom(null);
-            }
-        });
+                    listener.onCreatedRoom(room);
+                }
+
+                @Override
+                public void showError(String error) {
+                    setIsLoading(false);
+                    setStatus("Unknown error.Please try again later");
+                    listener.onCreatedRoom(null);
+                }
+            });
+        }
     }
 
     public void onImageClick(View view){
@@ -94,10 +107,14 @@ public class CreateRoomViewModel extends AndroidViewModel {
     }
 
     public MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
-    public MutableLiveData<String> status = new MutableLiveData<>("");
+    public MutableLiveData<String> statusFeedback = new MutableLiveData<>("");
 
     private void setIsLoading(boolean isLoadingOrNot){
         isLoading.setValue(isLoadingOrNot);
+    }
+
+    public void setStatus(String feedback){
+        statusFeedback.setValue(feedback);
     }
 
 }
