@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +51,7 @@ public class LoginFragment extends Fragment {
     LoginViewModel viewModel;
 
 
+    FragmentLoginBinding binding;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,7 +62,7 @@ public class LoginFragment extends Fragment {
 
         prefManager = new PrefManager(getActivity());
         
-        FragmentLoginBinding binding = DataBindingUtil.inflate(inflater,R.layout.fragment_login,container,false);
+        binding = DataBindingUtil.inflate(inflater,R.layout.fragment_login,container,false);
         viewModel = ViewModelProviders.of(requireActivity()).get(LoginViewModel.class);
         View view = binding.getRoot();
 
@@ -77,6 +79,8 @@ public class LoginFragment extends Fragment {
             viewModel.authenticateState.setValue(LoginViewModel.AuthenticateState.AUTHENTICATED);
         }
 
+        initializeProgressBar();
+        observeLoginStatus();
 
         final NavController navController = Navigation.findNavController(view);
         viewModel.authenticateState.observe(getViewLifecycleOwner(), new Observer<LoginViewModel.AuthenticateState>() {
@@ -143,6 +147,38 @@ public class LoginFragment extends Fragment {
 
     }
 
+    private void observeLoginStatus() {
+        viewModel.status.observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String status) {
+                if(!TextUtils.isEmpty(status)){
+                    binding.statusText.setVisibility(View.VISIBLE);
+                    binding.statusText.setText(status);
+                }else{
+                    binding.statusText.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
+    private void initializeProgressBar() {
+        viewModel.isLoading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoading) {
+                if(isLoading){
+                    if(binding.statusText.getVisibility() == View.VISIBLE){
+                        binding.statusText.setVisibility(View.GONE);
+                    }
+
+                    binding.progressBar.setVisibility(View.VISIBLE);
+                }
+                else{
+                    binding.progressBar.setVisibility(View.GONE);
+                }
+            }
+        });
+
+    }
 
 
 }

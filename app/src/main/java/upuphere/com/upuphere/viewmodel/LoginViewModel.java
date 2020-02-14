@@ -1,8 +1,10 @@
 package upuphere.com.upuphere.viewmodel;
 
 import android.app.Application;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -14,6 +16,7 @@ public class LoginViewModel extends AndroidViewModel{
 
     public String identityString;
     public String passwordString;
+    public ProgressBar progressBar;
 
     UserRepo userRepo = UserRepo.getInstance();
 
@@ -41,21 +44,49 @@ public class LoginViewModel extends AndroidViewModel{
         authenticateState.setValue(AuthenticateState.BACK_TO_LOGIN);
     }
 
-    public void onLoginButtonClick(View view){
-        Log.d("CLICK","Login");
-        authenticateState.setValue(AuthenticateState.START_AUTHENTICATION);
-        userRepo.loginUser(identityString, passwordString, new AuthListener() {
-            @Override
-            public void onSuccess() {
-                Log.d("Login","Success");
-                authenticateState.setValue(AuthenticateState.AUTHENTICATED);
-            }
+    public MutableLiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
 
-            @Override
-            public void onFailure(String error) {
-                authenticateState.setValue(AuthenticateState.UNAUTHENTICATED);
-            }
-        });
+    public MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    public MutableLiveData<String> status = new MutableLiveData<>();
+
+    private void setIsLoading(boolean isLoadingOrNot){
+        isLoading.setValue(isLoadingOrNot);
+    }
+
+    public void onLoginButtonClick(View view){
+        setIsLoading(true);
+
+        if(TextUtils.isEmpty(identityString)){
+            setIsLoading(false);
+            status.setValue("Please enter your email or username");
+        }
+
+        else if(TextUtils.isEmpty(passwordString)){
+            setIsLoading(false);
+            status.setValue("Please enter your password");
+        }
+
+        else if(!TextUtils.isEmpty(identityString) && !TextUtils.isEmpty(passwordString)){
+            Log.d("CLICK","Login");
+            authenticateState.setValue(AuthenticateState.START_AUTHENTICATION);
+            userRepo.loginUser(identityString, passwordString, new AuthListener() {
+                @Override
+                public void onSuccess() {
+                    Log.d("Login","Success");
+                    setIsLoading(false);
+                    authenticateState.setValue(AuthenticateState.AUTHENTICATED);
+                }
+
+                @Override
+                public void onFailure(String error) {
+                    setIsLoading(false);
+                    status.setValue("Invalid email,username or password.Please try again");
+                    authenticateState.setValue(AuthenticateState.UNAUTHENTICATED);
+                }
+            });
+        }
     }
 
     public void onRedirectTextClick(View view){
