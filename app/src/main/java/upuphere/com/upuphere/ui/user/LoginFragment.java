@@ -58,8 +58,6 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         //final View view = inflater.inflate(R.layout.fragment_login, container, false);
-        Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
-
         prefManager = new PrefManager(getActivity());
         
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_login,container,false);
@@ -180,5 +178,9 @@ public class LoginFragment extends Fragment {
 
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
+    }
 }

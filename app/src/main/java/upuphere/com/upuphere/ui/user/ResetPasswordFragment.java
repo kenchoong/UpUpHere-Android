@@ -160,4 +160,10 @@ public class ResetPasswordFragment extends Fragment implements ResetPasswordView
         binding.newPassword.setText("");
         binding.confirmNewPassword.setText("");
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
+    }
 }

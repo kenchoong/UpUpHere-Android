@@ -175,4 +175,10 @@ public class ForgotPasswordFragment extends Fragment implements ForgotPasswordVi
         binding.statusText.setText("");
         enableSendButton();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
+    }
 }

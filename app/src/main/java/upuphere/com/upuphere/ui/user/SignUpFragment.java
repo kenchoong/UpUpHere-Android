@@ -56,7 +56,6 @@ public class SignUpFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_sign_up, container, false);
         signUpViewModel = ViewModelProviders.of(requireActivity()).get(SignUpViewModel.class);
@@ -194,6 +193,12 @@ public class SignUpFragment extends Fragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
     }
 }
 

@@ -47,8 +47,6 @@ public class PhoneAuthFragment extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        //View view = inflater.inflate(R.layout.fragment_phone_auth, container, false);
-        Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
 
         phoneAuthBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_phone_auth,container,false);
         phoneAuthViewModel = ViewModelProviders.of(requireActivity()).get(PhoneAuthViewModel.class);
@@ -165,5 +163,11 @@ public class PhoneAuthFragment extends Fragment{
         for (View v : views) {
             v.setEnabled(false);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
     }
 }
