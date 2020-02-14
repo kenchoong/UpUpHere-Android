@@ -9,11 +9,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
@@ -26,11 +28,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import upuphere.com.upuphere.Interface.BoolCallBack;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.repositories.UserRepo;
+import upuphere.com.upuphere.viewmodel.PhoneAuthViewModel;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -71,6 +76,7 @@ public class PhoneAuthFragment2 extends Fragment {
 
         instructionText = rootView.findViewById(R.id.instructionText);
         statusText = rootView.findViewById(R.id.statusText);
+        progressBar = rootView.findViewById(R.id.progressBar);
 
         return rootView;
     }
@@ -78,14 +84,13 @@ public class PhoneAuthFragment2 extends Fragment {
     View rootView;
     TextView instructionText,statusText;
     Button continueButton;
+    ProgressBar progressBar;
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
-
-
 
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
@@ -95,44 +100,7 @@ public class PhoneAuthFragment2 extends Fragment {
 
                 Log.d("Phone Auth",phone_number);
 
-                UserRepo.getInstance().checkDetailsExisted(phone_number, 333, new BoolCallBack() {
-                    @Override
-                    public void success(boolean existed) {
-                        switch (previousFragmentCode){
-                            case FROM_LOGIN_FRAGMENT:
-                                if(existed){
-                                    statusText.setText(R.string.phone_number_registered);
-                                    continueButton.setText(R.string.login_instead);
-                                    continueButton.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            Navigation.findNavController(rootView).navigateUp();
-                                        }
-                                    });
-                                }else{
-                                    NavDirections directions = PhoneAuthFragment2Directions.actionPhoneAuthFragment2ToSignUpFragment(phone_number);
-                                    Navigation.findNavController(rootView).navigate(directions);
-                                }
-
-                                break;
-                            case FROM_FORGOT_PASSWORD:
-                                if(existed){
-                                    NavDirections directions1 = PhoneAuthFragment2Directions.actionPhoneAuthFragment2ToResetPasswordFragment(phone_number);
-                                    Navigation.findNavController(rootView).navigate(directions1);
-                                }else{
-                                    statusText.setText(R.string.phone_number_not_registered);
-                                    continueButton.setText(R.string.try_again);
-                                }
-                                break;
-                        }
-                    }
-
-                    @Override
-                    public void showError(String error) {
-                        statusText.setText(R.string.unknown_error);
-                    }
-                });
-
+                checkPhoneNumberExistedInOurDb(phone_number);
                 // ...
             } else {
                 // Sign in failed. If response is null the user canceled the
@@ -143,15 +111,95 @@ public class PhoneAuthFragment2 extends Fragment {
         }
     }
 
+    private void checkPhoneNumberExistedInOurDb(final String phone_number) {
+        viewModel.setIsLoading(true);
+
+        UserRepo.getInstance().checkDetailsExisted(phone_number, 333, new BoolCallBack() {
+            @Override
+            public void success(boolean existed) {
+                viewModel.setIsLoading(false);
+
+                switch (previousFragmentCode){
+                    case FROM_LOGIN_FRAGMENT:
+                        if(existed){
+                            statusText.setText(R.string.phone_number_registered);
+                            continueButton.setText(R.string.login_instead);
+                            continueButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Navigation.findNavController(rootView).navigateUp();
+                                }
+                            });
+                        }else{
+                            NavDirections directions = PhoneAuthFragment2Directions.actionPhoneAuthFragment2ToSignUpFragment(phone_number);
+                            Navigation.findNavController(rootView).navigate(directions);
+                        }
+
+                        break;
+                    case FROM_FORGOT_PASSWORD:
+                        if(existed){
+                            NavDirections directions1 = PhoneAuthFragment2Directions.actionPhoneAuthFragment2ToResetPasswordFragment(phone_number);
+                            Navigation.findNavController(rootView).navigate(directions1);
+                        }else{
+                            statusText.setText(R.string.phone_number_not_registered);
+                            continueButton.setText(R.string.try_again);
+                        }
+                        break;
+                }
+            }
+
+            @Override
+            public void showError(String error) {
+                viewModel.setIsLoading(false);
+                statusText.setText(R.string.unknown_error);
+            }
+        });
+    }
+
+    private void initProgressBar() {
+        viewModel.isLoading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoading) {
+                if(isLoading){
+                    if(statusText.getVisibility() == View.VISIBLE){
+                        statusText.setVisibility(View.GONE);
+                    }
+
+                    progressBar.setVisibility(View.VISIBLE);
+                }
+                else{
+                    progressBar.setVisibility(View.GONE);
+                }
+            }
+        });
+
+    }
+
+    private void observeSignUpStatus() {
+        viewModel.status.observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String status) {
+                if(!TextUtils.isEmpty(status)){
+                    statusText.setVisibility(View.VISIBLE);
+                    statusText.setText(status);
+                }else{
+                    statusText.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
     int previousFragmentCode;
+    PhoneAuthViewModel viewModel;
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        viewModel = ViewModelProviders.of(requireActivity()).get(PhoneAuthViewModel.class);
+
         if (getArguments() != null) {
             previousFragmentCode = PhoneAuthFragment2Args.fromBundle(getArguments()).getPreviousFragmentCode();
         }
-
 
         switch (previousFragmentCode){
             case FROM_FORGOT_PASSWORD:
@@ -161,5 +209,11 @@ public class PhoneAuthFragment2 extends Fragment {
                 instructionText.setText(R.string.verify_phone_number_reason);
                 break;
         }
+
+        initProgressBar();
+
+        observeSignUpStatus();
     }
+
+
 }

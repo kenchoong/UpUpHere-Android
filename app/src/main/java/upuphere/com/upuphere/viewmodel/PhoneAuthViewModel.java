@@ -51,6 +51,17 @@ public class PhoneAuthViewModel extends AndroidViewModel {
         TOO_MANY_REQUEST
    }
 
+    public MutableLiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
+
+    public MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    public MutableLiveData<String> status = new MutableLiveData<>("");
+
+    public void setIsLoading(boolean isLoadingOrNot){
+        isLoading.setValue(isLoadingOrNot);
+    }
+
     PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
         @Override
         public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
