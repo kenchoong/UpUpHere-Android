@@ -110,14 +110,54 @@ public class CreateRoomFragment extends Fragment implements CreateRoomViewModel.
             }
         });
 
+        observeFeedback();
+
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 if(isLoadingNow){
-                    Toast.makeText(getActivity(),"Creating Room",Toast.LENGTH_LONG).show();
+                    viewModel.setStatus("Creating room....");
                 }else{
                     clearState();
                     Navigation.findNavController(rootView).navigateUp();
+                }
+            }
+        });
+    }
+
+    private void observeFeedback() {
+        viewModel.statusFeedback.observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String feedback) {
+                if(!TextUtils.isEmpty(feedback)){
+                    binding.feedbackText.setVisibility(View.VISIBLE);
+                    binding.feedbackText.setText(feedback);
+                }else {
+                    binding.feedbackText.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
+    private void initializeProgressBar() {
+        viewModel.isLoading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoading) {
+                if(isLoading){
+                    if(binding.feedbackText.getVisibility() == View.VISIBLE){
+                        binding.feedbackText.setVisibility(View.GONE);
+                    }
+
+                    isLoadingNow = true;
+                    disableMenuItem(createRoomMenuItem);
+                    disableAllUI();
+                    binding.progressBar5.setVisibility(View.VISIBLE);
+                }
+                else{
+                    isLoadingNow = false;
+                    binding.progressBar5.setVisibility(View.GONE);
+                    enableMenuItem(createRoomMenuItem);
+                    enableAllUi();
                 }
             }
         });
@@ -135,8 +175,6 @@ public class CreateRoomFragment extends Fragment implements CreateRoomViewModel.
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if(item.getItemId() == R.id.create_room){
-            Toast.makeText(getActivity(),"CREATE ROOM CLICKED",Toast.LENGTH_SHORT).show();
-
             DecodeToken decodeToken = DecodeToken.newInstance();
             decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
                 @Override
@@ -279,28 +317,9 @@ public class CreateRoomFragment extends Fragment implements CreateRoomViewModel.
     private boolean isLoadingNow = false;
 
     private void clearState() {
+        viewModel.setStatus("");
         binding.roomNameField.setText("");
         viewModel.getSelectedPhoto().setValue(null);
-    }
-
-    private void initializeProgressBar() {
-        viewModel.isLoading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean isLoading) {
-                if(isLoading){
-                    isLoadingNow = true;
-                    disableMenuItem(createRoomMenuItem);
-                    disableAllUI();
-                    binding.progressBar5.setVisibility(View.VISIBLE);
-                }
-                else{
-                    isLoadingNow = false;
-                    binding.progressBar5.setVisibility(View.GONE);
-                    enableMenuItem(createRoomMenuItem);
-                    enableAllUi();
-                }
-            }
-        });
     }
 
     private void enableAllUi() {
