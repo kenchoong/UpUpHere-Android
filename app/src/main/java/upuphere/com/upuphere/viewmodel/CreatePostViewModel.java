@@ -61,19 +61,28 @@ public class CreatePostViewModel extends AndroidViewModel {
     }
 
     public void createPost(String roomId, String statusText, Bitmap bitmap,String mediaType, final StringCallBack callBack){
+        setIsLoading(true);
         postRepo.createPost(roomId, statusText, bitmap, mediaType, new StringCallBack() {
             @Override
             public void success(String item) {
+                setIsLoading(false);
                 callBack.success(item);
             }
 
             @Override
             public void showError(String error) {
+                setIsLoading(false);
                 callBack.showError(error);
             }
         });
 
     }
 
+    public MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    public MutableLiveData<String> status = new MutableLiveData<>("");
+
+    private void setIsLoading(boolean isLoadingOrNot){
+        isLoading.setValue(isLoadingOrNot);
+    }
 }
 

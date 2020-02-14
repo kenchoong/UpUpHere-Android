@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
 import upuphere.com.upuphere.Interface.AuthListener;
 import upuphere.com.upuphere.Interface.BoolCallBack;
 import upuphere.com.upuphere.Interface.CommonCallBack;
@@ -40,8 +41,6 @@ public class UserRepo{
         }
         return instance;
     }
-
-
 
     public void loginUser(String identity, String password, final AuthListener authListener){
         Log.d("Login called","called");

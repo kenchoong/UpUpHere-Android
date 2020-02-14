@@ -43,7 +43,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
                 android:afterTextChanged="@{viewModel::afterEmailChanged}"
                 android:drawableStart="@drawable/ic_email"
@@ -122,6 +121,25 @@
                 android:text="@string/redirect_sign_in"
                 android:textAlignment="center"
                 android:textColor="@color/redirect_color" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/signUpStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/open_sans"
+                android:textAlignment="center"
+                android:textColor="@color/colorPrimaryDark"
+                android:visibility="gone" />
         </LinearLayout>
 
     </RelativeLayout>

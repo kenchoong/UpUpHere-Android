@@ -10,6 +10,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import upuphere.com.upuphere.Interface.BoolCallBack;
 import upuphere.com.upuphere.R;
@@ -37,13 +38,27 @@ public class ForgotPasswordViewModel extends ViewModel {
 
     public String emailAddress;
 
+    public MutableLiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
+
+    public MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    public MutableLiveData<String> status = new MutableLiveData<>("");
+
+    private void setIsLoading(boolean isLoadingOrNot){
+        isLoading.setValue(isLoadingOrNot);
+    }
+
     public void onResetPasswordButtonClick(View view){
 
         if(isEmailValid(emailAddress)) {
+            setIsLoading(true);
 
             UserRepo.getInstance().checkDetailsExisted(emailAddress, 222, new BoolCallBack() {
                 @Override
                 public void success(boolean existed) {
+                    setIsLoading(false);
+
                     if (existed) {
                         FirebaseAuth auth = FirebaseAuth.getInstance();
                         auth.sendPasswordResetEmail(emailAddress)
@@ -63,10 +78,12 @@ public class ForgotPasswordViewModel extends ViewModel {
 
                 @Override
                 public void showError(String error) {
+                    setIsLoading(false);
                     forgotPassInterface.onError();
                 }
             });
         }else{
+            setIsLoading(false);
             forgotPassInterface.onInvalidEmail();
         }
     }

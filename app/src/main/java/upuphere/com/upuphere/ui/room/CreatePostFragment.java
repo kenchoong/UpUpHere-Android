@@ -4,6 +4,7 @@ package upuphere.com.upuphere.ui.room;
 import android.Manifest;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -14,7 +15,10 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -66,6 +70,8 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
     CreatePostViewModel viewModel;
     String roomId;
 
+    MenuItem create;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -105,7 +111,12 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                Navigation.findNavController(view).navigateUp();
+                if(isLoadingNow){
+                    Toast.makeText(getActivity(),"Creating post",Toast.LENGTH_LONG).show();
+                }else{
+                    clearState();
+                    Navigation.findNavController(view).navigateUp();
+                }
             }
         });
     }
@@ -162,6 +173,9 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_post,menu);
+        create = menu.findItem(R.id.create_post);
+
+        initializeProgressBar();
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -174,24 +188,7 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
                 public void onTokenValid() {
                     Toast.makeText(getActivity(),"EVERYTHING IS OK",Toast.LENGTH_LONG).show();
 
-                    //todo:: MAKE API call
-                    viewModel.createPost(roomId, viewModel.statusText, photo, AppConfig.MEDIA_IS_PHOTO,
-                    new StringCallBack() {
-                        @Override
-                        public void success(String item) {
-                            Toast.makeText(getActivity(),"Post successfully created",Toast.LENGTH_LONG).show();
-
-                            binding.statusField.setText("");
-                            viewModel.getSelectedPhoto().setValue(null);
-
-                            Navigation.findNavController(rootView).navigateUp();
-                        }
-
-                        @Override
-                        public void showError(String error) {
-                            Toast.makeText(getActivity(),error,Toast.LENGTH_LONG).show();
-                        }
-                    });
+                    createPostToServer();
                 }
 
                 @Override
@@ -274,5 +271,91 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
     @Override
     public void onChooseImage() {
         showBottomSheet();
+    }
+
+    private boolean isLoadingNow = false;
+
+    private void clearState() {
+        binding.statusField.setText("");
+        viewModel.getSelectedPhoto().setValue(null);
+    }
+
+    private void initializeProgressBar() {
+        viewModel.isLoading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoading) {
+                if(isLoading){
+                    isLoadingNow = true;
+                    disableMenuItem(create);
+                    disableAllUI();
+                    binding.progressBar4.setVisibility(View.VISIBLE);
+                }
+                else{
+                    isLoadingNow = false;
+                    binding.progressBar4.setVisibility(View.GONE);
+                    enableMenuItem(create);
+                    enableAllUi();
+                }
+            }
+        });
+    }
+
+    private void enableAllUi() {
+        binding.statusField.setEnabled(true);
+        if(binding.chosenImageShown.getVisibility() == View.VISIBLE){
+            binding.chosenImageShown.setClickable(true);
+        }
+
+        if(binding.chooseImageButton.getVisibility() == View.VISIBLE){
+            binding.chooseImageButton.setClickable(true);
+        }
+    }
+
+    private void disableAllUI() {
+        binding.statusField.setEnabled(false);
+        if(binding.chosenImageShown.getVisibility() == View.VISIBLE){
+            binding.chosenImageShown.setClickable(false);
+        }
+
+        if(binding.chooseImageButton.getVisibility() == View.VISIBLE){
+            binding.chooseImageButton.setClickable(false);
+        }
+    }
+
+    private void disableMenuItem(MenuItem menuItem) {
+        menuItem.setEnabled(false);
+        String title = menuItem.getTitle().toString();
+        SpannableString s = new SpannableString(title);
+        s.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.grey_color)), 0, s.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE); // provide whatever color you want here.
+        menuItem.setTitle(s);
+    }
+
+    private void enableMenuItem(MenuItem menuItem) {
+        menuItem.setEnabled(true);
+        String title = menuItem.getTitle().toString();
+        SpannableString s = new SpannableString(title);
+        s.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.background_color)), 0, s.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE); // provide whatever color you want here.
+        menuItem.setTitle(s);
+    }
+
+    private void createPostToServer() {
+
+        //todo:: MAKE API call
+        viewModel.createPost(roomId, viewModel.statusText, photo, AppConfig.MEDIA_IS_PHOTO,
+                new StringCallBack() {
+                    @Override
+                    public void success(String item) {
+                        Toast.makeText(getActivity(),"Post successfully created",Toast.LENGTH_LONG).show();
+
+                        clearState();
+
+                        Navigation.findNavController(rootView).navigateUp();
+                    }
+
+                    @Override
+                    public void showError(String error) {
+                        Toast.makeText(getActivity(),error,Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 }

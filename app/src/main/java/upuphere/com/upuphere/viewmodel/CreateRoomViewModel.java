@@ -54,9 +54,11 @@ public class CreateRoomViewModel extends AndroidViewModel {
 
 
     public void createRoom(final String roomName, Bitmap photo, final CreateRoomListener listener){
+        setIsLoading(true);
         roomRepo.createRoom(roomName, photo, new StringCallBack() {
             @Override
             public void success(String id) {
+                setIsLoading(false);
                 AllRooms room = new AllRooms();
                 room.setId(id);
                 room.setRoomName(roomName);
@@ -66,6 +68,7 @@ public class CreateRoomViewModel extends AndroidViewModel {
 
             @Override
             public void showError(String error) {
+                setIsLoading(false);
                 listener.onCreatedRoom(null);
             }
         });
@@ -88,6 +91,13 @@ public class CreateRoomViewModel extends AndroidViewModel {
 
     public void onClickImageChosen(View view){
         roomInterface.onChosenImageClick();
+    }
+
+    public MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    public MutableLiveData<String> status = new MutableLiveData<>("");
+
+    private void setIsLoading(boolean isLoadingOrNot){
+        isLoading.setValue(isLoadingOrNot);
     }
 
 }

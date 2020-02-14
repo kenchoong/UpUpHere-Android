@@ -95,6 +95,24 @@
                 android:textAlignment="center"
                 android:textColor="@color/redirect_color"
                 android:onClick="@{loginViewModel::onForgotPassword}"/>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/statusText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/open_sans"
+                android:textAlignment="center"
+                android:textColor="@color/colorPrimaryDark"
+                android:visibility="gone" />
         </LinearLayout>
 
     </RelativeLayout>

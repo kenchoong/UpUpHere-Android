@@ -52,6 +52,14 @@
             android:contentDescription="@string/content_description"
             android:onClick="@{viewmodel::onClickImageChosen}"/>
 
+        <ProgressBar
+            android:id="@+id/progressBar4"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
+
     </RelativeLayout>
 
 </layout>

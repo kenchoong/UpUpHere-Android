@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import java.util.Objects;
 
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
@@ -71,6 +72,8 @@ public class ResetPasswordFragment extends Fragment implements ResetPasswordView
         loginViewModel = ViewModelProviders.of(requireActivity()).get(LoginViewModel.class);
         binding.setViewmodel(viewModel);
 
+        initializeProgressBar();
+
         return rootView;
     }
 
@@ -88,10 +91,16 @@ public class ResetPasswordFragment extends Fragment implements ResetPasswordView
 
     @Override
     public void onFieldMatch() {
+        updateUserPassword();
+    }
+
+    private void updateUserPassword() {
+        viewModel.setIsLoading(true);
         UserRepo.getInstance().updateUserPassword(phoneNumberString, viewModel.confirmNewPassword, new StringCallBack() {
             @Override
             public void success(String item) {
                 Log.d("RESET Password",item);
+                viewModel.setIsLoading(false);
 
                 loginViewModel.backToLogin();
                 NavDirections action = ResetPasswordFragmentDirections.actionResetPasswordFragmentToLoginFragment2();
@@ -102,10 +111,31 @@ public class ResetPasswordFragment extends Fragment implements ResetPasswordView
             @Override
             public void showError(String error) {
                 Log.d("Reset error",error);
+                viewModel.setIsLoading(false);
                 binding.statusText.setText(R.string.failed_reset_password);
             }
         });
     }
+
+    private void initializeProgressBar() {
+        viewModel.isLoading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoading) {
+                if(isLoading){
+                    if(binding.statusText.getVisibility() == View.VISIBLE){
+                        binding.statusText.setVisibility(View.GONE);
+                    }
+
+                    binding.progressBar3.setVisibility(View.VISIBLE);
+                }
+                else{
+                    binding.progressBar3.setVisibility(View.GONE);
+                }
+            }
+        });
+
+    }
+
 
     @Override
     public void onFieldIsEmpty(int whichField) {
@@ -122,5 +152,12 @@ public class ResetPasswordFragment extends Fragment implements ResetPasswordView
     @Override
     public void onFieldNotMatch() {
         binding.confirmNewPassword.setError("Password not matched");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        binding.newPassword.setText("");
+        binding.confirmNewPassword.setText("");
     }
 }

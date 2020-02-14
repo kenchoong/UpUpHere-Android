@@ -95,7 +95,9 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
             @Override
             public void onChanged(List<CommentModel> commentModels) {
                 commentAdapter.setComment(commentModels);
-                commentRecyclerView.smoothScrollToPosition(commentModels.size() -1 );
+                if(commentModels.size() > 0) {
+                    commentRecyclerView.smoothScrollToPosition(commentModels.size() - 1);
+                }
             }
         });
     }
