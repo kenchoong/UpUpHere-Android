@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
 
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
@@ -65,11 +67,44 @@ public class ForgotPasswordFragment extends Fragment implements ForgotPasswordVi
 
         viewModel.setForgotPassInterface(this);
 
+        initializeProgressBar();
+        observeNetworkCallStatus();
+
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 loginViewModel.backToLogin();
                 Navigation.findNavController(view).navigateUp();
+            }
+        });
+
+    }
+
+    private void observeNetworkCallStatus() {
+        viewModel.status.observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String status) {
+                if(!TextUtils.isEmpty(status)){
+                    binding.statusText.setText(status);
+                }
+            }
+        });
+    }
+
+    private void initializeProgressBar() {
+        viewModel.isLoading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoading) {
+                if(isLoading){
+                    if(binding.statusText.getVisibility() == View.VISIBLE){
+                        binding.statusText.setVisibility(View.GONE);
+                    }
+
+                    binding.progressBar2.setVisibility(View.VISIBLE);
+                }
+                else{
+                    binding.progressBar2.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -103,6 +138,7 @@ public class ForgotPasswordFragment extends Fragment implements ForgotPasswordVi
 
     @Override
     public void onEmailSent() {
+        disableSendButton();
         binding.statusText.setText(R.string.password_reset_email_sent);
         binding.statusText.setTextColor(getResources().getColor(R.color.colorPrimary));
         binding.statusText.setVisibility(View.VISIBLE);
@@ -130,5 +166,13 @@ public class ForgotPasswordFragment extends Fragment implements ForgotPasswordVi
         binding.statusText.setText(R.string.unknown_error);
         binding.statusText.setVisibility(View.VISIBLE);
         disableSendButton();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        binding.email.setText("");
+        binding.statusText.setText("");
+        enableSendButton();
     }
 }
