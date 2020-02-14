@@ -14,7 +14,10 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,6 +41,7 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.R;
+import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.databinding.FragmentCreateRoomBinding;
 import upuphere.com.upuphere.fragment.DisplayPhotoFragment;
 import upuphere.com.upuphere.fragment.PhotoBottomSheetDialogFragment;
@@ -63,6 +67,8 @@ public class CreateRoomFragment extends Fragment implements CreateRoomViewModel.
     CreateRoomViewModel viewModel;
     FragmentCreateRoomBinding binding;
     View rootView;
+
+    private MenuItem createRoomMenuItem;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -104,23 +110,25 @@ public class CreateRoomFragment extends Fragment implements CreateRoomViewModel.
             }
         });
 
-
-
-        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
-                new OnBackPressedCallback(true) {
-                    @Override
-                    public void handleOnBackPressed() {
-                        //todo:: when click back,back to main fragment
-                        Log.d("Back","Back button pressed");
-                        //viewModel.exitCreateRoom();
-                        navController.navigateUp();
-                    }
-                });
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if(isLoadingNow){
+                    Toast.makeText(getActivity(),"Creating Room",Toast.LENGTH_LONG).show();
+                }else{
+                    clearState();
+                    Navigation.findNavController(rootView).navigateUp();
+                }
+            }
+        });
     }
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_create,menu);
+        createRoomMenuItem = menu.findItem(R.id.create_room);
+
+        initializeProgressBar();
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -134,45 +142,8 @@ public class CreateRoomFragment extends Fragment implements CreateRoomViewModel.
                 @Override
                 public void onTokenValid() {
                     Log.d("ACCESS TOKEN","VALID");
-                    viewModel.createRoom(viewModel.roomName, photo, new CreateRoomViewModel.CreateRoomListener() {
-                        @Override
-                        public void onCreatedRoom(AllRooms rooms) {
 
-                            if(rooms != null){
-                                binding.roomNameField.setText("");
-                                viewModel.getSelectedPhoto().setValue(null);
-
-                                NavDirections action = CreateRoomFragmentDirections.actionCreateRoomFragmentToRoomFragment(rooms);
-                                Navigation.findNavController(rootView).navigate(action);
-                            }
-                        }
-                    });
-
-                    /*
-                    new RoomRepo(getApp).createRoom(viewModel.roomName, photo, new StringCallBack() {
-                        @Override
-                        public void success(String roomId) {
-                            Log.d("CREATE ROOM",roomId);
-
-                            AllRooms rooms = new AllRooms();
-                            rooms.setId(roomId);
-                            rooms.setRoomName(viewModel.roomName);
-
-                            binding.roomNameField.setText("");
-                            viewModel.getSelectedPhoto().setValue(null);
-
-                            NavDirections action = CreateRoomFragmentDirections.actionCreateRoomFragmentToRoomFragment(rooms);
-                            Navigation.findNavController(rootView).navigate(action);
-
-                        }
-
-                        @Override
-                        public void showError(String error) {
-
-                        }
-                    });
-
-                     */
+                    createRoomToServer();
                 }
 
                 @Override
@@ -302,5 +273,86 @@ public class CreateRoomFragment extends Fragment implements CreateRoomViewModel.
     @Override
     public void onChooseImage() {
         showBottomSheet();
+    }
+
+
+    private boolean isLoadingNow = false;
+
+    private void clearState() {
+        binding.roomNameField.setText("");
+        viewModel.getSelectedPhoto().setValue(null);
+    }
+
+    private void initializeProgressBar() {
+        viewModel.isLoading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoading) {
+                if(isLoading){
+                    isLoadingNow = true;
+                    disableMenuItem(createRoomMenuItem);
+                    disableAllUI();
+                    binding.progressBar5.setVisibility(View.VISIBLE);
+                }
+                else{
+                    isLoadingNow = false;
+                    binding.progressBar5.setVisibility(View.GONE);
+                    enableMenuItem(createRoomMenuItem);
+                    enableAllUi();
+                }
+            }
+        });
+    }
+
+    private void enableAllUi() {
+        binding.roomNameField.setEnabled(true);
+        if(binding.chosenImageShown.getVisibility() == View.VISIBLE){
+            binding.chosenImageShown.setClickable(true);
+        }
+
+        if(binding.chooseImageButton.getVisibility() == View.VISIBLE){
+            binding.chooseImageButton.setClickable(true);
+        }
+    }
+
+    private void disableAllUI() {
+        binding.roomNameField.setEnabled(false);
+        if(binding.chosenImageShown.getVisibility() == View.VISIBLE){
+            binding.chosenImageShown.setClickable(false);
+        }
+
+        if(binding.chooseImageButton.getVisibility() == View.VISIBLE){
+            binding.chooseImageButton.setClickable(false);
+        }
+    }
+
+    private void disableMenuItem(MenuItem menuItem) {
+        menuItem.setEnabled(false);
+        String title = menuItem.getTitle().toString();
+        SpannableString s = new SpannableString(title);
+        s.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.grey_color)), 0, s.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE); // provide whatever color you want here.
+        menuItem.setTitle(s);
+    }
+
+    private void enableMenuItem(MenuItem menuItem) {
+        menuItem.setEnabled(true);
+        String title = menuItem.getTitle().toString();
+        SpannableString s = new SpannableString(title);
+        s.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.background_color)), 0, s.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE); // provide whatever color you want here.
+        menuItem.setTitle(s);
+    }
+
+    private void createRoomToServer() {
+
+        viewModel.createRoom(viewModel.roomName, photo, new CreateRoomViewModel.CreateRoomListener() {
+            @Override
+            public void onCreatedRoom(AllRooms rooms) {
+                if(rooms != null){
+                    clearState();
+
+                    NavDirections action = CreateRoomFragmentDirections.actionCreateRoomFragmentToRoomFragment(rooms);
+                    Navigation.findNavController(rootView).navigate(action);
+                }
+            }
+        });
     }
 }
