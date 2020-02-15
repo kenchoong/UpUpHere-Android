@@ -4,14 +4,21 @@ import android.app.Application;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import androidx.lifecycle.MutableLiveData;
 import upuphere.com.upuphere.Interface.StringCallBack;
@@ -38,33 +45,68 @@ public class PostRepo {
     }
 
     public void createPost(String roomId, String statusText, Bitmap bitmap,String mediaType, final StringCallBack callBack){
-        String fileKey = "post_file";
+        if(bitmap != null) {
+            String fileKey = "post_file";
 
-        String[] key = new String[]{"room_id","post_text","media_type"};
-        String[] values = new String[]{roomId,statusText,mediaType};
-        JSONObject params = VolleyRequest.getParams(key,values);
-        VolleyMultipartRequest request = VolleyRequest.postMultipartAccessRequest(AppConfig.URL_CREATE_POST_TO_ROOM, params, bitmap,fileKey, new VolleyRequest.ResponseCallBack() {
-            @Override
-            public void onSuccess(JSONObject response) {
-                try {
-                    String postId = response.getString("post_id");
+            String[] key = new String[]{"room_id", "post_text", "media_type"};
+            String[] values = new String[]{roomId, statusText, mediaType};
+            JSONObject params = VolleyRequest.getParams(key, values);
+            VolleyMultipartRequest request = VolleyRequest.postMultipartAccessRequest(AppConfig.URL_CREATE_POST_TO_ROOM, params, bitmap, fileKey, new VolleyRequest.ResponseCallBack() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    try {
+                        String postId = response.getString("post_id");
 
-                    Log.d("POST REPO ID",postId);
+                        Log.d("POST REPO ID", postId);
 
-                    callBack.success(postId);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                        callBack.success(postId);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
 
-            @Override
-            public void onError(String error) {
-                Log.d("POST REPO ERROR",error);
-                callBack.showError(error);
-            }
-        });
+                @Override
+                public void onError(String error) {
+                    Log.d("POST REPO ERROR", error);
+                    callBack.showError(error);
+                }
+            });
 
-        AppController.getInstance().addToRequestQueue(request);
+            AppController.getInstance().addToRequestQueue(request);
+        }else{
+            String[] k = new String[]{"room_id","post_text"};
+            String[] v= new String[]{roomId,statusText};
+            final JSONObject contentObject = VolleyRequest.getParams(k,v);
+
+            String[] key = new String[]{"data"};
+            String[] value = new String[]{contentObject.toString()};
+            Map<String,String> params = VolleyRequest.getStringParams(key,value);
+
+            StringRequest request = VolleyRequest.postFormDataStringRequestWithAccessToken(AppConfig.URL_CREATE_POST_TO_ROOM,params, new StringCallBack() {
+                @Override
+                public void success(String response) {
+                    Log.d("POST REQUEST", response);
+
+                    try {
+                        JSONObject json = new JSONObject(response);
+                        String postId = json.getString("post_id");
+
+                        Log.d("POST REPO ID", postId);
+                        callBack.success(postId);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void showError(String error) {
+                    Log.d("POST REQUEST",error);
+                    callBack.showError(error);
+                }
+            });
+
+            AppController.getInstance().addToRequestQueue(request);
+        }
     }
 
 

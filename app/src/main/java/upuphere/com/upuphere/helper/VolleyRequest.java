@@ -11,6 +11,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.google.gson.JsonObject;
 
 import org.json.JSONException;
@@ -31,6 +32,18 @@ public class VolleyRequest {
         void onSuccess(JSONObject response);
 
         void onError(String error);
+    }
+
+    public static Map<String, String> getStringParams(String[] keys,String[] values){
+        //String[] key = new String[];
+
+        Map<String, String> params = new HashMap<>();
+        if (keys.length != 0) {
+            for (int i = 0; i < keys.length; i++) {
+                params.put(keys[i], values[i]);
+            }
+        }
+        return params;
     }
 
     public static JSONObject getParams(String[] keys,String[] values){
@@ -188,6 +201,30 @@ public class VolleyRequest {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         return request;
+    }
+
+    public static StringRequest postFormDataStringRequestWithAccessToken(String url, final Map<String, String> params, final StringCallBack callBack){
+        return new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                callBack.success(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                callBack.showError(parseVolleyError(error));
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return volleyAccessClient();
+            }
+        };
     }
 
     private static byte[] getFileDataFromDrawable(Bitmap bitmap) {
