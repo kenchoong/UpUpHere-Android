@@ -12,6 +12,18 @@ public class PostModel {
     @Expose
     private List<Post> postInRooms = null;
 
+    public List<Post> getSinglePost() {
+        return singlePost;
+    }
+
+    public void setSinglePost(List<Post> singlePost) {
+        this.singlePost = singlePost;
+    }
+
+    @SerializedName("post")
+    @Expose
+    private List<Post> singlePost = null;
+
     public List<Post> getPost() {
         return postInRooms;
     }

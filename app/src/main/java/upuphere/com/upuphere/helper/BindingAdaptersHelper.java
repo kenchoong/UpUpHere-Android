@@ -35,14 +35,18 @@ public class BindingAdaptersHelper {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
         Date convertedDate = new Date();
         try{
-            convertedDate = formatter.parse(createdAt);
+            if(createdAt != null) {
+                convertedDate = formatter.parse(createdAt);
+                PrettyTime p =new PrettyTime();
+                String datetime= p.format(convertedDate);
+                textView.setText(datetime);
+            }else{
+                textView.setText("12asd123");
+            }
+
         } catch (ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        PrettyTime p =new PrettyTime();
-        String datetime= p.format(convertedDate);
-        textView.setText(datetime);
-
     }
 }
