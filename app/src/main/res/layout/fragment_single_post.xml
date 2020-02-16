@@ -1,14 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.SinglePostFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="viewmodel"
+            type="upuphere.com.upuphere.viewmodel.SinglePostViewModel" />
+    </data>
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        tools:context=".ui.SinglePostFragment">
 
-</FrameLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/postAndCommentRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/commentFieldContainer"
+            android:layout_marginBottom="10dp" />
+
+        <LinearLayout
+            android:id="@+id/commentFieldContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/commentField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="10dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:ems="10"
+                android:hint="@string/comment_hint"
+                android:inputType="textPersonName"
+                android:importantForAutofill="no"
+                android:text="@={viewmodel.commentText}"/>
+
+            <ImageButton
+                android:id="@+id/sendButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@null"
+                app:srcCompat="@drawable/ic_send"
+                android:contentDescription="@string/content_description"
+                android:onClick="@{viewmodel::onSendButtonClick}"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</layout>

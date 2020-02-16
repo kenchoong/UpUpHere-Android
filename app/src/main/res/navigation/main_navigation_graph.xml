@@ -213,8 +213,8 @@
     <fragment
         android:id="@+id/singlePostFragment"
         android:name="upuphere.com.upuphere.ui.SinglePostFragment"
-        android:label="fragment_single_post"
-        tools:layout="@layout/fragment_single_post" >
+        android:label="Post"
+        tools:layout="@layout/fragment_single_post">
         <argument
             android:name="postId"
             app:argType="string" />

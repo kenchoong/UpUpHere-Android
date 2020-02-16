@@ -36,6 +36,8 @@ public class AppConfig {
 
     public static String URL_UPDATE_USER_DETAILS = BASE_URL + "/api/user/update";
 
+    public static String URL_GET_SINGLE_POST = BASE_URL + "/api/posts/";
+
 
     // Notification stuff
     public static final int NOTIFICATION_TEXT = 100;

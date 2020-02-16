@@ -109,6 +109,34 @@ public class PostRepo {
         }
     }
 
+    public MutableLiveData<List<Post>> getSinglePostByPostId(final String postId){
+
+        if(AppController.getInstance().internetConnectionAvailable()){
+            String url = AppConfig.URL_GET_SINGLE_POST + postId;
+
+            JsonObjectRequest request = VolleyRequest.getJsonAccessRequestWithoutRetry(url, new VolleyRequest.ResponseCallBack() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    Gson gson = new Gson();
+                    PostModel postModel = gson.fromJson(response.toString(),PostModel.class);
+
+                    postMutableLiveData.setValue(postModel.getSinglePost());
+                }
+
+                @Override
+                public void onError(String error) {
+                    getSinglePostByPostId(postId);
+                }
+            });
+
+            AppController.getInstance().addToRequestQueue(request);
+        }else{
+            getPostByPostIdFromLocalDb(postId);
+        }
+
+        return postMutableLiveData;
+    }
+
 
     public MutableLiveData<List<Post>> getAllPostWithRoomId(final String roomId){
 
@@ -154,6 +182,15 @@ public class PostRepo {
             public void run() {
                 Log.d("POST DAO", String.valueOf(postDao.getPostByRoomIdInLocalDb(roomId).size()));
                 postMutableLiveData.postValue(postDao.getPostByRoomIdInLocalDb(roomId));
+            }
+        });
+    }
+
+    private void getPostByPostIdFromLocalDb(final String postId){
+        UpUpHereDatabase.databaseWriteExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                postMutableLiveData.postValue(postDao.getPostByPostIdInLocalDb(postId));
             }
         });
     }

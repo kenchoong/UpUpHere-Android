@@ -14,6 +14,9 @@ public interface PostDao {
     @Query("SELECT * FROM post_table WHERE in_room = :roomId")
     List<Post> getPostByRoomIdInLocalDb(String roomId);
 
+    @Query("SELECT * FROM post_table WHERE id = :postId")
+    List<Post> getPostByPostIdInLocalDb(String postId);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(List<Post> postList);
 
