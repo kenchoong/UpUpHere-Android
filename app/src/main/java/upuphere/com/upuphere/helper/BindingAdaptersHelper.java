@@ -1,4 +1,6 @@
 package upuphere.com.upuphere.helper;
+import android.text.TextUtils;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,9 +26,13 @@ public class BindingAdaptersHelper {
 
     @BindingAdapter({"roomImageUrl"})
     public static void loadImage(ImageView view, String url){
-        Glide.with(view.getContext())
-                .load(AppConfig.PHOTO_ENDPOINT+url)
-                .into(view);
+        if(url != null){
+            Glide.with(view.getContext())
+                    .load(AppConfig.PHOTO_ENDPOINT+url)
+                    .into(view);
+        }else{
+            view.setVisibility(View.GONE);
+        }
     }
 
     @BindingAdapter({"timeAgo"})
