@@ -23,32 +23,25 @@ public class LoginViewModel extends AndroidViewModel{
         super(application);
     }
 
-    public enum AuthenticateState{
-        START_AUTHENTICATION,
-        UNAUTHENTICATED,
-        AUTHENTICATED,
-        INVALID_AUTHENTICATED,
-        MOVE_TO_REGISTER,
-        BACK_TO_LOGIN,
-        FORGOT_PASSWORD
-    }
-
-    public MutableLiveData<AuthenticateState> authenticateState =  new MutableLiveData<>();
-
-    public void refuseAuthentication(){
-        authenticateState.setValue(AuthenticateState.UNAUTHENTICATED);
-    }
-
-    public void backToLogin(){
-        authenticateState.setValue(AuthenticateState.BACK_TO_LOGIN);
-    }
-
     public MutableLiveData<Boolean> getIsLoading() {
         return isLoading;
     }
 
     public MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     public MutableLiveData<String> status = new MutableLiveData<>("");
+
+    public void setLoginInterface(LoginInterface signUpInterface) {
+        this.loginInterface = signUpInterface;
+    }
+
+    public LoginInterface loginInterface;
+
+    public interface LoginInterface{
+        void onLoginSuccess();
+        void onLoginFailed();
+        void onForgotPasswordClick();
+        void onRegisterClick();
+    }
 
     private void setIsLoading(boolean isLoadingOrNot){
         isLoading.setValue(isLoadingOrNot);
@@ -69,31 +62,30 @@ public class LoginViewModel extends AndroidViewModel{
 
         else if(!TextUtils.isEmpty(identityString) && !TextUtils.isEmpty(passwordString)){
             Log.d("CLICK","Login");
-            authenticateState.setValue(AuthenticateState.START_AUTHENTICATION);
             userRepo.loginUser(identityString, passwordString, new AuthListener() {
                 @Override
                 public void onSuccess() {
                     Log.d("Login","Success");
                     setIsLoading(false);
-                    authenticateState.setValue(AuthenticateState.AUTHENTICATED);
+                    loginInterface.onLoginSuccess();
                 }
 
                 @Override
                 public void onFailure(String error) {
                     setIsLoading(false);
                     status.setValue("Invalid email,username or password.Please try again");
-                    authenticateState.setValue(AuthenticateState.UNAUTHENTICATED);
+                    loginInterface.onLoginFailed();
                 }
             });
         }
     }
 
     public void onRedirectTextClick(View view){
-        authenticateState.setValue(AuthenticateState.MOVE_TO_REGISTER);
+        loginInterface.onRegisterClick();
     }
 
     public void onForgotPassword(View view){
-        authenticateState.setValue(AuthenticateState.FORGOT_PASSWORD);
+        loginInterface.onForgotPasswordClick();
     }
 
 

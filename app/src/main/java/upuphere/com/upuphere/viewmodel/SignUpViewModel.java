@@ -15,26 +15,10 @@ public class SignUpViewModel extends ViewModel {
 
     UserRepo userRepo = UserRepo.getInstance();
 
-    public enum SignUpState{
-        REDIRECT_LOGIN,
-        START_CREATE_ACCOUNT,
-        SIGN_UP_SUCCESS,
-        SIGN_UP_ERROR,
-        EMAIL_INVALID,
-        USERNAME_TOO_SHORT,
-        USERNAME_INVALID,
-        PASSWORD_TOO_SHORT,
-        PASSWORD_DOESNT_MATCH,
-        USERNAME_TAKEN,
-        EMAIL_TAKEN
-    }
-
     private static final int EMAIL_FIELD = 1;
     private static final int USERNAME_FIELD = 2;
     private static final int PASSWORD_FIELD = 3;
     private static final int REENTER_PASSWORD_FIELD = 4;
-
-    public MutableLiveData<SignUpState> signUpState = new MutableLiveData<>();
 
     public MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     public MutableLiveData<String> status = new MutableLiveData<>("");
@@ -57,6 +41,16 @@ public class SignUpViewModel extends ViewModel {
 
     public interface SignUpInterface{
         void onBackToLogin();
+        void onStartSignUp();
+        void onSignUpSuccess();
+        void onSignUpError();
+        void onEmailInvalid();
+        void onUsernameTooShort();
+        void onPasswordTooShort();
+        void onPasswordNotMatch();
+        void onUsernameInvalid();
+        void onUsernameTaken();
+        void onEmailTaken();
     }
 
 
@@ -65,7 +59,7 @@ public class SignUpViewModel extends ViewModel {
     }
 
     public void OnClickCreateAccountButton(View view){
-        signUpState.setValue(SignUpState.START_CREATE_ACCOUNT);
+        signUpInterface.onStartSignUp();
     }
 
     public void afterUsernameChanged(Editable e){
@@ -88,14 +82,14 @@ public class SignUpViewModel extends ViewModel {
         switch (fieldTypes){
             case EMAIL_FIELD:
                 if (!isEmailValid(credential)){
-                    signUpState.setValue(SignUpState.EMAIL_INVALID);
+                    signUpInterface.onEmailInvalid();
                 }
 
                 checkIfCredentialExisted(credential,EMAIL_FIELD);
                 break;
             case USERNAME_FIELD:
                 if(credential.length() < 6){
-                    signUpState.setValue(SignUpState.USERNAME_TOO_SHORT);
+                    signUpInterface.onUsernameTooShort();
                 }
                 Pattern pattern = Pattern.compile("^(?=.{6,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$");
                 //username is 8-20 characters long
@@ -107,7 +101,7 @@ public class SignUpViewModel extends ViewModel {
                 boolean valid =  pattern.matcher(credential).matches();
 
                 if(!valid){
-                    signUpState.setValue(SignUpState.USERNAME_INVALID);
+                    signUpInterface.onUsernameInvalid();
                 }
 
                 checkIfCredentialExisted(credential,USERNAME_FIELD);
@@ -115,18 +109,18 @@ public class SignUpViewModel extends ViewModel {
                 break;
             case PASSWORD_FIELD:
                 if(credential.length()< 6){
-                    signUpState.setValue(SignUpState.PASSWORD_TOO_SHORT);
+                    signUpInterface.onPasswordTooShort();
                 }
                 break;
 
             case REENTER_PASSWORD_FIELD:
                 //todo :: check for password and reenter is the same
                 if(credential.length() < 6) {
-                    signUpState.setValue(SignUpState.PASSWORD_TOO_SHORT);
+                    signUpInterface.onPasswordTooShort();
                 }
 
                 if(!credential.equals(password)){
-                    signUpState.setValue(SignUpState.PASSWORD_DOESNT_MATCH);
+                    signUpInterface.onPasswordNotMatch();
                 }
 
                 break;
@@ -142,10 +136,10 @@ public class SignUpViewModel extends ViewModel {
                 if(existed){
                     switch (identityType){
                         case EMAIL_FIELD:
-                            signUpState.setValue(SignUpState.EMAIL_TAKEN);
+                            signUpInterface.onEmailTaken();
                             break;
                         case USERNAME_FIELD:
-                            signUpState.setValue(SignUpState.USERNAME_TAKEN);
+                            signUpInterface.onUsernameTaken();
                             break;
                     }
                 }
@@ -164,13 +158,13 @@ public class SignUpViewModel extends ViewModel {
         userRepo.signUp(phoneNumber, emailString, username, passwordString,firebaseToken, new CommonCallBack() {
             @Override
             public void success() {
-                signUpState.setValue(SignUpState.SIGN_UP_SUCCESS);
+                signUpInterface.onSignUpSuccess();
                 setIsLoading(false);
             }
 
             @Override
             public void showError(String error) {
-                signUpState.setValue(SignUpState.SIGN_UP_ERROR);
+                signUpInterface.onSignUpError();
                 setIsLoading(false);
                 status.setValue("Error when creating account,please try again later");
             }

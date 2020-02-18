@@ -40,7 +40,7 @@ import upuphere.com.upuphere.viewmodel.SignUpViewModel;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SignUpFragment extends Fragment {
+public class SignUpFragment extends Fragment implements SignUpViewModel.SignUpInterface {
     private String phoneNumber = null;
 
 
@@ -70,13 +70,7 @@ public class SignUpFragment extends Fragment {
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        signUpViewModel.setSignUpInterface(new SignUpViewModel.SignUpInterface() {
-            @Override
-            public void onBackToLogin() {
-                loginViewModel.backToLogin();
-                Navigation.findNavController(rootView).navigate(R.id.loginFragment);
-            }
-        });
+        signUpViewModel.setSignUpInterface(this);
 
         initProgressBar();
 
@@ -85,73 +79,7 @@ public class SignUpFragment extends Fragment {
         phoneNumber = Objects.requireNonNull(getArguments()).getString("phone_number");
         Log.d("PHONE_NUMBER", Objects.requireNonNull(phoneNumber));
 
-        final PrefManager prefManager = new PrefManager(getActivity());
-
-        signUpViewModel.signUpState.observe(getViewLifecycleOwner(), new Observer<SignUpViewModel.SignUpState>() {
-            @Override
-            public void onChanged(SignUpViewModel.SignUpState signUpState) {
-                switch (signUpState) {
-                    case SIGN_UP_SUCCESS:
-                        SharedPreferences sharedPreferences = new PrefManager(getActivity()).getPref();
-                        SharedPreferenceBooleanLiveData sharedPreferenceBooleanLiveData = new SharedPreferenceBooleanLiveData(sharedPreferences,PrefManager.IS_LOGGED_IN,false);
-
-
-                        sharedPreferenceBooleanLiveData.getBooleanLiveData(PrefManager.IS_LOGGED_IN,false).observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-                            @Override
-                            public void onChanged(Boolean isLoggedIn) {
-                                if(isLoggedIn){
-                                    NavController navController = Navigation.findNavController(view);
-                                    navController.popBackStack(R.id.signUpFragment,true);
-                                    navController.navigate(R.id.mainFragment);
-                                }
-                            }
-                        });
-                        break;
-                    case SIGN_UP_ERROR:
-                        Log.d("sign up error", "some error");
-                        break;
-                    case START_CREATE_ACCOUNT:
-                        String firebaseToken = prefManager.getFirebaseToken();
-                        signUpViewModel.createUserAccount(phoneNumber, signUpViewModel.email, signUpViewModel.username, signUpViewModel.password, firebaseToken);
-                        if(TextUtils.isEmpty(firebaseToken)){
-                            UserRepo.getInstance().requestTokenFromFirebase(getActivity(), new StringCallBack() {
-                                @Override
-                                public void success(String newToken) {
-                                    signUpViewModel.createUserAccount(phoneNumber, signUpViewModel.email, signUpViewModel.username, signUpViewModel.password, newToken);
-                                }
-
-                                @Override
-                                public void showError(String error) {
-                                    Log.d("Firebase error",error);
-                                }
-                            });
-                        }
-                        break;
-                    case PASSWORD_DOESNT_MATCH:
-                        binding.reenterPasswordField.setError("Password not match");
-                        break;
-                    case PASSWORD_TOO_SHORT:
-                        binding.passwordField.setError("Password must at least 6 character");
-                        break;
-                    case USERNAME_TOO_SHORT:
-                        binding.usernameField.setError("Username must at least 6 character");
-                        break;
-                    case USERNAME_INVALID:
-                        binding.usernameField.setError("Invalid username");
-                        break;
-                    case USERNAME_TAKEN:
-                        binding.usernameField.setError("Username is taken");
-                        break;
-                    case EMAIL_TAKEN:
-                        binding.emailField.setError("Email is taken");
-                        break;
-                    case EMAIL_INVALID:
-                        binding.emailField.setError("Invalid email");
-                        break;
-                }
-            }
-        });
-
+        prefManager = new PrefManager(getActivity());
 
         requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
             @Override
@@ -199,6 +127,90 @@ public class SignUpFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
+    }
+
+    @Override
+    public void onBackToLogin() {
+        Navigation.findNavController(rootView).navigate(R.id.loginFragment);
+    }
+
+    PrefManager prefManager;
+    @Override
+    public void onStartSignUp() {
+        String firebaseToken = prefManager.getFirebaseToken();
+        if(TextUtils.isEmpty(firebaseToken)){
+            UserRepo.getInstance().requestTokenFromFirebase(getActivity(), new StringCallBack() {
+                @Override
+                public void success(String newToken) {
+                    signUpViewModel.createUserAccount(phoneNumber, signUpViewModel.email, signUpViewModel.username, signUpViewModel.password, newToken);
+                }
+
+                @Override
+                public void showError(String error) {
+                    Log.d("Firebase error",error);
+                }
+            });
+        }else{
+            signUpViewModel.createUserAccount(phoneNumber,signUpViewModel.email,signUpViewModel.username,signUpViewModel.password,firebaseToken);
+        }
+    }
+
+    @Override
+    public void onSignUpSuccess() {
+        SharedPreferences sharedPreferences = new PrefManager(getActivity()).getPref();
+        SharedPreferenceBooleanLiveData sharedPreferenceBooleanLiveData = new SharedPreferenceBooleanLiveData(sharedPreferences,PrefManager.IS_LOGGED_IN,false);
+
+
+        sharedPreferenceBooleanLiveData.getBooleanLiveData(PrefManager.IS_LOGGED_IN,false).observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoggedIn) {
+                if(isLoggedIn){
+                    NavController navController = Navigation.findNavController(rootView);
+                    navController.popBackStack(R.id.signUpFragment,true);
+                    navController.navigate(R.id.mainFragment);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onSignUpError() {
+        Log.d("sign up error", "some error");
+    }
+
+    @Override
+    public void onEmailInvalid() {
+        binding.emailField.setError("Invalid email");
+    }
+
+    @Override
+    public void onUsernameTooShort() {
+        binding.usernameField.setError("Username must at least 6 character");
+    }
+
+    @Override
+    public void onPasswordTooShort() {
+        binding.passwordField.setError("Password must at least 6 character");
+    }
+
+    @Override
+    public void onPasswordNotMatch() {
+        binding.reenterPasswordField.setError("Password not match");
+    }
+
+    @Override
+    public void onUsernameInvalid() {
+        binding.usernameField.setError("Invalid username");
+    }
+
+    @Override
+    public void onUsernameTaken() {
+        binding.usernameField.setError("Username is taken");
+    }
+
+    @Override
+    public void onEmailTaken() {
+        binding.emailField.setError("Email is taken");
     }
 }
 

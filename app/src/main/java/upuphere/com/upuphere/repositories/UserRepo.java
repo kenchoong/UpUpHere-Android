@@ -58,6 +58,7 @@ public class UserRepo{
 
                 PrefManager prefManager = new PrefManager(AppController.getContext());
                 prefManager.setUserID(user.getUserId());
+                prefManager.setUsername(user.getUsername());
                 prefManager.setUserSessionId(user.getUserSessionId());
                 prefManager.setUserDeviceId(user.getUserDeviceId());
                 prefManager.setUserAccessToken(user.getAccessToken());
@@ -111,6 +112,7 @@ public class UserRepo{
 
                 PrefManager prefManager = new PrefManager(AppController.getContext());
                 prefManager.setUserID(user.getUserId());
+                prefManager.setUsername(user.getUsername());
                 prefManager.setUserSessionId(user.getUserSessionId());
                 prefManager.setUserDeviceId(user.getUserDeviceId());
                 prefManager.setUserAccessToken(user.getAccessToken());
