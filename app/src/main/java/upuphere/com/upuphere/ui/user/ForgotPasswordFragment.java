@@ -73,7 +73,6 @@ public class ForgotPasswordFragment extends Fragment implements ForgotPasswordVi
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                loginViewModel.backToLogin();
                 Navigation.findNavController(view).navigateUp();
             }
         });

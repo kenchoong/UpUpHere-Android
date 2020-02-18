@@ -102,7 +102,6 @@ public class ResetPasswordFragment extends Fragment implements ResetPasswordView
                 Log.d("RESET Password",item);
                 viewModel.setIsLoading(false);
 
-                loginViewModel.backToLogin();
                 NavDirections action = ResetPasswordFragmentDirections.actionResetPasswordFragmentToLoginFragment2();
                 Navigation.findNavController(rootView).navigate(action);
 

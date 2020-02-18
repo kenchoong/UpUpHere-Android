@@ -4,8 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class UserModel {
 
-    public UserModel(String userId, String userSessionId, String userDeviceId, String accessToken, String refreshToken) {
+    public UserModel(String userId,String username, String userSessionId, String userDeviceId, String accessToken, String refreshToken) {
         this.userId = userId;
+        this.username = username;
         this.userSessionId = userSessionId;
         this.userDeviceId = userDeviceId;
         this.accessToken = accessToken;
@@ -14,6 +15,9 @@ public class UserModel {
 
     @SerializedName("user_id")
     private String userId;
+
+    @SerializedName("username")
+    private String username;
 
     @SerializedName("user_session_id")
     private String userSessionId;
@@ -33,6 +37,14 @@ public class UserModel {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getUserSessionId() {

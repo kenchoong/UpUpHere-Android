@@ -39,7 +39,7 @@ import upuphere.com.upuphere.viewmodel.LoginViewModel;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class LoginFragment extends Fragment {
+public class LoginFragment extends Fragment implements LoginViewModel.LoginInterface {
 
 
     public LoginFragment() {
@@ -52,6 +52,7 @@ public class LoginFragment extends Fragment {
 
 
     FragmentLoginBinding binding;
+    View rootView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,10 +63,10 @@ public class LoginFragment extends Fragment {
         
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_login,container,false);
         viewModel = ViewModelProviders.of(requireActivity()).get(LoginViewModel.class);
-        View view = binding.getRoot();
+        rootView = binding.getRoot();
 
         binding.setLoginViewModel(viewModel);
-        return view;
+        return rootView;
     }
 
     @Override
@@ -74,70 +75,24 @@ public class LoginFragment extends Fragment {
 
         final PrefManager prefManager = new PrefManager(getActivity());
         if (prefManager.isLoggedIn()){
-            viewModel.authenticateState.setValue(LoginViewModel.AuthenticateState.AUTHENTICATED);
+            NavController navController = Navigation.findNavController(rootView);
+            navController.popBackStack(R.id.loginFragment,true);
+            navController.navigate(R.id.mainFragment);
         }
+
+        viewModel.setLoginInterface(this);
 
         initializeProgressBar();
         observeLoginStatus();
 
+
         final NavController navController = Navigation.findNavController(view);
-        viewModel.authenticateState.observe(getViewLifecycleOwner(), new Observer<LoginViewModel.AuthenticateState>() {
-            @Override
-            public void onChanged(LoginViewModel.AuthenticateState authenticateState) {
-                switch (authenticateState){
-                    case START_AUTHENTICATION:
-                        //Log.d("LOGIN","START");
-                    case AUTHENTICATED:
-
-                        SharedPreferences sharedPreferences = new PrefManager(getActivity()).getPref();
-                        SharedPreferenceBooleanLiveData sharedPreferenceBooleanLiveData = new SharedPreferenceBooleanLiveData(sharedPreferences,PrefManager.IS_LOGGED_IN,false);
-
-                        sharedPreferenceBooleanLiveData.getBooleanLiveData(PrefManager.IS_LOGGED_IN,false).observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-                            @Override
-                            public void onChanged(Boolean isLoggedIn) {
-                                Log.d("LOGIN 1",String.valueOf(isLoggedIn));
-                                if(isLoggedIn){
-                                    NavController navController = Navigation.findNavController(view);
-                                    navController.popBackStack(R.id.loginFragment,true);
-                                    navController.navigate(R.id.mainFragment);
-                                }
-                            }
-                        });
-                        break;
-                    case UNAUTHENTICATED:
-                        Log.d("LOGIN","INVALID");
-                        break;
-                    case INVALID_AUTHENTICATED:
-                        Log.d("LOGIN","UNAUTHENTICATED");
-                        break;
-                    case MOVE_TO_REGISTER:
-                        viewModel.backToLogin();
-                        //NavDirections action = LoginFragmentDirections.actionLoginFragmentToRegistrationGraph();
-                        //Bundle args = new Bundle();
-                        //args.putInt("previous_fragment_code",PhoneAuthFragment.FROM_LOGIN_FRAGMENT);
-                        //navController.navigate(R.id.phoneAuthFragment,args);
-
-                        NavDirections directions = LoginFragmentDirections.actionLoginFragmentToPhoneAuthFragment2(PhoneAuthFragment2.FROM_LOGIN_FRAGMENT);
-                        navController.navigate(directions);
-                        break;
-                    case BACK_TO_LOGIN:
-                        Log.d("LOGIN","BACK TO LOGIN");
-                        break;
-
-                    case FORGOT_PASSWORD:
-                        viewModel.backToLogin();
-                        NavDirections action1 = LoginFragmentDirections.actionLoginFragmentToForgotPasswordFragment();
-                        navController.navigate(action1);
-                        break;
-                }
-            }
-        });
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
                 new OnBackPressedCallback(true) {
                     @Override
                     public void handleOnBackPressed() {
-                        viewModel.refuseAuthentication();
+                        //viewModel.refuseAuthentication();
                         navController.popBackStack(R.id.mainFragment, false);
                     }
                 });
@@ -182,5 +137,40 @@ public class LoginFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
+    }
+
+    @Override
+    public void onLoginSuccess() {
+        SharedPreferences sharedPreferences = new PrefManager(getActivity()).getPref();
+        SharedPreferenceBooleanLiveData sharedPreferenceBooleanLiveData = new SharedPreferenceBooleanLiveData(sharedPreferences,PrefManager.IS_LOGGED_IN,false);
+
+        sharedPreferenceBooleanLiveData.getBooleanLiveData(PrefManager.IS_LOGGED_IN,false).observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoggedIn) {
+                Log.d("LOGIN 1",String.valueOf(isLoggedIn));
+                if(isLoggedIn){
+                    NavController navController = Navigation.findNavController(rootView);
+                    navController.popBackStack(R.id.loginFragment,true);
+                    navController.navigate(R.id.mainFragment);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onLoginFailed() {
+        Log.d("Error","Some Error");
+    }
+
+    @Override
+    public void onForgotPasswordClick() {
+        NavDirections action1 = LoginFragmentDirections.actionLoginFragmentToForgotPasswordFragment();
+        Navigation.findNavController(rootView).navigate(action1);
+    }
+
+    @Override
+    public void onRegisterClick() {
+        NavDirections directions = LoginFragmentDirections.actionLoginFragmentToPhoneAuthFragment2(PhoneAuthFragment2.FROM_LOGIN_FRAGMENT);
+        Navigation.findNavController(rootView).navigate(directions);
     }
 }
