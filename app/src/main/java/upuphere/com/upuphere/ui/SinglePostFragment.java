@@ -80,6 +80,8 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
         initialRecyclerView();
 
         populatePostToRecycleView();
+
+        populateCommentToRecycleView(singlePostList);
     }
 
     private void initialRecyclerView() {
@@ -89,18 +91,24 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
         singlePostRecyclerView.setAdapter(singlePostAdapter);
     }
 
-
     private void populatePostToRecycleView() {
-        Log.d("SINGLE POST","POST NOT NULL NOW");
         viewModel.getSinglePostByPostId(postId).observe(getViewLifecycleOwner(), new Observer<List<Post>>() {
             @Override
             public void onChanged(List<Post> posts) {
                 if(posts != null){
                     Log.d("SINGLE POST","POST NOT NULL NOW");
+                    binding.postAndCommentRecyclerView.setVisibility(View.VISIBLE);
+                    binding.commentFieldContainer.setVisibility(View.VISIBLE);
+                    binding.emptyStateContainer.setVisibility(View.GONE);
+
+                    singlePostList.addAll(posts);
                     singlePostAdapter.setPost(posts);
                     populateCommentToRecycleView(posts);
                 }else{
                     Log.d("SINGLE POST","POST IS NULL NOW");
+                    binding.postAndCommentRecyclerView.setVisibility(View.GONE);
+                    binding.commentFieldContainer.setVisibility(View.GONE);
+                    binding.emptyStateContainer.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -130,7 +138,7 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
 
         CommentModel comment = new CommentModel();
         comment.setTextComment(viewModel.commentText);
-        comment.setUser(new PrefManager(getActivity()).getUserId());
+        comment.setUser(new PrefManager(getActivity()).getUsername());
         comment.setCreatedAt(date);
         viewModel.appendNewCommentToMutableLiveData(singlePostList,postId,comment);
     }

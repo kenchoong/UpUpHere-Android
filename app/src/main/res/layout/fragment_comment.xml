@@ -20,13 +20,21 @@
         tools:context=".ui.CommentFragment">
 
 
+        <TextView
+            android:id="@+id/emptyStateComment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/empty_state_comment"
+            android:visibility="gone" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/commentRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/commentFieldContainer"
-            android:layout_marginBottom="10dp">
-
+            android:layout_below="@+id/emptyStateComment"
+            android:layout_above="@+id/commentFieldContainer"
+            android:layout_marginTop="10dp">
         </androidx.recyclerview.widget.RecyclerView>
 
         <LinearLayout
@@ -34,7 +42,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="10dp"
             android:orientation="horizontal">
 
             <EditText
@@ -49,9 +56,9 @@
                 android:background="@null"
                 android:ems="10"
                 android:hint="@string/comment_hint"
-                android:inputType="textPersonName"
                 android:importantForAutofill="no"
-                android:text="@={viewmodel.commentText}"/>
+                android:inputType="textPersonName"
+                android:text="@={viewmodel.commentText}" />
 
             <ImageButton
                 android:id="@+id/sendButton"
@@ -60,9 +67,9 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:background="@null"
-                app:srcCompat="@drawable/ic_send"
                 android:contentDescription="@string/content_description"
-                android:onClick="@{viewmodel::onSendButtonClick}"/>
+                android:onClick="@{viewmodel::onSendButtonClick}"
+                app:srcCompat="@drawable/ic_send" />
 
         </LinearLayout>
     </RelativeLayout>

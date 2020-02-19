@@ -73,7 +73,14 @@ public class NotificationFragment extends Fragment implements NotificationAdapte
         viewModel.getNotificationList().observe(getViewLifecycleOwner(), new Observer<List<NotificationModel>>() {
             @Override
             public void onChanged(List<NotificationModel> notificationModels) {
-                adapter.setNotificationList(notificationModels);
+                if(notificationModels != null && notificationModels.size()> 0){
+                    binding.notificationRecyclerView.setVisibility(View.VISIBLE);
+                    binding.emptyStateNotification.setVisibility(View.GONE);
+                    adapter.setNotificationList(notificationModels);
+                }else {
+                    binding.notificationRecyclerView.setVisibility(View.GONE);
+                    binding.emptyStateNotification.setVisibility(View.VISIBLE);
+                }
             }
         });
     }

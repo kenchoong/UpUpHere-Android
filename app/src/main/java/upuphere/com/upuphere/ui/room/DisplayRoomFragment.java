@@ -129,9 +129,19 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
         viewModel.getAllPostInRoom(roomId).observe(getViewLifecycleOwner(), new Observer<List<Post>>() {
             @Override
             public void onChanged(List<Post> posts) {
-                fetchedPost.addAll(posts);
-                postAdapter.setPost(posts);
                 mSwipeRefreshLayout.setRefreshing(false);
+
+                if(posts != null && posts.size() > 0){
+                    binding.postRecyclerView.setVisibility(View.VISIBLE);
+                    binding.emptyStateContainer.setVisibility(View.GONE);
+                    fetchedPost.addAll(posts);
+                    postAdapter.setPost(posts);
+                }else{
+                    binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                    binding.postRecyclerView.setVisibility(View.GONE);
+                }
+
+
             }
         });
     }
