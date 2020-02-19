@@ -96,5 +96,10 @@
     <string name="fcm_message">FCM TESTING</string>
 
     <string name="notification">Notification</string>
+    <string name="empty_state_post">Be the first one to start discussion!</string>
+    <string name="empty_state_comment">Be first to comment to start conversation!</string>
+    <string name="empty_state_notification">No notification at the moment.</string>
+    <string name="empty_state_single_post">Oops! Post Not found</string>
+    <string name="empty_state_room">Wow! Is empty.</string>
 
 </resources>

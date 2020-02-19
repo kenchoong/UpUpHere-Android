@@ -137,8 +137,15 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
         mainViewModel.getRoomList().observe(getViewLifecycleOwner(), new Observer<List<AllRooms>>() {
             @Override
             public void onChanged(List<AllRooms> rooms) {
-                roomAdapter.setRoomList(rooms);
                 mSwipeRreshLayout.setRefreshing(false);
+                if(rooms != null && rooms.size() > 0){
+                    roomAdapter.setRoomList(rooms);
+                    binding.roomRecyclerView.setVisibility(View.VISIBLE);
+                    binding.emptyStateRoom.setVisibility(View.GONE);
+                }else{
+                    binding.roomRecyclerView.setVisibility(View.GONE);
+                    binding.emptyStateRoom.setVisibility(View.VISIBLE);
+                }
             }
         });
     }

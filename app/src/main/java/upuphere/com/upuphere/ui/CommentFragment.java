@@ -94,9 +94,13 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
         commentViewModel.getCommentLiveData(postList,postId).observe(getViewLifecycleOwner(), new Observer<List<CommentModel>>() {
             @Override
             public void onChanged(List<CommentModel> commentModels) {
-                commentAdapter.setComment(commentModels);
-                if(commentModels.size() > 0) {
+                if(commentModels.size()> 0){
+                    binding.emptyStateComment.setVisibility(View.GONE);
+                    commentAdapter.setComment(commentModels);
                     commentRecyclerView.smoothScrollToPosition(commentModels.size() - 1);
+
+                }else{
+                    binding.emptyStateComment.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -118,7 +122,7 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
 
         CommentModel comment = new CommentModel();
         comment.setTextComment(commentViewModel.commentText);
-        comment.setUser(new PrefManager(getActivity()).getUserId());
+        comment.setUser(new PrefManager(getActivity()).getUsername());
         comment.setCreatedAt(date);
         commentViewModel.appendNewCommentToMutableLiveData(postList,postId,comment);
     }

@@ -43,6 +43,21 @@
             app:backgroundTint="@color/secondaryColor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+
+        <TextView
+            android:id="@+id/emptyStateContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:drawableTop="@drawable/empty2"
+            android:paddingTop="10dp"
+            android:text="@string/empty_state_post"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:visibility="gone" />
+
     </FrameLayout>
 
 </layout>
