@@ -13,7 +13,7 @@
             type="upuphere.com.upuphere.viewmodel.DisplayRoomViewModel" />
     </data>
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.room.DisplayRoomFragment">
@@ -36,7 +36,8 @@
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
             android:layout_margin="16dp"
             android:contentDescription="@string/add_group"
             app:srcCompat="@drawable/ic_add_white"
@@ -49,7 +50,7 @@
             android:id="@+id/emptyStateContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_centerInParent="true"
             android:layout_marginTop="10dp"
             android:drawableTop="@drawable/empty2"
             android:paddingTop="10dp"
@@ -58,6 +59,25 @@
             android:textSize="18sp"
             android:visibility="gone" />
 
-    </FrameLayout>
+        <Button
+            android:id="@+id/unblockRoomButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/emptyStateContainer"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/colorAccent"
+            android:onClick="@{model::onUnhideButtonClick}"
+            android:padding="10dp"
+            android:text="@string/unblock_room"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@color/background_color"
+            android:visibility="gone" />
+
+    </RelativeLayout>
 
 </layout>

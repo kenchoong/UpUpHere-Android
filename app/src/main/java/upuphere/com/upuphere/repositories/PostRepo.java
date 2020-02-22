@@ -179,8 +179,31 @@ public class PostRepo {
         AppController.getInstance().addToRequestQueue(request);
     }
 
+    public void unHideRoom(String roomId,final StringCallBack callback){
+        String[] key = new String[]{"blocked_room_id"};
+        String[] value = new String[]{roomId};
+        JSONObject params = VolleyRequest.getParams(key,value);
+        JsonObjectRequest request = VolleyRequest.putJsonRequestWithAccessToken(AppConfig.URL_BLOCK_UNBLOCK, params, new VolleyRequest.ResponseCallBack() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    String message = response.getString("message");
+                    callback.success(message);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    callback.showError(e.getMessage());
+                }
+            }
+            @Override
+            public void onError(String error) {
+                callback.showError(error);
+            }
+        });
 
-    public MutableLiveData<List<Post>> getAllPostWithRoomId(final String roomId){
+        AppController.getInstance().addToRequestQueue(request);
+    }
+
+    public MutableLiveData<List<Post>> getAllPostWithRoomId(final String roomId, final StringCallBack callback){
 
         if(AppController.getInstance().internetConnectionAvailable()){
 
@@ -198,11 +221,20 @@ public class PostRepo {
                 @Override
                 public void onSuccess(JSONObject response) {
 
-                    Gson gson = new Gson();
-                    PostModel postModel = gson.fromJson(response.toString(), PostModel.class);
+                    if(!response.has("error")){
+                        Gson gson = new Gson();
+                        PostModel postModel = gson.fromJson(response.toString(), PostModel.class);
 
-                    insertNewFetchPostOfARoomIntoLocalDb(postModel.getPost());
-                    postMutableLiveData.setValue(postModel.getPost());
+                        insertNewFetchPostOfARoomIntoLocalDb(postModel.getPost());
+                        postMutableLiveData.setValue(postModel.getPost());
+                    }else{
+                        try {
+                            String message = response.getString("message");
+                            callback.showError(message);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
 
                 @Override

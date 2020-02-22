@@ -30,12 +30,14 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.MainActivity;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.adapter.PostAdapter;
 import upuphere.com.upuphere.app.AppController;
 import upuphere.com.upuphere.databinding.FragmentDisplayRoomBinding;
 import upuphere.com.upuphere.fragment.DisplayPhotoFragmentArgs;
+import upuphere.com.upuphere.helper.DecodeToken;
 import upuphere.com.upuphere.models.AllRooms;
 import upuphere.com.upuphere.models.Post;
 import upuphere.com.upuphere.viewmodel.DisplayRoomViewModel;
@@ -91,6 +93,42 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
                 NavDirections action = DisplayRoomFragmentDirections.actionRoomFragmentToCreatePostFragment(roomId);
                 Navigation.findNavController(view).navigate(action);
             }
+
+            @Override
+            public void onRoomBlocked(String message) {
+                binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                binding.postRecyclerView.setVisibility(View.GONE);
+                binding.emptyStateContainer.setText(message);
+                binding.unblockRoomButton.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onClickUnhideRoomButton() {
+                Log.d("Display Room","UNHIDE THE ROOM");
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+                        viewModel.unHideRoom(roomId, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                                getPostInRoom(roomId);
+                            }
+                            @Override
+                            public void showError(String error) {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+            }
         });
 
         initializeRecyclerView();
@@ -101,7 +139,7 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
             @Override
             public void run() {
                 mSwipeRefreshLayout.setRefreshing(true);
-                getPostInRoom();
+                getPostInRoom(roomId);
             }
         });
     }
@@ -113,7 +151,7 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
             @Override
             public void onRefresh() {
                 mSwipeRefreshLayout.setRefreshing(true);
-                getPostInRoom();
+                getPostInRoom(roomId);
             }
         });
     }
@@ -125,7 +163,7 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
         recyclerView.setAdapter(postAdapter);
     }
 
-    private void getPostInRoom() {
+    private void getPostInRoom(String roomId) {
         viewModel.getAllPostInRoom(roomId).observe(getViewLifecycleOwner(), new Observer<List<Post>>() {
             @Override
             public void onChanged(List<Post> posts) {
@@ -134,6 +172,7 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
                 if(posts != null && posts.size() > 0){
                     binding.postRecyclerView.setVisibility(View.VISIBLE);
                     binding.emptyStateContainer.setVisibility(View.GONE);
+                    binding.unblockRoomButton.setVisibility(View.GONE);
                     fetchedPost.addAll(posts);
                     postAdapter.setPost(posts);
                 }else{
