@@ -30,6 +30,7 @@ import upuphere.com.upuphere.app.AppController;
 import upuphere.com.upuphere.database.PostDao;
 import upuphere.com.upuphere.database.RoomDao;
 import upuphere.com.upuphere.database.UpUpHereDatabase;
+import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.helper.VolleyMultipartRequest;
 import upuphere.com.upuphere.helper.VolleyRequest;
 import upuphere.com.upuphere.models.AllRooms;
@@ -53,7 +54,17 @@ public class RoomRepo {
     public MutableLiveData<List<AllRooms>> getRoomListMutableData(){
 
         if(AppController.getInstance().internetConnectionAvailable()){
-            JsonObjectRequest request = VolleyRequest.getJsonAccessRequestWithoutRetry(AppConfig.URL_GET_ROOM_LIST, new VolleyRequest.ResponseCallBack() {
+            PrefManager prefManager = new PrefManager(AppController.getContext());
+            String userId = prefManager.getUserId();
+
+            String url;
+            if(userId != null){
+                url = AppConfig.URL_GET_ROOM_LIST + "?user_public_id=" + userId;
+            }else{
+                url = AppConfig.URL_GET_ROOM_LIST;
+            }
+
+            JsonObjectRequest request = VolleyRequest.getJsonAccessRequestWithoutRetry(url, new VolleyRequest.ResponseCallBack() {
                 @Override
                 public void onSuccess(JSONObject response) {
 

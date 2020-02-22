@@ -26,6 +26,7 @@ import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.app.AppController;
 import upuphere.com.upuphere.database.PostDao;
 import upuphere.com.upuphere.database.UpUpHereDatabase;
+import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.helper.VolleyMultipartRequest;
 import upuphere.com.upuphere.helper.VolleyRequest;
 import upuphere.com.upuphere.models.CommentModel;
@@ -109,23 +110,40 @@ public class PostRepo {
         }
     }
 
-    public MutableLiveData<List<Post>> getSinglePostByPostId(final String postId){
+    public MutableLiveData<List<Post>> getSinglePostByPostId(final String postId, final StringCallBack callback){
 
         if(AppController.getInstance().internetConnectionAvailable()){
-            String url = AppConfig.URL_GET_SINGLE_POST + postId;
+            PrefManager prefManager = new PrefManager(AppController.getContext());
+            String userId = prefManager.getUserId();
+
+            String url = "";
+            if(userId != null){
+                url = AppConfig.URL_GET_SINGLE_POST + postId + "?user_public_id=" + userId;
+            }else{
+                url = AppConfig.URL_GET_SINGLE_POST + postId;
+            }
 
             JsonObjectRequest request = VolleyRequest.getJsonAccessRequestWithoutRetry(url, new VolleyRequest.ResponseCallBack() {
                 @Override
                 public void onSuccess(JSONObject response) {
-                    Gson gson = new Gson();
-                    PostModel postModel = gson.fromJson(response.toString(),PostModel.class);
+                    if(!response.has("error")){
+                        Gson gson = new Gson();
+                        PostModel postModel = gson.fromJson(response.toString(),PostModel.class);
 
-                    postMutableLiveData.setValue(postModel.getSinglePost());
+                        postMutableLiveData.setValue(postModel.getSinglePost());
+                    }else{
+                        try {
+                            String message = response.getString("message");
+                            callback.showError(message);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
 
                 @Override
                 public void onError(String error) {
-                    getSinglePostByPostId(postId);
+                    getPostByPostIdFromLocalDb(postId);
                 }
             });
 
@@ -137,12 +155,44 @@ public class PostRepo {
         return postMutableLiveData;
     }
 
+    public void unHidePost(String postId, final StringCallBack callBack){
+        String[] key = new String[]{"blocked_post_id"};
+        String[] value = new String[]{postId};
+        JSONObject params = VolleyRequest.getParams(key,value);
+        JsonObjectRequest request = VolleyRequest.putJsonRequestWithAccessToken(AppConfig.URL_BLOCK_UNBLOCK, params, new VolleyRequest.ResponseCallBack() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    String message = response.getString("message");
+                    callBack.success(message);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    callBack.showError(e.getMessage());
+                }
+            }
+            @Override
+            public void onError(String error) {
+                callBack.showError(error);
+            }
+        });
+
+        AppController.getInstance().addToRequestQueue(request);
+    }
+
 
     public MutableLiveData<List<Post>> getAllPostWithRoomId(final String roomId){
 
         if(AppController.getInstance().internetConnectionAvailable()){
 
-            String url = AppConfig.URL_GET_POST_IN_SPECIFIC_ROOM + roomId;
+            PrefManager prefManager = new PrefManager(AppController.getContext());
+            String userId = prefManager.getUserId();
+
+            String url;
+            if(userId != null){
+                url = AppConfig.URL_GET_POST_IN_SPECIFIC_ROOM + roomId + "?user_public_id=" + userId;
+            }else{
+                url = AppConfig.URL_GET_POST_IN_SPECIFIC_ROOM + roomId;
+            }
 
             JsonObjectRequest request = VolleyRequest.getJsonAccessRequestWithoutRetry(url, new VolleyRequest.ResponseCallBack() {
                 @Override

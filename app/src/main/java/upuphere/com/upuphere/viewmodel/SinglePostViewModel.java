@@ -9,6 +9,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.models.CommentModel;
@@ -23,8 +24,12 @@ public class SinglePostViewModel extends AndroidViewModel {
         postRepo = new PostRepo(application);
     }
 
-    public interface SinglePostInterface{
+    public interface SinglePostInterface {
         void onSend();
+
+        void onPostOrUserBlock(String message);
+
+        void onClickUnHideButton();
     }
 
     public SinglePostInterface commentInterface;
@@ -39,8 +44,46 @@ public class SinglePostViewModel extends AndroidViewModel {
         commentInterface.onSend();
     }
 
+    public void onUnhideButtonClick(View view){
+        commentInterface.onClickUnHideButton();
+    }
+
+    public MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+
+    private void setIsLoading(boolean isLoadingOrNot){
+        isLoading.setValue(isLoadingOrNot);
+    }
+
     public LiveData<List<Post>> getSinglePostByPostId(String postId){
-        return postRepo.getSinglePostByPostId(postId);
+        return postRepo.getSinglePostByPostId(postId, new StringCallBack() {
+            @Override
+            public void success(String item) {
+                //do nothing
+            }
+
+            @Override
+            public void showError(String error) {
+                Log.d("SINGLEPOSTFRAGMENT",error);
+                commentInterface.onPostOrUserBlock(error);
+            }
+        });
+    }
+
+    public void unHidePost(String postId, final StringCallBack callBack){
+        setIsLoading(true);
+        postRepo.unHidePost(postId, new StringCallBack() {
+            @Override
+            public void success(String item) {
+                callBack.success(item);
+                setIsLoading(false);
+            }
+
+            @Override
+            public void showError(String error) {
+                callBack.showError(error);
+                setIsLoading(false);
+            }
+        });
     }
 
     public LiveData<List<CommentModel>> getCommentLiveData(List<Post> posts, String postId){

@@ -38,6 +38,8 @@ public class AppConfig {
 
     public static String URL_GET_SINGLE_POST = BASE_URL + "/api/posts/";
 
+    public static String URL_BLOCK_UNBLOCK = BASE_URL + "/api/exclude";
+
 
     // Notification stuff
     public static final int NOTIFICATION_TEXT = 100;

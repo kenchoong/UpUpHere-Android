@@ -26,6 +26,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.adapter.SinglePostAdapter;
 import upuphere.com.upuphere.databinding.FragmentSinglePostBinding;
@@ -61,6 +62,7 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
 
         postId = SinglePostFragmentArgs.fromBundle(Objects.requireNonNull(getArguments())).getPostId();
         Toast.makeText(getActivity(),postId,Toast.LENGTH_LONG).show();
+        Log.d("SINGLEPOSTFRAGMENT",postId);
 
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_single_post,container,false);
@@ -75,6 +77,8 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        initializeProgressBar();
+
         viewModel.setCommentInterface(this);
 
         initialRecyclerView();
@@ -82,6 +86,21 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
         populatePostToRecycleView();
 
         populateCommentToRecycleView(singlePostList);
+
+    }
+
+    private void initializeProgressBar() {
+        viewModel.isLoading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoading) {
+                if(isLoading){
+                    binding.loadingBar.setVisibility(View.VISIBLE);
+                }
+                else{
+                    binding.loadingBar.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     private void initialRecyclerView() {
@@ -96,16 +115,15 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
             @Override
             public void onChanged(List<Post> posts) {
                 if(posts != null){
-                    Log.d("SINGLE POST","POST NOT NULL NOW");
                     binding.postAndCommentRecyclerView.setVisibility(View.VISIBLE);
                     binding.commentFieldContainer.setVisibility(View.VISIBLE);
                     binding.emptyStateContainer.setVisibility(View.GONE);
+                    binding.unhideButton.setVisibility(View.GONE);
 
                     singlePostList.addAll(posts);
                     singlePostAdapter.setPost(posts);
                     populateCommentToRecycleView(posts);
                 }else{
-                    Log.d("SINGLE POST","POST IS NULL NOW");
                     binding.postAndCommentRecyclerView.setVisibility(View.GONE);
                     binding.commentFieldContainer.setVisibility(View.GONE);
                     binding.emptyStateContainer.setVisibility(View.VISIBLE);
@@ -130,6 +148,44 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
         binding.commentField.setText("");
 
         sendCommentToServer();
+    }
+
+    @Override
+    public void onPostOrUserBlock(String message) {
+        binding.postAndCommentRecyclerView.setVisibility(View.GONE);
+        binding.commentFieldContainer.setVisibility(View.GONE);
+        binding.emptyStateContainer.setVisibility(View.VISIBLE);
+        binding.emptyStateContainer.setText(message);
+        binding.unhideButton.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onClickUnHideButton() {
+        DecodeToken decodeToken = DecodeToken.newInstance();
+        decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+            @Override
+            public void onTokenValid() {
+                viewModel.unHidePost(postId, new StringCallBack() {
+                    @Override
+                    public void success(String item) {
+                        Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                        populatePostToRecycleView();
+                    }
+
+                    @Override
+                    public void showError(String error) {
+                        Toast.makeText(getActivity(),"Error when unhide post",Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onTokenAllInvalid() {
+
+            }
+        });
+
+        decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
     }
 
     private void appendNewCommentToCommentList() {
@@ -158,5 +214,13 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
         });
 
         decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        binding.postAndCommentRecyclerView.setVisibility(View.VISIBLE);
+        binding.commentFieldContainer.setVisibility(View.VISIBLE);
+        binding.emptyStateContainer.setVisibility(View.GONE);
     }
 }
