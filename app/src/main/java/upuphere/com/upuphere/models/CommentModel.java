@@ -18,6 +18,10 @@ public class CommentModel{
     @Expose
     private String user;
 
+    @SerializedName("commenter_user_id")
+    @Expose
+    private String commenterUserId;
+
     @SerializedName("created_at")
     @Expose
     private String createdAt;
@@ -44,6 +48,14 @@ public class CommentModel{
 
     public void setUser(String user) {
         this.user = user;
+    }
+
+    public String getCommenterUserId() {
+        return commenterUserId;
+    }
+
+    public void setCommenterUserId(String commenterUserId) {
+        this.commenterUserId = commenterUserId;
     }
 
     public String getCreatedAt() {

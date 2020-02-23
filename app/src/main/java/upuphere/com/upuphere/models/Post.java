@@ -62,6 +62,11 @@ public class Post implements Parcelable {
     @Expose
     private String author;
 
+    @ColumnInfo(name = "author_user_id")
+    @SerializedName("author_user_id")
+    @Expose
+    private String authorUserId;
+
     @ColumnInfo(name = "in_room")
     @SerializedName("in_room")
     @Expose
@@ -91,6 +96,7 @@ public class Post implements Parcelable {
         cls = in.readString();
         postTitle = in.readString();
         author = in.readString();
+        authorUserId = in.readString();
         inRoom = in.readString();
         createdAt = in.readString();
         imagePath = in.readString();
@@ -139,6 +145,14 @@ public class Post implements Parcelable {
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public String getAuthorUserId() {
+        return authorUserId;
+    }
+
+    public void setAuthorUserId(String authorUserId) {
+        this.authorUserId = authorUserId;
     }
 
     public String getInRoom() {

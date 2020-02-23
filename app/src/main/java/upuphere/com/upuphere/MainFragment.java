@@ -179,12 +179,12 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
     }
 
     private MoreOptionBottomSheetDialogFragment moreOptionBottomSheetDialogFragment;
-    private void showRoomMoreOptionMenu(AllRooms rooms) {
+    private void showRoomMoreOptionMenu(final AllRooms rooms) {
         moreOptionBottomSheetDialogFragment = MoreOptionBottomSheetDialogFragment.newInstance();
         moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
             @Override
             public void onBlockUser() {
-
+                Log.d("Main Room Block user",rooms.getRoomOwnerUserId());
             }
 
             @Override

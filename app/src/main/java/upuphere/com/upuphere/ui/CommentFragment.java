@@ -157,12 +157,12 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
     }
 
     private MoreOptionBottomSheetDialogFragment moreOptionBottomSheetDialogFragment;
-    private void showCommentMoreOptionMenu(CommentModel comment) {
+    private void showCommentMoreOptionMenu(final CommentModel comment) {
         moreOptionBottomSheetDialogFragment = MoreOptionBottomSheetDialogFragment.newInstance();
         moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
             @Override
             public void onBlockUser() {
-
+                Log.d("Comment Block user",comment.getCommenterUserId());
             }
 
             @Override

@@ -53,6 +53,11 @@ public class AllRooms extends BaseObservable implements Parcelable {
     @Expose
     private String createdBy;
 
+    @ColumnInfo(name = "room_owner_user_id")
+    @SerializedName("room_owner_user_id")
+    @Expose
+    private String roomOwnerUserId;
+
     @ColumnInfo(name = "created_at")
     @SerializedName("created_at")
     @Expose
@@ -71,6 +76,7 @@ public class AllRooms extends BaseObservable implements Parcelable {
         roomProfileImage = in.readString();
         roomDescription = in.readString();
         createdBy = in.readString();
+        roomOwnerUserId = in.readString();
         createdAt = in.readString();
         byte tmpActiveStatus = in.readByte();
         activeStatus = tmpActiveStatus == 0 ? null : tmpActiveStatus == 1;
@@ -147,6 +153,14 @@ public class AllRooms extends BaseObservable implements Parcelable {
 
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public String getRoomOwnerUserId() {
+        return roomOwnerUserId;
+    }
+
+    public void setRoomOwnerUserId(String roomOwnerUserId) {
+        this.roomOwnerUserId = roomOwnerUserId;
     }
 
     public String getCreatedAt() {

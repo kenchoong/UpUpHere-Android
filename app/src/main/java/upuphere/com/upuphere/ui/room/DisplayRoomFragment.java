@@ -212,12 +212,12 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
     }
 
     private MoreOptionBottomSheetDialogFragment moreOptionBottomSheetDialogFragment;
-    private void showPostMoreOptionMenu(Post post) {
+    private void showPostMoreOptionMenu(final Post post) {
         moreOptionBottomSheetDialogFragment = MoreOptionBottomSheetDialogFragment.newInstance();
         moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
             @Override
             public void onBlockUser() {
-
+                Log.d("DisplayRoom Block user",post.getAuthorUserId());
             }
 
             @Override

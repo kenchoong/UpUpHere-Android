@@ -235,12 +235,12 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
     }
 
     private MoreOptionBottomSheetDialogFragment moreOptionBottomSheetDialogFragment;
-    private void showPostMoreOptionMenu(Post post) {
+    private void showPostMoreOptionMenu(final Post post) {
         moreOptionBottomSheetDialogFragment = MoreOptionBottomSheetDialogFragment.newInstance();
         moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
             @Override
             public void onBlockUser() {
-
+                Log.d("Single Block user",post.getAuthorUserId());
             }
 
             @Override
@@ -270,12 +270,12 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
         showCommentMoreOptionMenu(comment);
     }
 
-    private void showCommentMoreOptionMenu(CommentModel comment) {
+    private void showCommentMoreOptionMenu(final CommentModel comment) {
         moreOptionBottomSheetDialogFragment = MoreOptionBottomSheetDialogFragment.newInstance();
         moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
             @Override
             public void onBlockUser() {
-
+                Log.d("Comment Block user",comment.getCommenterUserId());
             }
 
             @Override
