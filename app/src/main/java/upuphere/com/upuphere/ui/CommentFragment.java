@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -29,6 +30,7 @@ import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.adapter.CommentAdapter;
 import upuphere.com.upuphere.databinding.FragmentCommentBinding;
+import upuphere.com.upuphere.fragment.MoreOptionBottomSheetDialogFragment;
 import upuphere.com.upuphere.helper.DecodeToken;
 import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.models.CommentModel;
@@ -150,5 +152,35 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
         Log.d("Comment Fragment","MORE BUTTON CLICKED");
         Log.d("Comment Fragment id",comment.getUser());
         //Log.d("Main Fragment user id",comment.getCreatedBy());
+
+        showCommentMoreOptionMenu(comment);
+    }
+
+    private MoreOptionBottomSheetDialogFragment moreOptionBottomSheetDialogFragment;
+    private void showCommentMoreOptionMenu(CommentModel comment) {
+        moreOptionBottomSheetDialogFragment = MoreOptionBottomSheetDialogFragment.newInstance();
+        moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
+            @Override
+            public void onBlockUser() {
+
+            }
+
+            @Override
+            public void onHide() {
+
+            }
+
+            @Override
+            public void onReport() {
+
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
+
+        moreOptionBottomSheetDialogFragment.show(Objects.requireNonNull(getFragmentManager()),MoreOptionBottomSheetDialogFragment.TAG);
     }
 }

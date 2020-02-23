@@ -50,6 +50,7 @@
     <string name="room_name_hint">Give this room an interesting name</string>
 
     <string name="content_description">Image</string>
+    <string name="more_content_description">More Button</string>
 
     <string name="take_photo">Take Photo</string>
     <string name="choose_photo_from_album">Choose from Album</string>
@@ -105,6 +106,8 @@
     <string name="unhide">Unhide</string>
     <string name="unblock_room">Unblock Room</string>
 
-    <string name="more_content_description">More Button</string>
+    <string name="block_user">Block user</string>
+    <string name="hide">Hide</string>
+    <string name="report">Report</string>
 
 </resources>

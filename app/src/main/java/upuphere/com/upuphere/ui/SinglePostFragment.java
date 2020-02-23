@@ -30,6 +30,7 @@ import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.adapter.SinglePostAdapter;
 import upuphere.com.upuphere.databinding.FragmentSinglePostBinding;
+import upuphere.com.upuphere.fragment.MoreOptionBottomSheetDialogFragment;
 import upuphere.com.upuphere.helper.DecodeToken;
 import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.models.CommentModel;
@@ -229,11 +230,70 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
         Log.d("single Fragment","MORE BUTTON CLICKED");
         Log.d("singleFragment room id",post.getId());
         Log.d("singleFragment user id",post.getAuthor());
+
+        showPostMoreOptionMenu(post);
+    }
+
+    private MoreOptionBottomSheetDialogFragment moreOptionBottomSheetDialogFragment;
+    private void showPostMoreOptionMenu(Post post) {
+        moreOptionBottomSheetDialogFragment = MoreOptionBottomSheetDialogFragment.newInstance();
+        moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
+            @Override
+            public void onBlockUser() {
+
+            }
+
+            @Override
+            public void onHide() {
+
+            }
+
+            @Override
+            public void onReport() {
+
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
+
+        moreOptionBottomSheetDialogFragment.show(Objects.requireNonNull(getFragmentManager()),MoreOptionBottomSheetDialogFragment.TAG);
     }
 
     @Override
     public void onCommentMoreButtonClick(CommentModel comment) {
         Log.d("single c Fragment","MORE BUTTON CLICKED");
         Log.d("single c Fragment id",comment.getUser());
+
+        showCommentMoreOptionMenu(comment);
+    }
+
+    private void showCommentMoreOptionMenu(CommentModel comment) {
+        moreOptionBottomSheetDialogFragment = MoreOptionBottomSheetDialogFragment.newInstance();
+        moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
+            @Override
+            public void onBlockUser() {
+
+            }
+
+            @Override
+            public void onHide() {
+
+            }
+
+            @Override
+            public void onReport() {
+
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
+
+        moreOptionBottomSheetDialogFragment.show(Objects.requireNonNull(getFragmentManager()),MoreOptionBottomSheetDialogFragment.TAG);
     }
 }

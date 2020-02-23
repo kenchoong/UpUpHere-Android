@@ -37,6 +37,7 @@ import upuphere.com.upuphere.adapter.PostAdapter;
 import upuphere.com.upuphere.app.AppController;
 import upuphere.com.upuphere.databinding.FragmentDisplayRoomBinding;
 import upuphere.com.upuphere.fragment.DisplayPhotoFragmentArgs;
+import upuphere.com.upuphere.fragment.MoreOptionBottomSheetDialogFragment;
 import upuphere.com.upuphere.helper.DecodeToken;
 import upuphere.com.upuphere.models.AllRooms;
 import upuphere.com.upuphere.models.Post;
@@ -206,6 +207,36 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
         Log.d("Display Fragment","MORE BUTTON CLICKED");
         Log.d("DisplayFragment room id",post.getId());
         Log.d("DisplayFragment user id",post.getAuthor());
+
+        showPostMoreOptionMenu(post);
+    }
+
+    private MoreOptionBottomSheetDialogFragment moreOptionBottomSheetDialogFragment;
+    private void showPostMoreOptionMenu(Post post) {
+        moreOptionBottomSheetDialogFragment = MoreOptionBottomSheetDialogFragment.newInstance();
+        moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
+            @Override
+            public void onBlockUser() {
+
+            }
+
+            @Override
+            public void onHide() {
+
+            }
+
+            @Override
+            public void onReport() {
+
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
+
+        moreOptionBottomSheetDialogFragment.show(Objects.requireNonNull(getFragmentManager()),MoreOptionBottomSheetDialogFragment.TAG);
     }
 
 

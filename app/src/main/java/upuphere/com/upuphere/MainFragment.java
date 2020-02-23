@@ -43,6 +43,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import upuphere.com.upuphere.adapter.RoomAdapter;
 import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.databinding.FragmentMainBinding;
+import upuphere.com.upuphere.fragment.MoreOptionBottomSheetDialogFragment;
 import upuphere.com.upuphere.helper.NotificationUtils;
 import upuphere.com.upuphere.helper.SharedPreferenceBooleanLiveData;
 import upuphere.com.upuphere.helper.PrefManager;
@@ -173,6 +174,36 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
         Log.d("Main Fragment","MORE BUTTON CLICKED");
         Log.d("Main Fragment room id",rooms.getId());
         Log.d("Main Fragment user id",rooms.getCreatedBy());
+
+        showRoomMoreOptionMenu(rooms);
+    }
+
+    private MoreOptionBottomSheetDialogFragment moreOptionBottomSheetDialogFragment;
+    private void showRoomMoreOptionMenu(AllRooms rooms) {
+        moreOptionBottomSheetDialogFragment = MoreOptionBottomSheetDialogFragment.newInstance();
+        moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
+            @Override
+            public void onBlockUser() {
+
+            }
+
+            @Override
+            public void onHide() {
+
+            }
+
+            @Override
+            public void onReport() {
+
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
+
+        moreOptionBottomSheetDialogFragment.show(Objects.requireNonNull(getFragmentManager()),MoreOptionBottomSheetDialogFragment.TAG);
     }
 
     private int dpToPx(int dp) {
