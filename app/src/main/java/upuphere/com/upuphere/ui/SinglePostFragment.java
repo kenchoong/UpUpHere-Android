@@ -39,7 +39,7 @@ import upuphere.com.upuphere.viewmodel.SinglePostViewModel;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SinglePostFragment extends Fragment implements SinglePostViewModel.SinglePostInterface{
+public class SinglePostFragment extends Fragment implements SinglePostViewModel.SinglePostInterface, SinglePostAdapter.SinglePostAdapterListener {
 
     FragmentSinglePostBinding binding;
     SinglePostViewModel viewModel;
@@ -106,7 +106,7 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
     private void initialRecyclerView() {
         singlePostRecyclerView = binding.postAndCommentRecyclerView;
         singlePostRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),RecyclerView.VERTICAL,false));
-        singlePostAdapter = new SinglePostAdapter();
+        singlePostAdapter = new SinglePostAdapter(this);
         singlePostRecyclerView.setAdapter(singlePostAdapter);
     }
 
@@ -222,5 +222,18 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
         binding.postAndCommentRecyclerView.setVisibility(View.VISIBLE);
         binding.commentFieldContainer.setVisibility(View.VISIBLE);
         binding.emptyStateContainer.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onPostMoreButtonClick(Post post) {
+        Log.d("single Fragment","MORE BUTTON CLICKED");
+        Log.d("singleFragment room id",post.getId());
+        Log.d("singleFragment user id",post.getAuthor());
+    }
+
+    @Override
+    public void onCommentMoreButtonClick(CommentModel comment) {
+        Log.d("single c Fragment","MORE BUTTON CLICKED");
+        Log.d("single c Fragment id",comment.getUser());
     }
 }

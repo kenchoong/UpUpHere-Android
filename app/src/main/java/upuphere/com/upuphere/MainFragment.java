@@ -168,6 +168,13 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
         Navigation.findNavController(view).navigate(action);
     }
 
+    @Override
+    public void onMoreButtonClicked(AllRooms rooms) {
+        Log.d("Main Fragment","MORE BUTTON CLICKED");
+        Log.d("Main Fragment room id",rooms.getId());
+        Log.d("Main Fragment user id",rooms.getCreatedBy());
+    }
+
     private int dpToPx(int dp) {
         Resources r = getResources();
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));

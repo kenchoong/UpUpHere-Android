@@ -201,6 +201,13 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
         Toast.makeText(getActivity(), post.getAuthor(), Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onMoreButtonClicked(Post post) {
+        Log.d("Display Fragment","MORE BUTTON CLICKED");
+        Log.d("DisplayFragment room id",post.getId());
+        Log.d("DisplayFragment user id",post.getAuthor());
+    }
+
 
     @Override
     public void onStop() {

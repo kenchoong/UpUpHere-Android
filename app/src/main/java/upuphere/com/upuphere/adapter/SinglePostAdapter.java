@@ -25,6 +25,11 @@ public class SinglePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private static final int COMMENT_TYPE = 2222;
 
     private LayoutInflater layoutInflater;
+
+    public SinglePostAdapter(SinglePostAdapterListener listener) {
+        this.listener = listener;
+    }
+
     private SinglePostAdapterListener listener;
 
     private List<CommentModel> comment;
@@ -43,7 +48,9 @@ public class SinglePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
 
     public interface SinglePostAdapterListener{
-        //void onPostClick();
+        void onPostMoreButtonClick(Post post);
+
+        void onCommentMoreButtonClick(CommentModel comment);
     }
 
     public class SinglePostViewHolder extends RecyclerView.ViewHolder{
@@ -93,7 +100,7 @@ public class SinglePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         int viewType = holder.getItemViewType();
         switch (viewType){
             case COMMENT_TYPE:
@@ -102,11 +109,25 @@ public class SinglePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     commentViewHolder.commentBinding.setData(comment.get(position));
                 }
 
+                ((CommentViewHolder) holder).commentBinding.moreButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        listener.onCommentMoreButtonClick(comment.get(position));
+                    }
+                });
+
                 break;
             case POST_TYPE:
                 default:
                     SinglePostViewHolder singlePostViewHolder = (SinglePostViewHolder) holder;
                     singlePostViewHolder.binding.setData(post.get(position));
+
+                    ((SinglePostViewHolder) holder).binding.moreButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            listener.onPostMoreButtonClick(post.get(position));
+                        }
+                    });
                 break;
         }
 

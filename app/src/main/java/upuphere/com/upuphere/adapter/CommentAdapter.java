@@ -2,6 +2,7 @@ package upuphere.com.upuphere.adapter;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.List;
@@ -17,6 +18,12 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
 
     private List<CommentModel> comment;
     private LayoutInflater layoutInflater;
+
+    public CommentAdapter(CommentAdapterListner listener) {
+        this.listener = listener;
+    }
+
+    private CommentAdapterListner listener;
 
     public void setComment(List<CommentModel> commentList){
         this.comment = commentList;
@@ -36,8 +43,15 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull CommentViewHolder holder, final int position) {
         holder.binding.setData(comment.get(position));
+
+        holder.binding.moreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onMoreButtonClicked(comment.get(position));
+            }
+        });
     }
 
     @Override
@@ -59,5 +73,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
             this.binding = itemRowBinding;
 
         }
+    }
+
+    public interface CommentAdapterListner{
+        void onMoreButtonClicked(CommentModel comment);
     }
 }

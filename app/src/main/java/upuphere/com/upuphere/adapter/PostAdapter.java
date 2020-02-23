@@ -69,6 +69,13 @@ public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.PostViewHolde
                 listener.onShareClicked(post.get(position));
             }
         });
+
+        holder.binding.moreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onMoreButtonClicked(post.get(position));
+            }
+        });
     }
 
     @Override
@@ -87,5 +94,7 @@ public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.PostViewHolde
         void onCommentClicked(Post post);
 
         void onShareClicked(Post post);
+
+        void onMoreButtonClicked(Post post);
     }
 }

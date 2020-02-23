@@ -59,6 +59,13 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
                 listener.onRoomClicked(roomList.get(position));
             }
         });
+
+        holder.binding.moreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onMoreButtonClicked(roomList.get(position));
+            }
+        });
     }
 
     @Override
@@ -75,6 +82,8 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
     public interface RoomAdapterListener{
         void onRoomClicked(AllRooms room);
+
+        void onMoreButtonClicked(AllRooms rooms);
     }
 
 

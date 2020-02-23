@@ -40,7 +40,7 @@ import upuphere.com.upuphere.viewmodel.CommentViewModel;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CommentFragment extends Fragment implements CommentViewModel.CommentInterface {
+public class CommentFragment extends Fragment implements CommentViewModel.CommentInterface, CommentAdapter.CommentAdapterListner {
 
 
     public CommentFragment() {
@@ -85,7 +85,7 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
     private void initializeRecyclerView() {
         commentRecyclerView = binding.commentRecyclerView;
         commentRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),RecyclerView.VERTICAL,false));
-        commentAdapter = new CommentAdapter();
+        commentAdapter = new CommentAdapter(this);
         commentRecyclerView.setAdapter(commentAdapter);
     }
 
@@ -145,4 +145,10 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
     }
 
 
+    @Override
+    public void onMoreButtonClicked(CommentModel comment) {
+        Log.d("Comment Fragment","MORE BUTTON CLICKED");
+        Log.d("Comment Fragment id",comment.getUser());
+        //Log.d("Main Fragment user id",comment.getCreatedBy());
+    }
 }
