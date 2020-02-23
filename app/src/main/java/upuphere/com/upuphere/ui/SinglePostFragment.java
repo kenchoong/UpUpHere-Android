@@ -249,7 +249,7 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
                     @Override
                     public void onTokenValid() {
 
-                        viewModel.blockUserOrHidePost(userId, AppConfig.BLOCK_USER, new StringCallBack() {
+                        viewModel.blockUserOrHidePostOrHideComment(userId,null, AppConfig.BLOCK_USER, new StringCallBack() {
                             @Override
                             public void success(String item) {
                                 Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
@@ -279,7 +279,7 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
                     @Override
                     public void onTokenValid() {
 
-                        viewModel.blockUserOrHidePost(postId, AppConfig.HIDE_POST, new StringCallBack() {
+                        viewModel.blockUserOrHidePostOrHideComment(postId, null,AppConfig.HIDE_POST, new StringCallBack() {
                             @Override
                             public void success(String item) {
                                 Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
@@ -310,7 +310,7 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
                     @Override
                     public void onTokenValid() {
 
-                        viewModel.blockUserOrHidePost(userId, AppConfig.BLOCK_USER, new StringCallBack() {
+                        viewModel.blockUserOrHidePostOrHideComment(userId,null, AppConfig.BLOCK_USER, new StringCallBack() {
                             @Override
                             public void success(String item) {
                                 Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
@@ -356,21 +356,94 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
             @Override
             public void onBlockUser() {
                 Log.d("Comment Block user",comment.getCommenterUserId());
+
+                final String userId = comment.getCommenterUserId();
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+
+                        viewModel.blockUserOrHidePostOrHideComment(userId,null, AppConfig.BLOCK_USER, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void showError(String error) {
+                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
             }
 
             @Override
             public void onHide() {
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
 
+                        viewModel.blockUserOrHidePostOrHideComment(comment.getCommentId(),postId, AppConfig.HIDE_COMMENT, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void showError(String error) {
+                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
             }
 
             @Override
             public void onReport() {
+                final String userId = comment.getCommenterUserId();
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
 
+                        viewModel.blockUserOrHidePostOrHideComment(userId,null, AppConfig.BLOCK_USER, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void showError(String error) {
+                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
             }
 
             @Override
             public void onCancel() {
-
+                moreOptionBottomSheetDialogFragment.dismiss();
             }
         });
 

@@ -60,7 +60,7 @@ public class DisplayRoomViewModel extends AndroidViewModel {
     }
 
     public void blockUserOrHidePost(String postOrUserId, int operationType, final StringCallBack callback){
-        postRepo.blockUserOrHidePost(postOrUserId, operationType, new StringCallBack() {
+        postRepo.blockSomething(postOrUserId,null, operationType, new StringCallBack() {
             @Override
             public void success(String item) {
 

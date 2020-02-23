@@ -52,4 +52,6 @@ public class AppConfig {
     public static final int BLOCK_USER = 2222;
 
     public static final int HIDE_ROOM = 3333;
+
+    public static final int HIDE_COMMENT = 4444;
 }

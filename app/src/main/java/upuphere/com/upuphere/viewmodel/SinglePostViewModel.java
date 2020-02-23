@@ -12,6 +12,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import upuphere.com.upuphere.Interface.StringCallBack;
+import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.models.CommentModel;
 import upuphere.com.upuphere.models.Post;
 import upuphere.com.upuphere.repositories.PostRepo;
@@ -108,20 +109,55 @@ public class SinglePostViewModel extends AndroidViewModel {
         });
     }
 
-    public void blockUserOrHidePost(String postOrUserId, int operationType, final StringCallBack callback){
+    public void blockUserOrHidePostOrHideComment(String itemIdWannaToBlock,String postIdForHideComment, int operationType, final StringCallBack callback){
         setIsLoading(true);
-        postRepo.blockUserOrHidePost(postOrUserId, operationType, new StringCallBack() {
-            @Override
-            public void success(String item) {
-                setIsLoading(false);
-                callback.success(item);
-            }
 
-            @Override
-            public void showError(String error) {
-                setIsLoading(false);
-                callback.showError(error);
-            }
-        });
+        if(operationType == AppConfig.BLOCK_USER) {
+            postRepo.blockSomething(itemIdWannaToBlock, null, operationType, new StringCallBack() {
+                @Override
+                public void success(String item) {
+                    setIsLoading(false);
+                    callback.success(item);
+                }
+
+                @Override
+                public void showError(String error) {
+                    setIsLoading(false);
+                    callback.showError(error);
+                }
+            });
+        }
+
+        if(operationType == AppConfig.HIDE_POST) {
+            postRepo.blockSomething(itemIdWannaToBlock, null, operationType, new StringCallBack() {
+                @Override
+                public void success(String item) {
+                    setIsLoading(false);
+                    callback.success(item);
+                }
+
+                @Override
+                public void showError(String error) {
+                    setIsLoading(false);
+                    callback.showError(error);
+                }
+            });
+        }
+
+        if(operationType == AppConfig.HIDE_COMMENT){
+            postRepo.blockSomething(itemIdWannaToBlock, postIdForHideComment, operationType, new StringCallBack() {
+                @Override
+                public void success(String item) {
+                    setIsLoading(false);
+                    callback.success(item);
+                }
+
+                @Override
+                public void showError(String error) {
+                    setIsLoading(false);
+                    callback.showError(error);
+                }
+            });
+        }
     }
 }

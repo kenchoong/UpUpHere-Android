@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.app.AppConfig;
@@ -155,42 +156,53 @@ public class PostRepo {
         return postMutableLiveData;
     }
 
-    public void blockUserOrHidePost(String postOrUserId,int operationType,final StringCallBack callBack){
-        JSONObject params;
+    public void blockSomething(String itemIdWannaBlock, @Nullable String postIdForHideComment, int operationType, final StringCallBack callBack){
+        JSONObject params = null;
         switch (operationType){
             case AppConfig.BLOCK_USER:
                 String[] keys = new String[]{"blocked_user_id"};
-                String[] values = new String[]{postOrUserId};
+                String[] values = new String[]{itemIdWannaBlock};
                 params = VolleyRequest.getParams(keys,values);
                 break;
+            case AppConfig.HIDE_COMMENT:
+                if(postIdForHideComment != null){
+                    String[] keys1 = new String[]{"blocked_comment_id","post_id"};
+                    String[] values1 = new String[]{itemIdWannaBlock,postIdForHideComment};
+                    params = VolleyRequest.getParams(keys1,values1);
+                }else{
+                    callBack.showError("Post not exists!");
+                }
+                break;
             case AppConfig.HIDE_POST:
-                default:
-                    String[] key = new String[]{"blocked_post_id"};
-                    String[] value = new String[]{postOrUserId};
-                    params = VolleyRequest.getParams(key,value);
+            default:
+                String[] key = new String[]{"blocked_post_id"};
+                String[] value = new String[]{itemIdWannaBlock};
+                params = VolleyRequest.getParams(key,value);
                 break;
         }
 
-        JsonObjectRequest request = VolleyRequest.postJsonAccessRequestWithoutRetry(AppConfig.URL_BLOCK_UNBLOCK, params, new VolleyRequest.ResponseCallBack() {
-            @Override
-            public void onSuccess(JSONObject response) {
-                try {
-                    String message = response.getString("message");
-                    callBack.success(message);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    callBack.showError(e.getMessage());
+        if(params != null) {
+            JsonObjectRequest request = VolleyRequest.postJsonAccessRequestWithoutRetry(AppConfig.URL_BLOCK_UNBLOCK, params, new VolleyRequest.ResponseCallBack() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    try {
+                        String message = response.getString("message");
+                        callBack.success(message);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        callBack.showError(e.getMessage());
+                    }
                 }
-            }
-            @Override
-            public void onError(String error) {
-                callBack.showError(error);
-            }
-        });
 
-        AppController.getInstance().addToRequestQueue(request);
+                @Override
+                public void onError(String error) {
+                    callBack.showError(error);
+                }
+            });
 
+            AppController.getInstance().addToRequestQueue(request);
 
+        }
     }
 
     public void unHidePost(String postId, final StringCallBack callBack){

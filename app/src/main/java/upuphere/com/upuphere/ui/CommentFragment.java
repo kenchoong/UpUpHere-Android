@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -29,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.adapter.CommentAdapter;
+import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.databinding.FragmentCommentBinding;
 import upuphere.com.upuphere.fragment.MoreOptionBottomSheetDialogFragment;
 import upuphere.com.upuphere.helper.DecodeToken;
@@ -157,27 +159,106 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
     }
 
     private MoreOptionBottomSheetDialogFragment moreOptionBottomSheetDialogFragment;
+
     private void showCommentMoreOptionMenu(final CommentModel comment) {
+
         moreOptionBottomSheetDialogFragment = MoreOptionBottomSheetDialogFragment.newInstance();
         moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
             @Override
             public void onBlockUser() {
                 Log.d("Comment Block user",comment.getCommenterUserId());
+
+                final String userId = comment.getCommenterUserId();
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+
+                        commentViewModel.blockUserOrHideComment(userId,null, AppConfig.BLOCK_USER, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void showError(String error) {
+                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
             }
 
             @Override
             public void onHide() {
+                Log.d("Comment Block commentId",comment.getCommentId());
 
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+
+                        commentViewModel.blockUserOrHideComment(comment.getCommentId(),postId, AppConfig.HIDE_COMMENT, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void showError(String error) {
+                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
             }
 
             @Override
             public void onReport() {
+                Log.d("Comment Block user",comment.getCommenterUserId());
 
+                final String userId = comment.getCommenterUserId();
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+
+                        commentViewModel.blockUserOrHideComment(userId,null, AppConfig.BLOCK_USER, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void showError(String error) {
+                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
             }
 
             @Override
             public void onCancel() {
-
+                moreOptionBottomSheetDialogFragment.dismiss();
             }
         });
 

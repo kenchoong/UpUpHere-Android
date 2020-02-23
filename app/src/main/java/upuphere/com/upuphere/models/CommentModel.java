@@ -26,6 +26,10 @@ public class CommentModel{
     @Expose
     private String createdAt;
 
+    @SerializedName("comment_id")
+    @Expose
+    private String commentId;
+
     public String getCls() {
         return cls;
     }
@@ -64,5 +68,13 @@ public class CommentModel{
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getCommentId() {
+        return commentId;
+    }
+
+    public void setCommentId(String commentId) {
+        this.commentId = commentId;
     }
 }
