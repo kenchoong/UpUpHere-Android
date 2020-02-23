@@ -9,6 +9,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.models.AllRooms;
 import upuphere.com.upuphere.repositories.RoomRepo;
 
@@ -35,6 +36,21 @@ public class MainViewModel extends AndroidViewModel {
 
     public LiveData<List<AllRooms>> getRoomList(){
         return roomRepo.getRoomListMutableData();
+    }
+
+    public void blockUserOrHideRoom(String roomIdOrUserId, int operationType, final StringCallBack callBack){
+
+        roomRepo.blockUserOrHideRoom(roomIdOrUserId, operationType, new StringCallBack() {
+            @Override
+            public void success(String item) {
+                callBack.success(item);
+            }
+
+            @Override
+            public void showError(String error) {
+                callBack.showError(error);
+            }
+        });
     }
 
 }

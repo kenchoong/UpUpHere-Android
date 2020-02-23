@@ -40,10 +40,12 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.adapter.RoomAdapter;
 import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.databinding.FragmentMainBinding;
 import upuphere.com.upuphere.fragment.MoreOptionBottomSheetDialogFragment;
+import upuphere.com.upuphere.helper.DecodeToken;
 import upuphere.com.upuphere.helper.NotificationUtils;
 import upuphere.com.upuphere.helper.SharedPreferenceBooleanLiveData;
 import upuphere.com.upuphere.helper.PrefManager;
@@ -185,21 +187,90 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
             @Override
             public void onBlockUser() {
                 Log.d("Main Room Block user",rooms.getRoomOwnerUserId());
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+
+                        mainViewModel.blockUserOrHideRoom(rooms.getRoomOwnerUserId(), AppConfig.BLOCK_USER, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void showError(String error) {
+                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
             }
 
             @Override
             public void onHide() {
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+                        mainViewModel.blockUserOrHideRoom(rooms.getId(), AppConfig.HIDE_ROOM, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                            }
 
+                            @Override
+                            public void showError(String error) {
+                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
             }
 
             @Override
             public void onReport() {
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+                        mainViewModel.blockUserOrHideRoom(rooms.getId(), AppConfig.HIDE_ROOM, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void showError(String error) {
+                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
 
             }
 
             @Override
             public void onCancel() {
-
+                moreOptionBottomSheetDialogFragment.dismiss();
             }
         });
 

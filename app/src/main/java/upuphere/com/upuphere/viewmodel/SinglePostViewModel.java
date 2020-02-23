@@ -107,4 +107,21 @@ public class SinglePostViewModel extends AndroidViewModel {
             }
         });
     }
+
+    public void blockUserOrHidePost(String postOrUserId, int operationType, final StringCallBack callback){
+        setIsLoading(true);
+        postRepo.blockUserOrHidePost(postOrUserId, operationType, new StringCallBack() {
+            @Override
+            public void success(String item) {
+                setIsLoading(false);
+                callback.success(item);
+            }
+
+            @Override
+            public void showError(String error) {
+                setIsLoading(false);
+                callback.showError(error);
+            }
+        });
+    }
 }

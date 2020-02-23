@@ -155,6 +155,44 @@ public class PostRepo {
         return postMutableLiveData;
     }
 
+    public void blockUserOrHidePost(String postOrUserId,int operationType,final StringCallBack callBack){
+        JSONObject params;
+        switch (operationType){
+            case AppConfig.BLOCK_USER:
+                String[] keys = new String[]{"blocked_user_id"};
+                String[] values = new String[]{postOrUserId};
+                params = VolleyRequest.getParams(keys,values);
+                break;
+            case AppConfig.HIDE_POST:
+                default:
+                    String[] key = new String[]{"blocked_post_id"};
+                    String[] value = new String[]{postOrUserId};
+                    params = VolleyRequest.getParams(key,value);
+                break;
+        }
+
+        JsonObjectRequest request = VolleyRequest.postJsonAccessRequestWithoutRetry(AppConfig.URL_BLOCK_UNBLOCK, params, new VolleyRequest.ResponseCallBack() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    String message = response.getString("message");
+                    callBack.success(message);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    callBack.showError(e.getMessage());
+                }
+            }
+            @Override
+            public void onError(String error) {
+                callBack.showError(error);
+            }
+        });
+
+        AppController.getInstance().addToRequestQueue(request);
+
+
+    }
+
     public void unHidePost(String postId, final StringCallBack callBack){
         String[] key = new String[]{"blocked_post_id"};
         String[] value = new String[]{postId};

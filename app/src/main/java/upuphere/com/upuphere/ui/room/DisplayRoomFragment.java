@@ -34,6 +34,7 @@ import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.MainActivity;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.adapter.PostAdapter;
+import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.app.AppController;
 import upuphere.com.upuphere.databinding.FragmentDisplayRoomBinding;
 import upuphere.com.upuphere.fragment.DisplayPhotoFragmentArgs;
@@ -217,22 +218,105 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
         moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
             @Override
             public void onBlockUser() {
-                Log.d("DisplayRoom Block user",post.getAuthorUserId());
+                Log.d("Single Block user",post.getAuthorUserId());
+                final String userId = post.getAuthorUserId();
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+
+                        viewModel.blockUserOrHidePost(userId, AppConfig.BLOCK_USER, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void showError(String error) {
+                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+
+
             }
 
             @Override
             public void onHide() {
+                Log.d("SinglePost post id",post.getId());
+
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+
+                        viewModel.blockUserOrHidePost(post.getId(), AppConfig.HIDE_POST, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+
+                                //todo:; here do whatever u want to update the ui after hide post
+                            }
+
+                            @Override
+                            public void showError(String error) {
+                                Log.d("HIDE POST",error);
+                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+
 
             }
 
             @Override
             public void onReport() {
+                final String userId = post.getAuthorUserId();
+
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+
+                        viewModel.blockUserOrHidePost(userId, AppConfig.BLOCK_USER, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void showError(String error) {
+                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
 
             }
 
             @Override
             public void onCancel() {
-
+                moreOptionBottomSheetDialogFragment.dismiss();
             }
         });
 

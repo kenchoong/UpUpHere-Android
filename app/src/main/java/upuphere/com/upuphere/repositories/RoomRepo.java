@@ -90,6 +90,43 @@ public class RoomRepo {
         return roomMutableLiveData;
     }
 
+    public void blockUserOrHideRoom(String roomOrUserId,int operationType,final StringCallBack callBack){
+        JSONObject params;
+        switch (operationType){
+            case AppConfig.BLOCK_USER:
+                String[] keys = new String[]{"blocked_user_id"};
+                String[] values = new String[]{roomOrUserId};
+                params = VolleyRequest.getParams(keys,values);
+                break;
+            case AppConfig.HIDE_ROOM:
+            default:
+                String[] key = new String[]{"blocked_room_id"};
+                String[] value = new String[]{roomOrUserId};
+                params = VolleyRequest.getParams(key,value);
+                break;
+        }
+
+        JsonObjectRequest request = VolleyRequest.postJsonAccessRequestWithoutRetry(AppConfig.URL_BLOCK_UNBLOCK, params, new VolleyRequest.ResponseCallBack() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    String message = response.getString("message");
+                    callBack.success(message);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    callBack.showError(e.getMessage());
+                }
+            }
+            @Override
+            public void onError(String error) {
+                callBack.showError(error);
+            }
+        });
+
+        AppController.getInstance().addToRequestQueue(request);
+
+
+    }
 
     private void getAllRoomFromLocalDB(){
 

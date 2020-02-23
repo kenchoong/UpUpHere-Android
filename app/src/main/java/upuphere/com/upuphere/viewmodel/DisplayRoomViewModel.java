@@ -59,6 +59,22 @@ public class DisplayRoomViewModel extends AndroidViewModel {
         });
     }
 
+    public void blockUserOrHidePost(String postOrUserId, int operationType, final StringCallBack callback){
+        postRepo.blockUserOrHidePost(postOrUserId, operationType, new StringCallBack() {
+            @Override
+            public void success(String item) {
+
+                callback.success(item);
+            }
+
+            @Override
+            public void showError(String error) {
+
+                callback.showError(error);
+            }
+        });
+    }
+
     public LiveData<List<Post>> getAllPostInRoom(String roomId){
         return postRepo.getAllPostWithRoomId(roomId, new StringCallBack() {
             @Override
