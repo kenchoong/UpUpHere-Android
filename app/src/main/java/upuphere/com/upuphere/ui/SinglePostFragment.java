@@ -252,11 +252,16 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
                         viewModel.blockUserOrHidePostOrHideComment(userId,null, AppConfig.BLOCK_USER, new StringCallBack() {
                             @Override
                             public void success(String item) {
-                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                binding.postAndCommentRecyclerView.setVisibility(View.GONE);
+                                binding.commentFieldContainer.setVisibility(View.GONE);
+                                binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                                binding.emptyStateContainer.setText(getResources().getString(R.string.user_success_block));
                             }
 
                             @Override
                             public void showError(String error) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
                                 Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -282,12 +287,17 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
                         viewModel.blockUserOrHidePostOrHideComment(postId, null,AppConfig.HIDE_POST, new StringCallBack() {
                             @Override
                             public void success(String item) {
-                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                binding.postAndCommentRecyclerView.setVisibility(View.GONE);
+                                binding.commentFieldContainer.setVisibility(View.GONE);
+                                binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                                binding.emptyStateContainer.setText(getResources().getString(R.string.post_success_hide));
                             }
 
                             @Override
                             public void showError(String error) {
                                 Log.d("HIDE POST",error);
+                                moreOptionBottomSheetDialogFragment.dismiss();
                                 Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -313,13 +323,16 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
                         viewModel.blockUserOrHidePostOrHideComment(userId,null, AppConfig.BLOCK_USER, new StringCallBack() {
                             @Override
                             public void success(String item) {
-                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
-
-                                //todo:; here do whatever u want to update the ui after hide post
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                binding.postAndCommentRecyclerView.setVisibility(View.GONE);
+                                binding.commentFieldContainer.setVisibility(View.GONE);
+                                binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                                binding.emptyStateContainer.setText(getResources().getString(R.string.user_success_report));
                             }
 
                             @Override
                             public void showError(String error) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
                                 Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -366,6 +379,8 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
                         viewModel.blockUserOrHidePostOrHideComment(userId,null, AppConfig.BLOCK_USER, new StringCallBack() {
                             @Override
                             public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                singlePostAdapter.removeCommentCreatedByBlockedUser(comment.getCommenterUserId());
                                 Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
                             }
 
@@ -394,6 +409,8 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
                         viewModel.blockUserOrHidePostOrHideComment(comment.getCommentId(),postId, AppConfig.HIDE_COMMENT, new StringCallBack() {
                             @Override
                             public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                singlePostAdapter.removeHidedComment(comment);
                                 Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
                             }
 
@@ -423,6 +440,8 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
                         viewModel.blockUserOrHidePostOrHideComment(userId,null, AppConfig.BLOCK_USER, new StringCallBack() {
                             @Override
                             public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                singlePostAdapter.removeCommentCreatedByBlockedUser(comment.getCommenterUserId());
                                 Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
                             }
 

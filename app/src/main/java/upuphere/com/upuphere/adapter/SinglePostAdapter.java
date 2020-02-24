@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import org.w3c.dom.Comment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -32,7 +33,7 @@ public class SinglePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private SinglePostAdapterListener listener;
 
-    private List<CommentModel> comment;
+    private List<CommentModel> commentList;
     private List<Post> post;
     private int size = 0;
 
@@ -42,10 +43,25 @@ public class SinglePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public void setComment(List<CommentModel> comment){
-        this.comment = comment;
+        this.commentList = comment;
         notifyDataSetChanged();
     }
 
+    public void removeHidedComment(CommentModel comment){
+        commentList.remove(comment);
+        notifyDataSetChanged();
+    }
+
+    public void removeCommentCreatedByBlockedUser(String userId){
+        List<CommentModel> shouldRemoveComment = new ArrayList<>();
+        for(CommentModel comment : commentList){
+            if(comment.getCommenterUserId().equals(userId)){
+                shouldRemoveComment.add(comment);
+            }
+        }
+        commentList.removeAll(shouldRemoveComment);
+        notifyDataSetChanged();
+    }
 
     public interface SinglePostAdapterListener{
         void onPostMoreButtonClick(Post post);
@@ -105,14 +121,14 @@ public class SinglePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         switch (viewType){
             case COMMENT_TYPE:
                 CommentViewHolder commentViewHolder = (CommentViewHolder) holder;
-                if(position < post.size() + comment.size() - 1){
-                    commentViewHolder.commentBinding.setData(comment.get(position));
+                if(position < post.size() + commentList.size() - 1){
+                    commentViewHolder.commentBinding.setData(commentList.get(position));
                 }
 
                 ((CommentViewHolder) holder).commentBinding.moreButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        listener.onCommentMoreButtonClick(comment.get(position));
+                        listener.onCommentMoreButtonClick(commentList.get(position));
                     }
                 });
 
@@ -135,8 +151,8 @@ public class SinglePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemCount() {
-        if(post != null && comment != null){
-            return post.size() + comment.size();
+        if(post != null && commentList != null){
+            return post.size() + commentList.size();
         }
         else if(post != null){
             return 1;

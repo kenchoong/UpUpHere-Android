@@ -110,4 +110,8 @@
     <string name="hide">Hide</string>
     <string name="report">Report</string>
 
+    <string name="post_success_hide">Post already hided</string>
+    <string name="user_success_block">User already block</string>
+    <string name="user_success_report">Successfully report user</string>
+
 </resources>
