@@ -20,6 +20,7 @@ public class PrefManager {
 
     private static final String USER_ID= "user_id";
     private static final String USERNAME = "username";
+    private static final String USER_REAL_ID = "user_real_id";
     private static final String USER_DEVICE_ID= "user_device_id";
     private static final String USER_SESSION_ID= "user_session_id";
     private static final String USER_ACCESS_TOKEN = "access_token";
@@ -71,6 +72,15 @@ public class PrefManager {
 
     public String getUserId(){
         return pref.getString(USER_ID,null);
+    }
+
+    public void setUserRealId(String userID){
+        editor.putString(USER_REAL_ID,userID);
+        editor.commit();
+    }
+
+    public String getUserRealId(){
+        return pref.getString(USER_REAL_ID,null);
     }
 
     public String getUsername(){

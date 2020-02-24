@@ -71,27 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         setupNavigation();
 
-        requestFirebaseToken();
-
         viewModel = ViewModelProviders.of(this).get(NotificationViewModel.class);
-    }
-
-    private void requestFirebaseToken() {
-        String myFirebaseToken = prefManager.getFirebaseToken();
-
-        if(TextUtils.isEmpty(myFirebaseToken)){
-           UserRepo.getInstance().requestTokenFromFirebase(this, new StringCallBack() {
-               @Override
-               public void success(String newToken) {
-                   prefManager.setFirebaseToken(newToken);
-               }
-
-               @Override
-               public void showError(String error) {
-                   Log.d("Firebase error",error);
-               }
-           });
-        }
     }
 
     private void setupNavigation() {

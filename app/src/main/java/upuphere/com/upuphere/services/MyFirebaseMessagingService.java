@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -20,10 +22,12 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.MainActivity;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.app.AppController;
+import upuphere.com.upuphere.helper.DecodeToken;
 import upuphere.com.upuphere.helper.NotificationUtils;
 import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.models.NotificationModel;
@@ -35,12 +39,39 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public static final String TAG = MyFirebaseMessagingService.class.getSimpleName();
 
     @Override
-    public void onNewToken(@NonNull String newToken) {
+    public void onNewToken(@NonNull final String newToken) {
         super.onNewToken(newToken);
         Log.d("New Token 1",newToken);
 
-        new PrefManager(AppController.getContext()).setFirebaseToken(newToken);
-        UserRepo.getInstance().updateFirebaseTokenToServer(AppController.getContext(),newToken);
+        PrefManager prefManager = new PrefManager(AppController.getContext());
+        prefManager.setFirebaseToken(newToken);
+
+        if(!TextUtils.isEmpty(prefManager.getUserAccessToken())) {
+            DecodeToken decodeToken = DecodeToken.newInstance();
+            decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                @Override
+                public void onTokenValid() {
+
+                    UserRepo.getInstance().updateFirebaseTokenToServer(newToken, new StringCallBack() {
+                        @Override
+                        public void success(String item) {
+                            Log.d("Update token",item);
+                        }
+
+                        @Override
+                        public void showError(String error) {
+                            Log.d("Update token",error);
+                        }
+                    });
+                }
+
+                @Override
+                public void onTokenAllInvalid() {
+
+                }
+            });
+            decodeToken.checkAccessTokenRefreshTokenIfExpired(AppController.getContext());
+        }
     }
 
     @Override

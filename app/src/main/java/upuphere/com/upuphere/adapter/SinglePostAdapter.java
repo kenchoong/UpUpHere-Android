@@ -63,6 +63,14 @@ public class SinglePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         notifyDataSetChanged();
     }
 
+    public void removeAllData(){
+        if(commentList !=null & post != null){
+            commentList.clear();
+            post.clear();
+            notifyDataSetChanged();
+        }
+    }
+
     public interface SinglePostAdapterListener{
         void onPostMoreButtonClick(Post post);
 

@@ -11,6 +11,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import upuphere.com.upuphere.Interface.GetResultListener;
 import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.models.CommentModel;
@@ -28,7 +29,7 @@ public class SinglePostViewModel extends AndroidViewModel {
     public interface SinglePostInterface {
         void onSend();
 
-        void onPostOrUserBlock(String message);
+        void onPostOrUserBlock(String message,int blockType,String blockItemId);
 
         void onClickUnHideButton();
     }
@@ -55,33 +56,34 @@ public class SinglePostViewModel extends AndroidViewModel {
         isLoading.setValue(isLoadingOrNot);
     }
 
-    public LiveData<List<Post>> getSinglePostByPostId(String postId){
-        return postRepo.getSinglePostByPostId(postId, new StringCallBack() {
+    public LiveData<List<Post>> getSinglePostByPostId(final String postId){
+        return postRepo.getSinglePostByPostId(postId, new GetResultListener() {
+
             @Override
-            public void success(String item) {
-                //do nothing
+            public void onHidedPost(String message,int blockType) {
+                commentInterface.onPostOrUserBlock(message,blockType,postId);
             }
 
             @Override
-            public void showError(String error) {
-                Log.d("SINGLEPOSTFRAGMENT",error);
-                commentInterface.onPostOrUserBlock(error);
+            public void onBlockedUser(String message,int blockType, String blockUserId) {
+                commentInterface.onPostOrUserBlock(message,blockType,blockUserId);
             }
         });
     }
 
-    public void unHidePost(String postId, final StringCallBack callBack){
+    public void unHideSomething(String unHideItemId,int unhideType,final StringCallBack callback){
         setIsLoading(true);
-        postRepo.unHidePost(postId, new StringCallBack() {
+
+        postRepo.unHideSomething(unHideItemId, unhideType, new StringCallBack() {
             @Override
             public void success(String item) {
-                callBack.success(item);
+                callback.success(item);
                 setIsLoading(false);
             }
 
             @Override
             public void showError(String error) {
-                callBack.showError(error);
+                callback.showError(error);
                 setIsLoading(false);
             }
         });

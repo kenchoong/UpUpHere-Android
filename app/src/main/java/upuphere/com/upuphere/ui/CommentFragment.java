@@ -60,6 +60,8 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
 
     List<Post> postList;
     String postId;
+    PrefManager prefManager;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -78,6 +80,8 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        prefManager = new PrefManager(getActivity());
 
         commentViewModel.setCommentInterface(this);
 
@@ -182,36 +186,41 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
         moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
             @Override
             public void onBlockUser() {
-                Log.d("Comment Block user",comment.getCommenterUserId());
+                Log.d("Comment Block user", comment.getCommenterUserId());
 
                 final String userId = comment.getCommenterUserId();
-                DecodeToken decodeToken = DecodeToken.newInstance();
-                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
-                    @Override
-                    public void onTokenValid() {
+                if (prefManager.getUserRealId().equals(userId)) {
+                    moreOptionBottomSheetDialogFragment.dismiss();
+                    Toast.makeText(getActivity(), "Cannot block yourself", Toast.LENGTH_SHORT).show();
+                } else {
+                    DecodeToken decodeToken = DecodeToken.newInstance();
+                    decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                        @Override
+                        public void onTokenValid() {
 
-                        commentViewModel.blockUserOrHideComment(userId,null, AppConfig.BLOCK_USER, new StringCallBack() {
-                            @Override
-                            public void success(String item) {
-                                moreOptionBottomSheetDialogFragment.dismiss();
-                                commentAdapter.removeCommentCreatedByBlockedUser(comment.getCommenterUserId());
-                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
-                            }
+                            commentViewModel.blockUserOrHideComment(userId, null, AppConfig.BLOCK_USER, new StringCallBack() {
+                                @Override
+                                public void success(String item) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    commentAdapter.removeCommentCreatedByBlockedUser(comment.getCommenterUserId());
+                                    Toast.makeText(getActivity(), item, Toast.LENGTH_SHORT).show();
+                                }
 
-                            @Override
-                            public void showError(String error) {
-                                moreOptionBottomSheetDialogFragment.dismiss();
-                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
+                                @Override
+                                public void showError(String error) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
 
-                    @Override
-                    public void onTokenAllInvalid() {
+                        @Override
+                        public void onTokenAllInvalid() {
 
-                    }
-                });
-                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+                        }
+                    });
+                    decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+                }
             }
 
             @Override
@@ -252,33 +261,39 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
                 Log.d("Comment Block user",comment.getCommenterUserId());
 
                 final String userId = comment.getCommenterUserId();
-                DecodeToken decodeToken = DecodeToken.newInstance();
-                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
-                    @Override
-                    public void onTokenValid() {
+                if(prefManager.getUserRealId().equals(userId)){
+                    moreOptionBottomSheetDialogFragment.dismiss();
+                    Toast.makeText(getActivity(),"Cannot report yourself",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    DecodeToken decodeToken = DecodeToken.newInstance();
+                    decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                        @Override
+                        public void onTokenValid() {
 
-                        commentViewModel.blockUserOrHideComment(userId,null, AppConfig.BLOCK_USER, new StringCallBack() {
-                            @Override
-                            public void success(String item) {
-                                moreOptionBottomSheetDialogFragment.dismiss();
-                                commentAdapter.removeCommentCreatedByBlockedUser(comment.getCommenterUserId());
-                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
-                            }
+                            commentViewModel.blockUserOrHideComment(userId, null, AppConfig.BLOCK_USER, new StringCallBack() {
+                                @Override
+                                public void success(String item) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    commentAdapter.removeCommentCreatedByBlockedUser(comment.getCommenterUserId());
+                                    Toast.makeText(getActivity(), item, Toast.LENGTH_SHORT).show();
+                                }
 
-                            @Override
-                            public void showError(String error) {
-                                moreOptionBottomSheetDialogFragment.dismiss();
-                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
+                                @Override
+                                public void showError(String error) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
 
-                    @Override
-                    public void onTokenAllInvalid() {
+                        @Override
+                        public void onTokenAllInvalid() {
 
-                    }
-                });
-                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+                        }
+                    });
+                    decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+                }
             }
 
             @Override
@@ -288,5 +303,11 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
         });
 
         moreOptionBottomSheetDialogFragment.show(Objects.requireNonNull(getFragmentManager()),MoreOptionBottomSheetDialogFragment.TAG);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        commentAdapter.removeAllComment();
     }
 }

@@ -68,6 +68,7 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
     private View view;
     private NotificationViewModel notificationViewModel;
     SwipeRefreshLayout mSwipeRreshLayout;
+    PrefManager prefManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -110,6 +111,8 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
                 Navigation.findNavController(view).navigate(action);
             }
         });
+
+        prefManager = new PrefManager(getActivity());
 
         observeProgressBar();
 
@@ -203,33 +206,41 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
             @Override
             public void onBlockUser() {
                 Log.d("Main Room Block user",rooms.getRoomOwnerUserId());
-                DecodeToken decodeToken = DecodeToken.newInstance();
-                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
-                    @Override
-                    public void onTokenValid() {
+                final String roomOwnerUserId = rooms.getRoomOwnerUserId();
 
-                        mainViewModel.blockUserOrHideRoom(rooms.getRoomOwnerUserId(), AppConfig.BLOCK_USER, new StringCallBack() {
-                            @Override
-                            public void success(String item) {
-                                moreOptionBottomSheetDialogFragment.dismiss();
-                                roomAdapter.removeRoomCreatedByBlockedUser(rooms.getRoomOwnerUserId());
-                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
-                            }
+                if(prefManager.getUserRealId().equals(roomOwnerUserId)){
+                    moreOptionBottomSheetDialogFragment.dismiss();
+                    Toast.makeText(getActivity(),"Cannot block yourself",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    DecodeToken decodeToken = DecodeToken.newInstance();
+                    decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                        @Override
+                        public void onTokenValid() {
 
-                            @Override
-                            public void showError(String error) {
-                                moreOptionBottomSheetDialogFragment.dismiss();
-                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
+                            mainViewModel.blockUserOrHideRoom(roomOwnerUserId, AppConfig.BLOCK_USER, new StringCallBack() {
+                                @Override
+                                public void success(String item) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    roomAdapter.removeRoomCreatedByBlockedUser(roomOwnerUserId);
+                                    Toast.makeText(getActivity(), item, Toast.LENGTH_SHORT).show();
+                                }
 
-                    @Override
-                    public void onTokenAllInvalid() {
+                                @Override
+                                public void showError(String error) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
 
-                    }
-                });
-                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+                        @Override
+                        public void onTokenAllInvalid() {
+
+                        }
+                    });
+                    decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+                }
             }
 
             @Override
@@ -290,7 +301,6 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
                     }
                 });
                 decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
-
             }
 
             @Override

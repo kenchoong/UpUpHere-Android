@@ -75,9 +75,12 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
         return rootView;
     }
 
+    PrefManager prefManager;
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        prefManager = new PrefManager(getActivity());
 
         initializeProgressBar();
 
@@ -96,6 +99,7 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
             @Override
             public void onChanged(Boolean isLoading) {
                 if(isLoading){
+                    binding.loadingBar.bringToFront();
                     binding.loadingBar.setVisibility(View.VISIBLE);
                 }
                 else{
@@ -152,8 +156,13 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
         sendCommentToServer();
     }
 
+    int blockTypeRecord;
+    String blockItemIdString;
+
     @Override
-    public void onPostOrUserBlock(String message) {
+    public void onPostOrUserBlock(String message,int blockType,String blockItemId) {
+        blockTypeRecord = blockType;
+        blockItemIdString = blockItemId;
         binding.postAndCommentRecyclerView.setVisibility(View.GONE);
         binding.commentFieldContainer.setVisibility(View.GONE);
         binding.emptyStateContainer.setVisibility(View.VISIBLE);
@@ -167,18 +176,35 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
         decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
             @Override
             public void onTokenValid() {
-                viewModel.unHidePost(postId, new StringCallBack() {
-                    @Override
-                    public void success(String item) {
-                        Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
-                        populatePostToRecycleView();
-                    }
+                if(blockTypeRecord==AppConfig.BLOCK_USER){
+                    viewModel.unHideSomething(blockItemIdString,AppConfig.BLOCK_USER, new StringCallBack() {
+                        @Override
+                        public void success(String item) {
+                            Toast.makeText(getActivity(), item, Toast.LENGTH_SHORT).show();
+                            populatePostToRecycleView();
+                        }
 
-                    @Override
-                    public void showError(String error) {
-                        Toast.makeText(getActivity(),"Error when unhide post",Toast.LENGTH_LONG).show();
-                    }
-                });
+                        @Override
+                        public void showError(String error) {
+                            Toast.makeText(getActivity(), "Error when unhide post", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+
+                if(blockTypeRecord==AppConfig.HIDE_POST) {
+                    viewModel.unHideSomething(postId,AppConfig.HIDE_POST, new StringCallBack() {
+                        @Override
+                        public void success(String item) {
+                            Toast.makeText(getActivity(), item, Toast.LENGTH_SHORT).show();
+                            populatePostToRecycleView();
+                        }
+
+                        @Override
+                        public void showError(String error) {
+                            Toast.makeText(getActivity(), "Error when unhide post", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
             }
 
             @Override
@@ -221,9 +247,7 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
     @Override
     public void onStop() {
         super.onStop();
-        binding.postAndCommentRecyclerView.setVisibility(View.VISIBLE);
-        binding.commentFieldContainer.setVisibility(View.VISIBLE);
-        binding.emptyStateContainer.setVisibility(View.GONE);
+        singlePostAdapter.removeAllData();
     }
 
     @Override
@@ -244,35 +268,46 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
                 Log.d("Single Block user",post.getAuthorUserId());
                 final String userId = post.getAuthorUserId();
 
-                DecodeToken decodeToken = DecodeToken.newInstance();
-                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
-                    @Override
-                    public void onTokenValid() {
+                if(prefManager.getUserRealId().equals(userId)){
+                    moreOptionBottomSheetDialogFragment.dismiss();
+                    Toast.makeText(getActivity(),"Cannot block yourself",Toast.LENGTH_SHORT).show();
+                }
+                else {
 
-                        viewModel.blockUserOrHidePostOrHideComment(userId,null, AppConfig.BLOCK_USER, new StringCallBack() {
-                            @Override
-                            public void success(String item) {
-                                moreOptionBottomSheetDialogFragment.dismiss();
-                                binding.postAndCommentRecyclerView.setVisibility(View.GONE);
-                                binding.commentFieldContainer.setVisibility(View.GONE);
-                                binding.emptyStateContainer.setVisibility(View.VISIBLE);
-                                binding.emptyStateContainer.setText(getResources().getString(R.string.user_success_block));
-                            }
+                    DecodeToken decodeToken = DecodeToken.newInstance();
+                    decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                        @Override
+                        public void onTokenValid() {
 
-                            @Override
-                            public void showError(String error) {
-                                moreOptionBottomSheetDialogFragment.dismiss();
-                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
+                            viewModel.blockUserOrHidePostOrHideComment(userId, null, AppConfig.BLOCK_USER, new StringCallBack() {
+                                @Override
+                                public void success(String item) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    binding.postAndCommentRecyclerView.setVisibility(View.GONE);
+                                    binding.commentFieldContainer.setVisibility(View.GONE);
+                                    binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                                    binding.emptyStateContainer.setText(getResources().getString(R.string.user_success_block));
+                                    blockItemIdString = userId;
+                                    blockTypeRecord = AppConfig.BLOCK_USER;
+                                    binding.unhideButton.setVisibility(View.VISIBLE);
+                                }
 
-                    @Override
-                    public void onTokenAllInvalid() {
+                                @Override
+                                public void showError(String error) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
 
-                    }
-                });
-                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+                        @Override
+                        public void onTokenAllInvalid() {
+
+                        }
+                    });
+                    decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+
+                }
             }
 
             @Override
@@ -292,6 +327,9 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
                                 binding.commentFieldContainer.setVisibility(View.GONE);
                                 binding.emptyStateContainer.setVisibility(View.VISIBLE);
                                 binding.emptyStateContainer.setText(getResources().getString(R.string.post_success_hide));
+                                blockItemIdString = postId;
+                                blockTypeRecord = AppConfig.HIDE_POST;
+                                binding.unhideButton.setVisibility(View.VISIBLE);
                             }
 
                             @Override
@@ -315,35 +353,44 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
             public void onReport() {
                 final String userId = post.getAuthorUserId();
 
-                DecodeToken decodeToken = DecodeToken.newInstance();
-                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
-                    @Override
-                    public void onTokenValid() {
+                if(prefManager.getUserRealId().equals(userId)){
+                    moreOptionBottomSheetDialogFragment.dismiss();
+                    Toast.makeText(getActivity(),"Cannot report yourself",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    DecodeToken decodeToken = DecodeToken.newInstance();
+                    decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                        @Override
+                        public void onTokenValid() {
 
-                        viewModel.blockUserOrHidePostOrHideComment(userId,null, AppConfig.BLOCK_USER, new StringCallBack() {
-                            @Override
-                            public void success(String item) {
-                                moreOptionBottomSheetDialogFragment.dismiss();
-                                binding.postAndCommentRecyclerView.setVisibility(View.GONE);
-                                binding.commentFieldContainer.setVisibility(View.GONE);
-                                binding.emptyStateContainer.setVisibility(View.VISIBLE);
-                                binding.emptyStateContainer.setText(getResources().getString(R.string.user_success_report));
-                            }
+                            viewModel.blockUserOrHidePostOrHideComment(userId, null, AppConfig.BLOCK_USER, new StringCallBack() {
+                                @Override
+                                public void success(String item) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    binding.postAndCommentRecyclerView.setVisibility(View.GONE);
+                                    binding.commentFieldContainer.setVisibility(View.GONE);
+                                    binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                                    binding.emptyStateContainer.setText(getResources().getString(R.string.user_success_report));
+                                    blockItemIdString = userId;
+                                    blockTypeRecord = AppConfig.BLOCK_USER;
+                                    binding.unhideButton.setVisibility(View.VISIBLE);
+                                }
 
-                            @Override
-                            public void showError(String error) {
-                                moreOptionBottomSheetDialogFragment.dismiss();
-                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
+                                @Override
+                                public void showError(String error) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
 
-                    @Override
-                    public void onTokenAllInvalid() {
+                        @Override
+                        public void onTokenAllInvalid() {
 
-                    }
-                });
-                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+                        }
+                    });
+                    decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+                }
             }
 
             @Override

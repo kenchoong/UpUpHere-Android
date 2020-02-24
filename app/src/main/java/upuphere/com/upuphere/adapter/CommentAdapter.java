@@ -47,6 +47,13 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         notifyDataSetChanged();
     }
 
+    public void removeAllComment(){
+        if(commentList != null){
+            commentList.clear();
+            notifyDataSetChanged();
+        }
+    }
+
     @NonNull
     @Override
     public CommentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

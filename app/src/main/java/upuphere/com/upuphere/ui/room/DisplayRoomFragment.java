@@ -40,6 +40,7 @@ import upuphere.com.upuphere.databinding.FragmentDisplayRoomBinding;
 import upuphere.com.upuphere.fragment.DisplayPhotoFragmentArgs;
 import upuphere.com.upuphere.fragment.MoreOptionBottomSheetDialogFragment;
 import upuphere.com.upuphere.helper.DecodeToken;
+import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.models.AllRooms;
 import upuphere.com.upuphere.models.Post;
 import upuphere.com.upuphere.viewmodel.DisplayRoomViewModel;
@@ -85,9 +86,12 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
         return rootView;
     }
 
+    PrefManager prefManager;
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        prefManager = new PrefManager(getActivity());
 
         viewModel.setDisplayRoomInterface(new DisplayRoomViewModel.DisplayRoomInterface() {
             @Override
@@ -236,34 +240,40 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
             public void onBlockUser() {
                 Log.d("Single Block user",post.getAuthorUserId());
                 final String userId = post.getAuthorUserId();
-                DecodeToken decodeToken = DecodeToken.newInstance();
-                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
-                    @Override
-                    public void onTokenValid() {
 
-                        viewModel.blockUserOrHidePost(userId, AppConfig.BLOCK_USER, new StringCallBack() {
-                            @Override
-                            public void success(String item) {
-                                moreOptionBottomSheetDialogFragment.dismiss();
-                                postAdapter.removePostCreatedByBlockedUser(post.getAuthorUserId());
-                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
-                            }
+                if(prefManager.getUserRealId().equals(userId)){
+                    moreOptionBottomSheetDialogFragment.dismiss();
+                    Toast.makeText(getActivity(),"Cannot block yourself",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    DecodeToken decodeToken = DecodeToken.newInstance();
+                    decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                        @Override
+                        public void onTokenValid() {
 
-                            @Override
-                            public void showError(String error) {
-                                moreOptionBottomSheetDialogFragment.dismiss();
-                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
+                            viewModel.blockUserOrHidePost(userId, AppConfig.BLOCK_USER, new StringCallBack() {
+                                @Override
+                                public void success(String item) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    postAdapter.removePostCreatedByBlockedUser(post.getAuthorUserId());
+                                    Toast.makeText(getActivity(), item, Toast.LENGTH_SHORT).show();
+                                }
 
-                    @Override
-                    public void onTokenAllInvalid() {
+                                @Override
+                                public void showError(String error) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
 
-                    }
-                });
-                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+                        @Override
+                        public void onTokenAllInvalid() {
 
+                        }
+                    });
+                    decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+                }
 
             }
 
@@ -307,34 +317,39 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
             public void onReport() {
                 final String userId = post.getAuthorUserId();
 
-                DecodeToken decodeToken = DecodeToken.newInstance();
-                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
-                    @Override
-                    public void onTokenValid() {
+                if(prefManager.getUserRealId().equals(userId)){
+                    moreOptionBottomSheetDialogFragment.dismiss();
+                    Toast.makeText(getActivity(),"Cannot report yourself",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    DecodeToken decodeToken = DecodeToken.newInstance();
+                    decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                        @Override
+                        public void onTokenValid() {
 
-                        viewModel.blockUserOrHidePost(userId, AppConfig.BLOCK_USER, new StringCallBack() {
-                            @Override
-                            public void success(String item) {
-                                moreOptionBottomSheetDialogFragment.dismiss();
-                                postAdapter.removePostCreatedByBlockedUser(post.getAuthorUserId());
-                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
-                            }
+                            viewModel.blockUserOrHidePost(userId, AppConfig.BLOCK_USER, new StringCallBack() {
+                                @Override
+                                public void success(String item) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    postAdapter.removePostCreatedByBlockedUser(post.getAuthorUserId());
+                                    Toast.makeText(getActivity(), item, Toast.LENGTH_SHORT).show();
+                                }
 
-                            @Override
-                            public void showError(String error) {
-                                moreOptionBottomSheetDialogFragment.dismiss();
-                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
+                                @Override
+                                public void showError(String error) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
 
-                    @Override
-                    public void onTokenAllInvalid() {
+                        @Override
+                        public void onTokenAllInvalid() {
 
-                    }
-                });
-                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
-
+                        }
+                    });
+                    decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+                }
             }
 
             @Override
@@ -350,6 +365,6 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
     @Override
     public void onStop() {
         super.onStop();
-        viewModel.setPostListToBlank();
+        postAdapter.removeAllPost();
     }
 }

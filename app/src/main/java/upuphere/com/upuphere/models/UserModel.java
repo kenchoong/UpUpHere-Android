@@ -16,6 +16,9 @@ public class UserModel {
     @SerializedName("user_id")
     private String userId;
 
+    @SerializedName("user_real_id")
+    private String userRealId;
+
     @SerializedName("username")
     private String username;
 
@@ -37,6 +40,14 @@ public class UserModel {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getUserRealId() {
+        return userRealId;
+    }
+
+    public void setUserRealId(String userRealId) {
+        this.userRealId = userRealId;
     }
 
     public String getUsername() {

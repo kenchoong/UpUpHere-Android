@@ -22,6 +22,7 @@ import java.util.Map;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
+import upuphere.com.upuphere.Interface.GetResultListener;
 import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.app.AppController;
@@ -111,7 +112,7 @@ public class PostRepo {
         }
     }
 
-    public MutableLiveData<List<Post>> getSinglePostByPostId(final String postId, final StringCallBack callback){
+    public MutableLiveData<List<Post>> getSinglePostByPostId(final String postId, final GetResultListener listener){
 
         if(AppController.getInstance().internetConnectionAvailable()){
             PrefManager prefManager = new PrefManager(AppController.getContext());
@@ -135,7 +136,16 @@ public class PostRepo {
                     }else{
                         try {
                             String message = response.getString("message");
-                            callback.showError(message);
+                            int blockType = response.getInt("block_type");
+
+                            if(response.has("blocked_user_id")){
+                                String blockUserId = response.getString("blocked_user_id");
+
+                                listener.onBlockedUser(message,blockType,blockUserId);
+                            }else{
+                                listener.onHidedPost(message,blockType);
+                            }
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -203,6 +213,47 @@ public class PostRepo {
             AppController.getInstance().addToRequestQueue(request);
 
         }
+    }
+
+    public void unHideSomething(String unHideItemId,int unhideType,final StringCallBack callback){
+        JSONObject params = null;
+        switch (unhideType) {
+            case AppConfig.BLOCK_USER:
+                String[] keys = new String[]{"blocked_user_id"};
+                String[] values = new String[]{unHideItemId};
+                params = VolleyRequest.getParams(keys, values);
+                break;
+            case AppConfig.HIDE_ROOM:
+                String[] keys1 = new String[]{"blocked_room_id"};
+                String[] values1 = new String[]{unHideItemId};
+                params = VolleyRequest.getParams(keys1, values1);
+                break;
+            case AppConfig.HIDE_POST:
+            default:
+                String[] key = new String[]{"blocked_post_id"};
+                String[] value = new String[]{unHideItemId};
+                params = VolleyRequest.getParams(key, value);
+                break;
+        }
+
+        JsonObjectRequest request = VolleyRequest.putJsonRequestWithAccessToken(AppConfig.URL_BLOCK_UNBLOCK, params, new VolleyRequest.ResponseCallBack() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    String message = response.getString("message");
+                    callback.success(message);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    callback.showError(e.getMessage());
+                }
+            }
+            @Override
+            public void onError(String error) {
+                callback.showError(error);
+            }
+        });
+
+        AppController.getInstance().addToRequestQueue(request);
     }
 
     public void unHidePost(String postId, final StringCallBack callBack){

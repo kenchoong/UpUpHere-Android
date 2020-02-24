@@ -36,6 +36,13 @@ public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.PostViewHolde
         notifyDataSetChanged();
     }
 
+    public void removeAllPost(){
+        if (postList != null) {
+            postList.clear();
+            notifyDataSetChanged();
+        }
+    }
+
     public void removePostCreatedByBlockedUser(String userId){
         List<Post> shouldRemovePost = new ArrayList<>();
         for(Post post : postList){
