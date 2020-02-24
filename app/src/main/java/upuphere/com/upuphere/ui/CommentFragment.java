@@ -81,9 +81,25 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
 
         commentViewModel.setCommentInterface(this);
 
+        observeProgressBar();
+
         initializeRecyclerView();
 
         populateCommentIntoRecyclerView();
+    }
+
+    private void observeProgressBar() {
+        commentViewModel.isLoading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoading) {
+                if(isLoading){
+                    binding.progressBar8.bringToFront();
+                    binding.progressBar8.setVisibility(View.VISIBLE);
+                }else {
+                    binding.progressBar8.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     private void initializeRecyclerView() {
@@ -177,11 +193,14 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
                         commentViewModel.blockUserOrHideComment(userId,null, AppConfig.BLOCK_USER, new StringCallBack() {
                             @Override
                             public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                commentAdapter.removeCommentCreatedByBlockedUser(comment.getCommenterUserId());
                                 Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
                             public void showError(String error) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
                                 Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -207,11 +226,14 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
                         commentViewModel.blockUserOrHideComment(comment.getCommentId(),postId, AppConfig.HIDE_COMMENT, new StringCallBack() {
                             @Override
                             public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                commentAdapter.removeHidedComment(comment);
                                 Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
                             public void showError(String error) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
                                 Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -238,11 +260,14 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
                         commentViewModel.blockUserOrHideComment(userId,null, AppConfig.BLOCK_USER, new StringCallBack() {
                             @Override
                             public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                commentAdapter.removeCommentCreatedByBlockedUser(comment.getCommenterUserId());
                                 Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
                             public void showError(String error) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
                                 Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
                             }
                         });

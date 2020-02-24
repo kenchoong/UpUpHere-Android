@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -16,7 +17,7 @@ import upuphere.com.upuphere.models.CommentModel;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHolder>{
 
-    private List<CommentModel> comment;
+    private List<CommentModel> commentList;
     private LayoutInflater layoutInflater;
 
     public CommentAdapter(CommentAdapterListner listener) {
@@ -26,7 +27,23 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     private CommentAdapterListner listener;
 
     public void setComment(List<CommentModel> commentList){
-        this.comment = commentList;
+        this.commentList = commentList;
+        notifyDataSetChanged();
+    }
+
+    public void removeHidedComment(CommentModel comment){
+        commentList.remove(comment);
+        notifyDataSetChanged();
+    }
+
+    public void removeCommentCreatedByBlockedUser(String userId){
+        List<CommentModel> shouldRemoveComment = new ArrayList<>();
+        for(CommentModel comment : commentList){
+            if(comment.getCommenterUserId().equals(userId)){
+                shouldRemoveComment.add(comment);
+            }
+        }
+        commentList.removeAll(shouldRemoveComment);
         notifyDataSetChanged();
     }
 
@@ -44,21 +61,21 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
 
     @Override
     public void onBindViewHolder(@NonNull CommentViewHolder holder, final int position) {
-        holder.binding.setData(comment.get(position));
+        holder.binding.setData(commentList.get(position));
 
         holder.binding.moreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.onMoreButtonClicked(comment.get(position));
+                listener.onMoreButtonClicked(commentList.get(position));
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        if (comment != null) {
+        if (commentList != null) {
             //Log.d("comment SIZE",String.valueOf(comment.size()));
-            return comment.size();
+            return commentList.size();
         } else {
             //Log.d("comment SIZE","0");
             return 0;
