@@ -218,6 +218,7 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
 
                             @Override
                             public void showError(String error) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
                                 Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -277,6 +278,7 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
 
                             @Override
                             public void showError(String error) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
                                 Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
                             }
                         });

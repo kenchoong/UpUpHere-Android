@@ -133,6 +133,8 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
             }
         });
 
+        observeProgressBar();
+
         initializeRecyclerView();
 
         setUpSwipeRefreshLayout();
@@ -154,6 +156,20 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
             public void onRefresh() {
                 mSwipeRefreshLayout.setRefreshing(true);
                 getPostInRoom(roomId);
+            }
+        });
+    }
+
+    private void observeProgressBar() {
+        viewModel.isLoading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoading) {
+                if(isLoading){
+                    binding.progressBar7.bringToFront();
+                    binding.progressBar7.setVisibility(View.VISIBLE);
+                }else {
+                    binding.progressBar7.setVisibility(View.GONE);
+                }
             }
         });
     }
@@ -228,11 +244,14 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
                         viewModel.blockUserOrHidePost(userId, AppConfig.BLOCK_USER, new StringCallBack() {
                             @Override
                             public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                postAdapter.removePostCreatedByBlockedUser(post.getAuthorUserId());
                                 Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
                             public void showError(String error) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
                                 Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -260,14 +279,15 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
                         viewModel.blockUserOrHidePost(post.getId(), AppConfig.HIDE_POST, new StringCallBack() {
                             @Override
                             public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                postAdapter.removeHidedPost(post);
                                 Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
-
-                                //todo:; here do whatever u want to update the ui after hide post
                             }
 
                             @Override
                             public void showError(String error) {
                                 Log.d("HIDE POST",error);
+                                moreOptionBottomSheetDialogFragment.dismiss();
                                 Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -295,11 +315,14 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
                         viewModel.blockUserOrHidePost(userId, AppConfig.BLOCK_USER, new StringCallBack() {
                             @Override
                             public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                postAdapter.removePostCreatedByBlockedUser(post.getAuthorUserId());
                                 Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
                             public void showError(String error) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
                                 Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
                             }
                         });

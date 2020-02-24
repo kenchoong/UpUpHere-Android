@@ -46,30 +46,34 @@ public class DisplayRoomViewModel extends AndroidViewModel {
     }
 
     public void unHideRoom(String roomId, final StringCallBack callBack){
+        setIsLoading(true);
         postRepo.unHideRoom(roomId, new StringCallBack() {
             @Override
             public void success(String item) {
+                setIsLoading(false);
                 callBack.success(item);
             }
 
             @Override
             public void showError(String error) {
+                setIsLoading(false);
                 callBack.showError(error);
             }
         });
     }
 
     public void blockUserOrHidePost(String postOrUserId, int operationType, final StringCallBack callback){
+        setIsLoading(true);
         postRepo.blockSomething(postOrUserId,null, operationType, new StringCallBack() {
             @Override
             public void success(String item) {
-
+                setIsLoading(false);
                 callback.success(item);
             }
 
             @Override
             public void showError(String error) {
-
+                setIsLoading(false);
                 callback.showError(error);
             }
         });
@@ -91,6 +95,12 @@ public class DisplayRoomViewModel extends AndroidViewModel {
 
     public void setPostListToBlank(){
         postRepo.setPostMutableLiveDataToNull();
+    }
+
+    public MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+
+    private void setIsLoading(boolean isLoadingOrNot){
+        isLoading.setValue(isLoadingOrNot);
     }
 
 }
