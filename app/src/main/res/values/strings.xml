@@ -114,4 +114,6 @@
     <string name="user_success_block">User already block</string>
     <string name="user_success_report">Successfully report user</string>
 
+    <string name="undo">Undo</string>
+
 </resources>

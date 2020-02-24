@@ -26,6 +26,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -199,6 +202,7 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
         showRoomMoreOptionMenu(rooms);
     }
 
+
     private MoreOptionBottomSheetDialogFragment moreOptionBottomSheetDialogFragment;
     private void showRoomMoreOptionMenu(final AllRooms rooms) {
         moreOptionBottomSheetDialogFragment = MoreOptionBottomSheetDialogFragment.newInstance();
@@ -223,7 +227,9 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
                                 public void success(String item) {
                                     moreOptionBottomSheetDialogFragment.dismiss();
                                     roomAdapter.removeRoomCreatedByBlockedUser(roomOwnerUserId);
-                                    Toast.makeText(getActivity(), item, Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(getActivity(), item, Toast.LENGTH_SHORT).show();
+
+                                    showSnackBar(item,AppConfig.BLOCK_USER,roomOwnerUserId);
                                 }
 
                                 @Override
@@ -254,7 +260,10 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
                             public void success(String item) {
                                 moreOptionBottomSheetDialogFragment.dismiss();
                                 roomAdapter.removeHidedRoom(rooms);
-                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+
+                                showSnackBar(item,AppConfig.HIDE_ROOM,rooms.getId());
+
                             }
 
                             @Override
@@ -284,7 +293,9 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
                             public void success(String item) {
                                 moreOptionBottomSheetDialogFragment.dismiss();
                                 roomAdapter.removeHidedRoom(rooms);
-                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+
+                                showSnackBar(item,AppConfig.HIDE_ROOM,rooms.getId());
                             }
 
                             @Override
@@ -310,6 +321,30 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
         });
 
         moreOptionBottomSheetDialogFragment.show(Objects.requireNonNull(getFragmentManager()),MoreOptionBottomSheetDialogFragment.TAG);
+    }
+
+    private void showSnackBar(String message, final int blockType, final String blockItemId){
+        final Snackbar snackbar = Snackbar.make(binding.rootLayout,message, BaseTransientBottomBar.LENGTH_SHORT);
+        snackbar.setAction(R.string.undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mainViewModel.unHideSomething(blockItemId, blockType, new StringCallBack() {
+                    @Override
+                    public void success(String item) {
+                        snackbar.dismiss();
+                        Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                        getRoomList();
+                    }
+
+                    @Override
+                    public void showError(String error) {
+                        snackbar.dismiss();
+                        Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+        snackbar.show();
     }
 
     private int dpToPx(int dp) {
