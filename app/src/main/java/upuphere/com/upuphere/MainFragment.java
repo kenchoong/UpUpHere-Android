@@ -111,6 +111,8 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
             }
         });
 
+        observeProgressBar();
+
         initRecyclerView();
 
         setUpSwipeRefreshLayout();
@@ -123,6 +125,20 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
             }
         });
 
+    }
+
+    private void observeProgressBar() {
+        mainViewModel.isLoading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoading) {
+                if(isLoading){
+                    binding.progressBar6.bringToFront();
+                    binding.progressBar6.setVisibility(View.VISIBLE);
+                }else {
+                    binding.progressBar6.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     private void initRecyclerView() {
@@ -195,6 +211,8 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
                         mainViewModel.blockUserOrHideRoom(rooms.getRoomOwnerUserId(), AppConfig.BLOCK_USER, new StringCallBack() {
                             @Override
                             public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                roomAdapter.removeRoomCreatedByBlockedUser(rooms.getRoomOwnerUserId());
                                 Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
                             }
 
@@ -222,11 +240,14 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
                         mainViewModel.blockUserOrHideRoom(rooms.getId(), AppConfig.HIDE_ROOM, new StringCallBack() {
                             @Override
                             public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                roomAdapter.removeHidedRoom(rooms);
                                 Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
                             public void showError(String error) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
                                 Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -249,6 +270,8 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
                         mainViewModel.blockUserOrHideRoom(rooms.getId(), AppConfig.HIDE_ROOM, new StringCallBack() {
                             @Override
                             public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                roomAdapter.removeHidedRoom(rooms);
                                 Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
                             }
 

@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -35,6 +36,22 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
     public void setRoomList(List<AllRooms> room){
         this.roomList = room;
+        notifyDataSetChanged();
+    }
+
+    public void removeHidedRoom(AllRooms rooms){
+        roomList.remove(rooms);
+        notifyDataSetChanged();
+    }
+
+    public void removeRoomCreatedByBlockedUser(String userId){
+        List<AllRooms> shouldRemoveRoom = new ArrayList<>();
+        for(AllRooms room : roomList){
+            if(room.getRoomOwnerUserId().equals(userId)){
+                shouldRemoveRoom.add(room);
+            }
+        }
+        roomList.removeAll(shouldRemoveRoom);
         notifyDataSetChanged();
     }
 

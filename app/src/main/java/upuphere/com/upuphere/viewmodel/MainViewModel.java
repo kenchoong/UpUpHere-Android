@@ -39,18 +39,27 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public void blockUserOrHideRoom(String roomIdOrUserId, int operationType, final StringCallBack callBack){
+        setIsLoading(true);
 
         roomRepo.blockUserOrHideRoom(roomIdOrUserId, operationType, new StringCallBack() {
             @Override
             public void success(String item) {
+                setIsLoading(false);
                 callBack.success(item);
             }
 
             @Override
             public void showError(String error) {
+                setIsLoading(false);
                 callBack.showError(error);
             }
         });
+    }
+
+    public MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+
+    private void setIsLoading(boolean isLoadingOrNot){
+        isLoading.setValue(isLoadingOrNot);
     }
 
 }
