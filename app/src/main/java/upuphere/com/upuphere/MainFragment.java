@@ -93,19 +93,27 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        SharedPreferences sharedPreferences = new PrefManager(getActivity()).getPref();
-        SharedPreferenceBooleanLiveData sharedPreferenceBooleanLiveData = new SharedPreferenceBooleanLiveData(sharedPreferences,PrefManager.IS_LOGGED_IN,false);
+        prefManager = new PrefManager(getActivity());
+        if(!prefManager.isUserAgreeTerm()){
+            NavDirections directions = MainFragmentDirections.actionMainFragmentToWelcomeFragment();
+            Navigation.findNavController(view).navigate(directions);
 
-        sharedPreferenceBooleanLiveData.getBooleanLiveData(PrefManager.IS_LOGGED_IN,false).observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean isLoggedIn) {
-                Log.d("LOGIN 2",String.valueOf(isLoggedIn));
-                if(!isLoggedIn){
-                    NavController navController = Navigation.findNavController(view);
-                    navController.navigate(R.id.loginFragment);
+        }else {
+
+            SharedPreferences sharedPreferences = prefManager.getPref();
+            SharedPreferenceBooleanLiveData sharedPreferenceBooleanLiveData = new SharedPreferenceBooleanLiveData(sharedPreferences, PrefManager.IS_LOGGED_IN, false);
+
+            sharedPreferenceBooleanLiveData.getBooleanLiveData(PrefManager.IS_LOGGED_IN, false).observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+                @Override
+                public void onChanged(Boolean isLoggedIn) {
+                    Log.d("LOGIN 2", String.valueOf(isLoggedIn));
+                    if (!isLoggedIn) {
+                        NavController navController = Navigation.findNavController(view);
+                        navController.navigate(R.id.loginFragment);
+                    }
                 }
-            }
-        });
+            });
+        }
 
         mainViewModel.setMainFragmentInterface(new MainViewModel.MainFragmentInterface() {
             @Override

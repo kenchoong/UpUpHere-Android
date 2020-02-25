@@ -25,6 +25,9 @@
             app:destination="@id/notificationFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/action_mainFragment_to_welcomeFragment"
+            app:destination="@id/welcomeFragment" />
     </fragment>
     <fragment
         android:id="@+id/createRoomFragment"
@@ -218,5 +221,23 @@
         <argument
             android:name="postId"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/welcomeFragment"
+        android:name="upuphere.com.upuphere.ui.onboarding.WelcomeFragment"
+        android:label="fragment_welcome"
+        tools:layout="@layout/fragment_welcome" >
+        <action
+            android:id="@+id/action_welcomeFragment_to_agreementFragment"
+            app:destination="@id/agreementFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/agreementFragment"
+        android:name="upuphere.com.upuphere.ui.onboarding.AgreementFragment"
+        android:label="fragment_agreement"
+        tools:layout="@layout/fragment_agreement" >
+        <argument
+            android:name="agreementType"
+            app:argType="integer" />
     </fragment>
 </navigation>

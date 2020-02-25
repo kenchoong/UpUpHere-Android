@@ -16,6 +16,8 @@ public class PrefManager {
     private static final String PREF_NAME = "UpUpHere";
 
     private static final String IS_FIRST_TIME_LAUNCH = "IsFirstTimeLaunch";
+    private static final String IS_USER_AGREED_TERM = "UserAgreedTerm";
+
     public static final String IS_LOGGED_IN = "IsLoggedIn";
 
     private static final String USER_ID= "user_id";
@@ -36,6 +38,15 @@ public class PrefManager {
         this._context = context;
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
+    }
+
+    public boolean isUserAgreeTerm(){
+        return pref.getBoolean(IS_USER_AGREED_TERM,false);
+    }
+
+    public void setIsUserAgreedTerm(boolean isUserAgreedTerm){
+        editor.putBoolean(IS_USER_AGREED_TERM, isUserAgreedTerm);
+        editor.commit();
     }
 
     public void setIsLoggedIn(boolean isLoggedIn){
