@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -38,6 +39,22 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         notifyDataSetChanged();
     }
 
+    public void removeHidedRoom(AllRooms rooms){
+        roomList.remove(rooms);
+        notifyDataSetChanged();
+    }
+
+    public void removeRoomCreatedByBlockedUser(String userId){
+        List<AllRooms> shouldRemoveRoom = new ArrayList<>();
+        for(AllRooms room : roomList){
+            if(room.getRoomOwnerUserId().equals(userId)){
+                shouldRemoveRoom.add(room);
+            }
+        }
+        roomList.removeAll(shouldRemoveRoom);
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public RoomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -59,6 +76,13 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
                 listener.onRoomClicked(roomList.get(position));
             }
         });
+
+        holder.binding.moreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onMoreButtonClicked(roomList.get(position));
+            }
+        });
     }
 
     @Override
@@ -75,6 +99,8 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
     public interface RoomAdapterListener{
         void onRoomClicked(AllRooms room);
+
+        void onMoreButtonClicked(AllRooms rooms);
     }
 
 

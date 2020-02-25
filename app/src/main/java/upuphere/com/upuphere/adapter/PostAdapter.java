@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -16,7 +17,7 @@ import upuphere.com.upuphere.models.Post;
 
 public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
-    private List<Post> post;
+    private List<Post> postList;
     private LayoutInflater layoutInflater;
     private PostAdapterListener listener;
 
@@ -26,7 +27,30 @@ public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.PostViewHolde
 
     public void setPost(List<Post> postList){
         //Log.d("POST HERE","GET CALLED");
-        this.post = postList;
+        this.postList = postList;
+        notifyDataSetChanged();
+    }
+
+    public void removeHidedPost(Post post){
+        postList.remove(post);
+        notifyDataSetChanged();
+    }
+
+    public void removeAllPost(){
+        if (postList != null) {
+            postList.clear();
+            notifyDataSetChanged();
+        }
+    }
+
+    public void removePostCreatedByBlockedUser(String userId){
+        List<Post> shouldRemovePost = new ArrayList<>();
+        for(Post post : postList){
+            if(post.getAuthorUserId().equals(userId)){
+                shouldRemovePost.add(post);
+            }
+        }
+        postList.removeAll(shouldRemovePost);
         notifyDataSetChanged();
     }
 
@@ -54,28 +78,35 @@ public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.PostViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, final int position) {
-        holder.binding.setData(post.get(position));
+        holder.binding.setData(postList.get(position));
 
         holder.binding.commentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.onCommentClicked(post.get(position));
+                listener.onCommentClicked(postList.get(position));
             }
         });
 
         holder.binding.shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.onShareClicked(post.get(position));
+                listener.onShareClicked(postList.get(position));
+            }
+        });
+
+        holder.binding.moreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onMoreButtonClicked(postList.get(position));
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        if (post != null) {
+        if (postList != null) {
             //Log.d("post SIZE",String.valueOf(post.size()));
-            return post.size();
+            return postList.size();
         } else {
             //Log.d("post SIZE","0");
             return 0;
@@ -87,5 +118,7 @@ public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.PostViewHolde
         void onCommentClicked(Post post);
 
         void onShareClicked(Post post);
+
+        void onMoreButtonClicked(Post post);
     }
 }

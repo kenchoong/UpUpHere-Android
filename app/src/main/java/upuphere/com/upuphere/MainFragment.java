@@ -26,6 +26,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -40,9 +43,12 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.adapter.RoomAdapter;
 import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.databinding.FragmentMainBinding;
+import upuphere.com.upuphere.fragment.MoreOptionBottomSheetDialogFragment;
+import upuphere.com.upuphere.helper.DecodeToken;
 import upuphere.com.upuphere.helper.NotificationUtils;
 import upuphere.com.upuphere.helper.SharedPreferenceBooleanLiveData;
 import upuphere.com.upuphere.helper.PrefManager;
@@ -65,6 +71,7 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
     private View view;
     private NotificationViewModel notificationViewModel;
     SwipeRefreshLayout mSwipeRreshLayout;
+    PrefManager prefManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -108,6 +115,10 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
             }
         });
 
+        prefManager = new PrefManager(getActivity());
+
+        observeProgressBar();
+
         initRecyclerView();
 
         setUpSwipeRefreshLayout();
@@ -120,6 +131,20 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
             }
         });
 
+    }
+
+    private void observeProgressBar() {
+        mainViewModel.isLoading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoading) {
+                if(isLoading){
+                    binding.progressBar6.bringToFront();
+                    binding.progressBar6.setVisibility(View.VISIBLE);
+                }else {
+                    binding.progressBar6.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     private void initRecyclerView() {
@@ -166,6 +191,160 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
         Toast.makeText(getActivity(),room.getId(),Toast.LENGTH_SHORT).show();
         NavDirections action = MainFragmentDirections.actionMainFragmentToRoomFragment(room);
         Navigation.findNavController(view).navigate(action);
+    }
+
+    @Override
+    public void onMoreButtonClicked(AllRooms rooms) {
+        Log.d("Main Fragment","MORE BUTTON CLICKED");
+        Log.d("Main Fragment room id",rooms.getId());
+        Log.d("Main Fragment user id",rooms.getCreatedBy());
+
+        showRoomMoreOptionMenu(rooms);
+    }
+
+
+    private MoreOptionBottomSheetDialogFragment moreOptionBottomSheetDialogFragment;
+    private void showRoomMoreOptionMenu(final AllRooms rooms) {
+        moreOptionBottomSheetDialogFragment = MoreOptionBottomSheetDialogFragment.newInstance();
+        moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
+            @Override
+            public void onBlockUser() {
+                Log.d("Main Room Block user",rooms.getRoomOwnerUserId());
+                final String roomOwnerUserId = rooms.getRoomOwnerUserId();
+
+                if(prefManager.getUserRealId().equals(roomOwnerUserId)){
+                    moreOptionBottomSheetDialogFragment.dismiss();
+                    Toast.makeText(getActivity(),"Cannot block yourself",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    DecodeToken decodeToken = DecodeToken.newInstance();
+                    decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                        @Override
+                        public void onTokenValid() {
+
+                            mainViewModel.blockUserOrHideRoom(roomOwnerUserId, AppConfig.BLOCK_USER, new StringCallBack() {
+                                @Override
+                                public void success(String item) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    roomAdapter.removeRoomCreatedByBlockedUser(roomOwnerUserId);
+                                    //Toast.makeText(getActivity(), item, Toast.LENGTH_SHORT).show();
+
+                                    showSnackBar(item,AppConfig.BLOCK_USER,roomOwnerUserId);
+                                }
+
+                                @Override
+                                public void showError(String error) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onTokenAllInvalid() {
+
+                        }
+                    });
+                    decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+                }
+            }
+
+            @Override
+            public void onHide() {
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+                        mainViewModel.blockUserOrHideRoom(rooms.getId(), AppConfig.HIDE_ROOM, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                roomAdapter.removeHidedRoom(rooms);
+                                //Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+
+                                showSnackBar(item,AppConfig.HIDE_ROOM,rooms.getId());
+
+                            }
+
+                            @Override
+                            public void showError(String error) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+            }
+
+            @Override
+            public void onReport() {
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+                        mainViewModel.blockUserOrHideRoom(rooms.getId(), AppConfig.HIDE_ROOM, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                roomAdapter.removeHidedRoom(rooms);
+                                //Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+
+                                showSnackBar(item,AppConfig.HIDE_ROOM,rooms.getId());
+                            }
+
+                            @Override
+                            public void showError(String error) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+            }
+
+            @Override
+            public void onCancel() {
+                moreOptionBottomSheetDialogFragment.dismiss();
+            }
+        });
+
+        moreOptionBottomSheetDialogFragment.show(Objects.requireNonNull(getFragmentManager()),MoreOptionBottomSheetDialogFragment.TAG);
+    }
+
+    private void showSnackBar(String message, final int blockType, final String blockItemId){
+        final Snackbar snackbar = Snackbar.make(binding.rootLayout,message, BaseTransientBottomBar.LENGTH_SHORT);
+        snackbar.setAction(R.string.undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mainViewModel.unHideSomething(blockItemId, blockType, new StringCallBack() {
+                    @Override
+                    public void success(String item) {
+                        snackbar.dismiss();
+                        Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                        getRoomList();
+                    }
+
+                    @Override
+                    public void showError(String error) {
+                        snackbar.dismiss();
+                        Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+        snackbar.show();
     }
 
     private int dpToPx(int dp) {

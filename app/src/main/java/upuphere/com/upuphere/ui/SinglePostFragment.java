@@ -26,9 +26,12 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.adapter.SinglePostAdapter;
+import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.databinding.FragmentSinglePostBinding;
+import upuphere.com.upuphere.fragment.MoreOptionBottomSheetDialogFragment;
 import upuphere.com.upuphere.helper.DecodeToken;
 import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.models.CommentModel;
@@ -38,7 +41,7 @@ import upuphere.com.upuphere.viewmodel.SinglePostViewModel;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SinglePostFragment extends Fragment implements SinglePostViewModel.SinglePostInterface{
+public class SinglePostFragment extends Fragment implements SinglePostViewModel.SinglePostInterface, SinglePostAdapter.SinglePostAdapterListener {
 
     FragmentSinglePostBinding binding;
     SinglePostViewModel viewModel;
@@ -61,6 +64,7 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
 
         postId = SinglePostFragmentArgs.fromBundle(Objects.requireNonNull(getArguments())).getPostId();
         Toast.makeText(getActivity(),postId,Toast.LENGTH_LONG).show();
+        Log.d("SINGLEPOSTFRAGMENT",postId);
 
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_single_post,container,false);
@@ -71,9 +75,14 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
         return rootView;
     }
 
+    PrefManager prefManager;
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        prefManager = new PrefManager(getActivity());
+
+        initializeProgressBar();
 
         viewModel.setCommentInterface(this);
 
@@ -82,12 +91,28 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
         populatePostToRecycleView();
 
         populateCommentToRecycleView(singlePostList);
+
+    }
+
+    private void initializeProgressBar() {
+        viewModel.isLoading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoading) {
+                if(isLoading){
+                    binding.loadingBar.bringToFront();
+                    binding.loadingBar.setVisibility(View.VISIBLE);
+                }
+                else{
+                    binding.loadingBar.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     private void initialRecyclerView() {
         singlePostRecyclerView = binding.postAndCommentRecyclerView;
         singlePostRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),RecyclerView.VERTICAL,false));
-        singlePostAdapter = new SinglePostAdapter();
+        singlePostAdapter = new SinglePostAdapter(this);
         singlePostRecyclerView.setAdapter(singlePostAdapter);
     }
 
@@ -96,16 +121,15 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
             @Override
             public void onChanged(List<Post> posts) {
                 if(posts != null){
-                    Log.d("SINGLE POST","POST NOT NULL NOW");
                     binding.postAndCommentRecyclerView.setVisibility(View.VISIBLE);
                     binding.commentFieldContainer.setVisibility(View.VISIBLE);
                     binding.emptyStateContainer.setVisibility(View.GONE);
+                    binding.unhideButton.setVisibility(View.GONE);
 
                     singlePostList.addAll(posts);
                     singlePostAdapter.setPost(posts);
                     populateCommentToRecycleView(posts);
                 }else{
-                    Log.d("SINGLE POST","POST IS NULL NOW");
                     binding.postAndCommentRecyclerView.setVisibility(View.GONE);
                     binding.commentFieldContainer.setVisibility(View.GONE);
                     binding.emptyStateContainer.setVisibility(View.VISIBLE);
@@ -130,6 +154,66 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
         binding.commentField.setText("");
 
         sendCommentToServer();
+    }
+
+    int blockTypeRecord;
+    String blockItemIdString;
+
+    @Override
+    public void onPostOrUserBlock(String message,int blockType,String blockItemId) {
+        blockTypeRecord = blockType;
+        blockItemIdString = blockItemId;
+        binding.postAndCommentRecyclerView.setVisibility(View.GONE);
+        binding.commentFieldContainer.setVisibility(View.GONE);
+        binding.emptyStateContainer.setVisibility(View.VISIBLE);
+        binding.emptyStateContainer.setText(message);
+        binding.unhideButton.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onClickUnHideButton() {
+        DecodeToken decodeToken = DecodeToken.newInstance();
+        decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+            @Override
+            public void onTokenValid() {
+                if(blockTypeRecord==AppConfig.BLOCK_USER){
+                    viewModel.unHideSomething(blockItemIdString,AppConfig.BLOCK_USER, new StringCallBack() {
+                        @Override
+                        public void success(String item) {
+                            Toast.makeText(getActivity(), item, Toast.LENGTH_SHORT).show();
+                            populatePostToRecycleView();
+                        }
+
+                        @Override
+                        public void showError(String error) {
+                            Toast.makeText(getActivity(), "Error when unhide post", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+
+                if(blockTypeRecord==AppConfig.HIDE_POST) {
+                    viewModel.unHideSomething(postId,AppConfig.HIDE_POST, new StringCallBack() {
+                        @Override
+                        public void success(String item) {
+                            Toast.makeText(getActivity(), item, Toast.LENGTH_SHORT).show();
+                            populatePostToRecycleView();
+                        }
+
+                        @Override
+                        public void showError(String error) {
+                            Toast.makeText(getActivity(), "Error when unhide post", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onTokenAllInvalid() {
+
+            }
+        });
+
+        decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
     }
 
     private void appendNewCommentToCommentList() {
@@ -158,5 +242,277 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
         });
 
         decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        singlePostAdapter.removeAllData();
+    }
+
+    @Override
+    public void onPostMoreButtonClick(Post post) {
+        Log.d("single Fragment","MORE BUTTON CLICKED");
+        Log.d("singleFragment room id",post.getId());
+        Log.d("singleFragment user id",post.getAuthor());
+
+        showPostMoreOptionMenu(post);
+    }
+
+    private MoreOptionBottomSheetDialogFragment moreOptionBottomSheetDialogFragment;
+    private void showPostMoreOptionMenu(final Post post) {
+        moreOptionBottomSheetDialogFragment = MoreOptionBottomSheetDialogFragment.newInstance();
+        moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
+            @Override
+            public void onBlockUser() {
+                Log.d("Single Block user",post.getAuthorUserId());
+                final String userId = post.getAuthorUserId();
+
+                if(prefManager.getUserRealId().equals(userId)){
+                    moreOptionBottomSheetDialogFragment.dismiss();
+                    Toast.makeText(getActivity(),"Cannot block yourself",Toast.LENGTH_SHORT).show();
+                }
+                else {
+
+                    DecodeToken decodeToken = DecodeToken.newInstance();
+                    decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                        @Override
+                        public void onTokenValid() {
+
+                            viewModel.blockUserOrHidePostOrHideComment(userId, null, AppConfig.BLOCK_USER, new StringCallBack() {
+                                @Override
+                                public void success(String item) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    binding.postAndCommentRecyclerView.setVisibility(View.GONE);
+                                    binding.commentFieldContainer.setVisibility(View.GONE);
+                                    binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                                    binding.emptyStateContainer.setText(getResources().getString(R.string.user_success_block));
+                                    blockItemIdString = userId;
+                                    blockTypeRecord = AppConfig.BLOCK_USER;
+                                    binding.unhideButton.setVisibility(View.VISIBLE);
+                                }
+
+                                @Override
+                                public void showError(String error) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onTokenAllInvalid() {
+
+                        }
+                    });
+                    decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+
+                }
+            }
+
+            @Override
+            public void onHide() {
+                Log.d("SinglePost post id",post.getId());
+
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+
+                        viewModel.blockUserOrHidePostOrHideComment(postId, null,AppConfig.HIDE_POST, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                binding.postAndCommentRecyclerView.setVisibility(View.GONE);
+                                binding.commentFieldContainer.setVisibility(View.GONE);
+                                binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                                binding.emptyStateContainer.setText(getResources().getString(R.string.post_success_hide));
+                                blockItemIdString = postId;
+                                blockTypeRecord = AppConfig.HIDE_POST;
+                                binding.unhideButton.setVisibility(View.VISIBLE);
+                            }
+
+                            @Override
+                            public void showError(String error) {
+                                Log.d("HIDE POST",error);
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+            }
+
+            @Override
+            public void onReport() {
+                final String userId = post.getAuthorUserId();
+
+                if(prefManager.getUserRealId().equals(userId)){
+                    moreOptionBottomSheetDialogFragment.dismiss();
+                    Toast.makeText(getActivity(),"Cannot report yourself",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    DecodeToken decodeToken = DecodeToken.newInstance();
+                    decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                        @Override
+                        public void onTokenValid() {
+
+                            viewModel.blockUserOrHidePostOrHideComment(userId, null, AppConfig.BLOCK_USER, new StringCallBack() {
+                                @Override
+                                public void success(String item) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    binding.postAndCommentRecyclerView.setVisibility(View.GONE);
+                                    binding.commentFieldContainer.setVisibility(View.GONE);
+                                    binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                                    binding.emptyStateContainer.setText(getResources().getString(R.string.user_success_report));
+                                    blockItemIdString = userId;
+                                    blockTypeRecord = AppConfig.BLOCK_USER;
+                                    binding.unhideButton.setVisibility(View.VISIBLE);
+                                }
+
+                                @Override
+                                public void showError(String error) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onTokenAllInvalid() {
+
+                        }
+                    });
+                    decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+                }
+            }
+
+            @Override
+            public void onCancel() {
+                moreOptionBottomSheetDialogFragment.dismiss();
+            }
+        });
+
+        moreOptionBottomSheetDialogFragment.show(Objects.requireNonNull(getFragmentManager()),MoreOptionBottomSheetDialogFragment.TAG);
+    }
+
+    @Override
+    public void onCommentMoreButtonClick(CommentModel comment) {
+        Log.d("single c Fragment","MORE BUTTON CLICKED");
+        Log.d("single c Fragment id",comment.getUser());
+
+        showCommentMoreOptionMenu(comment);
+    }
+
+    private void showCommentMoreOptionMenu(final CommentModel comment) {
+        moreOptionBottomSheetDialogFragment = MoreOptionBottomSheetDialogFragment.newInstance();
+        moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
+            @Override
+            public void onBlockUser() {
+                Log.d("Comment Block user",comment.getCommenterUserId());
+
+                final String userId = comment.getCommenterUserId();
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+
+                        viewModel.blockUserOrHidePostOrHideComment(userId,null, AppConfig.BLOCK_USER, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                singlePostAdapter.removeCommentCreatedByBlockedUser(comment.getCommenterUserId());
+                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void showError(String error) {
+                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+            }
+
+            @Override
+            public void onHide() {
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+
+                        viewModel.blockUserOrHidePostOrHideComment(comment.getCommentId(),postId, AppConfig.HIDE_COMMENT, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                singlePostAdapter.removeHidedComment(comment);
+                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void showError(String error) {
+                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+            }
+
+            @Override
+            public void onReport() {
+                final String userId = comment.getCommenterUserId();
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+
+                        viewModel.blockUserOrHidePostOrHideComment(userId,null, AppConfig.BLOCK_USER, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                singlePostAdapter.removeCommentCreatedByBlockedUser(comment.getCommenterUserId());
+                                Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void showError(String error) {
+                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+            }
+
+            @Override
+            public void onCancel() {
+                moreOptionBottomSheetDialogFragment.dismiss();
+            }
+        });
+
+        moreOptionBottomSheetDialogFragment.show(Objects.requireNonNull(getFragmentManager()),MoreOptionBottomSheetDialogFragment.TAG);
     }
 }

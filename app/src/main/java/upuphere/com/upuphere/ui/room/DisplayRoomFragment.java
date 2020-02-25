@@ -8,6 +8,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuItemCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
@@ -15,9 +16,15 @@ import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +37,17 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.MainActivity;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.adapter.PostAdapter;
+import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.app.AppController;
 import upuphere.com.upuphere.databinding.FragmentDisplayRoomBinding;
 import upuphere.com.upuphere.fragment.DisplayPhotoFragmentArgs;
+import upuphere.com.upuphere.fragment.MoreOptionBottomSheetDialogFragment;
+import upuphere.com.upuphere.helper.DecodeToken;
+import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.models.AllRooms;
 import upuphere.com.upuphere.models.Post;
 import upuphere.com.upuphere.viewmodel.DisplayRoomViewModel;
@@ -59,12 +71,12 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
     String roomName;
 
     List<Post> fetchedPost = new ArrayList<>();
-
+    AllRooms room;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        AllRooms room = DisplayRoomFragmentArgs.fromBundle(Objects.requireNonNull(getArguments())).getRoom();
+        room = DisplayRoomFragmentArgs.fromBundle(Objects.requireNonNull(getArguments())).getRoom();
         roomId = room.getId();
         roomName = room.getRoomName();
 
@@ -78,12 +90,20 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
         rootView = binding.getRoot();
         binding.setModel(viewModel);
 
+        setHasOptionsMenu(true);
         return rootView;
     }
+
+    PrefManager prefManager;
+
+    int blockTypeRecord;
+    String blockItemIdString;
 
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        prefManager = new PrefManager(getActivity());
 
         viewModel.setDisplayRoomInterface(new DisplayRoomViewModel.DisplayRoomInterface() {
             @Override
@@ -91,7 +111,66 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
                 NavDirections action = DisplayRoomFragmentDirections.actionRoomFragmentToCreatePostFragment(roomId);
                 Navigation.findNavController(view).navigate(action);
             }
+
+            @Override
+            public void onRoomOrUserBlocked(String message,int blockType,String blockItemId){
+                blockTypeRecord = blockType;
+                blockItemIdString = blockItemId;
+                binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                binding.postRecyclerView.setVisibility(View.GONE);
+                binding.emptyStateContainer.setText(message);
+                binding.unblockRoomButton.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onClickUnhideRoomButton() {
+                Log.d("Display Room","UNHIDE THE ROOM");
+
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+                        if(blockTypeRecord==AppConfig.BLOCK_USER){
+                            viewModel.unHideSomething(blockItemIdString,AppConfig.BLOCK_USER, new StringCallBack() {
+                                @Override
+                                public void success(String item) {
+                                    Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                                    getPostInRoom(roomId);
+                                }
+
+                                @Override
+                                public void showError(String error) {
+                                    Toast.makeText(getActivity(), "Error when unhide post", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+
+                        if(blockTypeRecord==AppConfig.HIDE_ROOM) {
+                            viewModel.unHideSomething(blockItemIdString,AppConfig.HIDE_ROOM, new StringCallBack() {
+                                @Override
+                                public void success(String item) {
+                                    Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                                    getPostInRoom(roomId);
+                                }
+
+                                @Override
+                                public void showError(String error) {
+                                    Toast.makeText(getActivity(), "Error when unhide room", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+            }
         });
+
+        observeProgressBar();
 
         initializeRecyclerView();
 
@@ -101,7 +180,7 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
             @Override
             public void run() {
                 mSwipeRefreshLayout.setRefreshing(true);
-                getPostInRoom();
+                getPostInRoom(roomId);
             }
         });
     }
@@ -113,7 +192,21 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
             @Override
             public void onRefresh() {
                 mSwipeRefreshLayout.setRefreshing(true);
-                getPostInRoom();
+                getPostInRoom(roomId);
+            }
+        });
+    }
+
+    private void observeProgressBar() {
+        viewModel.isLoading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoading) {
+                if(isLoading){
+                    binding.progressBar7.bringToFront();
+                    binding.progressBar7.setVisibility(View.VISIBLE);
+                }else {
+                    binding.progressBar7.setVisibility(View.GONE);
+                }
             }
         });
     }
@@ -125,7 +218,7 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
         recyclerView.setAdapter(postAdapter);
     }
 
-    private void getPostInRoom() {
+    private void getPostInRoom(String roomId) {
         viewModel.getAllPostInRoom(roomId).observe(getViewLifecycleOwner(), new Observer<List<Post>>() {
             @Override
             public void onChanged(List<Post> posts) {
@@ -134,9 +227,10 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
                 if(posts != null && posts.size() > 0){
                     binding.postRecyclerView.setVisibility(View.VISIBLE);
                     binding.emptyStateContainer.setVisibility(View.GONE);
+                    binding.unblockRoomButton.setVisibility(View.GONE);
                     fetchedPost.addAll(posts);
                     postAdapter.setPost(posts);
-                }else{
+                }else if(Objects.requireNonNull(posts).size() == 0){
                     binding.emptyStateContainer.setVisibility(View.VISIBLE);
                     binding.postRecyclerView.setVisibility(View.GONE);
                 }
@@ -162,10 +256,335 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
         Toast.makeText(getActivity(), post.getAuthor(), Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onMoreButtonClicked(Post post) {
+        Log.d("Display Fragment","MORE BUTTON CLICKED");
+        Log.d("DisplayFragment room id",post.getId());
+        Log.d("DisplayFragment user id",post.getAuthor());
+
+        showPostMoreOptionMenu(post);
+    }
+
+    private MoreOptionBottomSheetDialogFragment moreOptionBottomSheetDialogFragment;
+    private void showPostMoreOptionMenu(final Post post) {
+        moreOptionBottomSheetDialogFragment = MoreOptionBottomSheetDialogFragment.newInstance();
+        moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
+            @Override
+            public void onBlockUser() {
+                Log.d("Single Block user",post.getAuthorUserId());
+                final String userId = post.getAuthorUserId();
+
+                if(prefManager.getUserRealId().equals(userId)){
+                    moreOptionBottomSheetDialogFragment.dismiss();
+                    Toast.makeText(getActivity(),"Cannot block yourself",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    DecodeToken decodeToken = DecodeToken.newInstance();
+                    decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                        @Override
+                        public void onTokenValid() {
+
+                            viewModel.blockUserOrHidePost(userId, AppConfig.BLOCK_USER, new StringCallBack() {
+                                @Override
+                                public void success(String item) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    postAdapter.removePostCreatedByBlockedUser(post.getAuthorUserId());
+                                    //Toast.makeText(getActivity(), item, Toast.LENGTH_SHORT).show();
+
+                                    showSnackBar(item,AppConfig.BLOCK_USER,post.getAuthorUserId());
+                                }
+
+                                @Override
+                                public void showError(String error) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onTokenAllInvalid() {
+
+                        }
+                    });
+                    decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+                }
+
+            }
+
+            @Override
+            public void onHide() {
+                Log.d("SinglePost post id",post.getId());
+
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+
+                        viewModel.blockUserOrHidePost(post.getId(), AppConfig.HIDE_POST, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                postAdapter.removeHidedPost(post);
+
+                                showSnackBar(item,AppConfig.HIDE_POST,post.getId());
+                            }
+
+                            @Override
+                            public void showError(String error) {
+                                Log.d("HIDE POST",error);
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+
+
+            }
+
+            @Override
+            public void onReport() {
+                final String userId = post.getAuthorUserId();
+
+                if(prefManager.getUserRealId().equals(userId)){
+                    moreOptionBottomSheetDialogFragment.dismiss();
+                    Toast.makeText(getActivity(),"Cannot report yourself",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    DecodeToken decodeToken = DecodeToken.newInstance();
+                    decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                        @Override
+                        public void onTokenValid() {
+
+                            viewModel.blockUserOrHidePost(userId, AppConfig.BLOCK_USER, new StringCallBack() {
+                                @Override
+                                public void success(String item) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    postAdapter.removePostCreatedByBlockedUser(post.getAuthorUserId());
+                                    showSnackBar(item,AppConfig.BLOCK_USER,post.getAuthorUserId());
+                                }
+
+                                @Override
+                                public void showError(String error) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onTokenAllInvalid() {
+
+                        }
+                    });
+                    decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+                }
+            }
+
+            @Override
+            public void onCancel() {
+                moreOptionBottomSheetDialogFragment.dismiss();
+            }
+        });
+
+        moreOptionBottomSheetDialogFragment.show(Objects.requireNonNull(getFragmentManager()),MoreOptionBottomSheetDialogFragment.TAG);
+    }
+
+    private void showRoomMoreOptionMenu(final AllRooms room){
+        moreOptionBottomSheetDialogFragment = MoreOptionBottomSheetDialogFragment.newInstance();
+        moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
+            @Override
+            public void onBlockUser() {
+                final String userId = room.getRoomOwnerUserId();
+
+                if(prefManager.getUserRealId().equals(userId)){
+                    moreOptionBottomSheetDialogFragment.dismiss();
+                    Toast.makeText(getActivity(),"Cannot block yourself",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    DecodeToken decodeToken = DecodeToken.newInstance();
+                    decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                        @Override
+                        public void onTokenValid() {
+
+                            viewModel.blockUserOrHidePost(userId, AppConfig.BLOCK_USER, new StringCallBack() {
+                                @Override
+                                public void success(String item) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                                    binding.emptyStateContainer.setText(item);
+                                    binding.postRecyclerView.setVisibility(View.GONE);
+                                    blockItemIdString = userId;
+                                    blockTypeRecord = AppConfig.BLOCK_USER;
+                                    binding.unblockRoomButton.setVisibility(View.VISIBLE);
+
+                                    showSnackBar(item,AppConfig.BLOCK_USER,room.getRoomOwnerUserId());
+                                }
+
+                                @Override
+                                public void showError(String error) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onTokenAllInvalid() {
+
+                        }
+                    });
+                    decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+                }
+            }
+
+            @Override
+            public void onHide() {
+
+                DecodeToken decodeToken = DecodeToken.newInstance();
+                decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                    @Override
+                    public void onTokenValid() {
+
+                        viewModel.blockUserOrHidePost(roomId, AppConfig.HIDE_ROOM, new StringCallBack() {
+                            @Override
+                            public void success(String item) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                                binding.emptyStateContainer.setText(item);
+                                binding.postRecyclerView.setVisibility(View.GONE);
+                                blockItemIdString = roomId;
+                                blockTypeRecord = AppConfig.HIDE_ROOM;
+                                binding.unblockRoomButton.setVisibility(View.VISIBLE);
+
+                                showSnackBar(item,AppConfig.HIDE_ROOM,roomId);
+                            }
+
+                            @Override
+                            public void showError(String error) {
+                                moreOptionBottomSheetDialogFragment.dismiss();
+                                Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTokenAllInvalid() {
+
+                    }
+                });
+                decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+            }
+
+            @Override
+            public void onReport() {
+                final String userId = room.getRoomOwnerUserId();
+
+                if(prefManager.getUserRealId().equals(userId)){
+                    moreOptionBottomSheetDialogFragment.dismiss();
+                    Toast.makeText(getActivity(),"Cannot block yourself",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    DecodeToken decodeToken = DecodeToken.newInstance();
+                    decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+                        @Override
+                        public void onTokenValid() {
+
+                            viewModel.blockUserOrHidePost(userId, AppConfig.BLOCK_USER, new StringCallBack() {
+                                @Override
+                                public void success(String item) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                                    binding.emptyStateContainer.setText(item);
+                                    binding.postRecyclerView.setVisibility(View.GONE);
+                                    blockItemIdString = userId;
+                                    blockTypeRecord = AppConfig.BLOCK_USER;
+                                    binding.unblockRoomButton.setVisibility(View.VISIBLE);
+
+                                    showSnackBar(item,AppConfig.BLOCK_USER,room.getRoomOwnerUserId());
+                                }
+
+                                @Override
+                                public void showError(String error) {
+                                    moreOptionBottomSheetDialogFragment.dismiss();
+                                    Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onTokenAllInvalid() {
+
+                        }
+                    });
+                    decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+                }
+            }
+
+            @Override
+            public void onCancel() {
+                moreOptionBottomSheetDialogFragment.dismiss();
+            }
+        });
+        moreOptionBottomSheetDialogFragment.show(Objects.requireNonNull(getFragmentManager()),MoreOptionBottomSheetDialogFragment.TAG);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_more_option,menu);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.moreMenuOption:
+                if(room != null){
+                    showRoomMoreOptionMenu(room);
+                }
+
+                return  true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showSnackBar(String message, final int blockType, final String blockItemId){
+        final Snackbar snackbar = Snackbar.make(binding.rootLayout,message, BaseTransientBottomBar.LENGTH_SHORT);
+        snackbar.setAction(R.string.undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewModel.unHideSomething(blockItemId, blockType, new StringCallBack() {
+                    @Override
+                    public void success(String item) {
+                        snackbar.dismiss();
+                        Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
+                        getPostInRoom(roomId);
+                    }
+
+                    @Override
+                    public void showError(String error) {
+                        snackbar.dismiss();
+                        Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+        snackbar.show();
+    }
+
 
     @Override
     public void onStop() {
         super.onStop();
-        viewModel.setPostListToBlank();
+        postAdapter.removeAllPost();
     }
 }

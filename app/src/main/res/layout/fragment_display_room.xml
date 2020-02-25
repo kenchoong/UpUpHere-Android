@@ -13,10 +13,19 @@
             type="upuphere.com.upuphere.viewmodel.DisplayRoomViewModel" />
     </data>
 
-    <FrameLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/root_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.room.DisplayRoomFragment">
+
+        <ProgressBar
+            android:id="@+id/progressBar7"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefreshLayout"
@@ -58,6 +67,26 @@
             android:textSize="18sp"
             android:visibility="gone" />
 
-    </FrameLayout>
+        <Button
+            android:id="@+id/unblockRoomButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/colorAccent"
+            android:onClick="@{model::onUnhideButtonClick}"
+            android:padding="10dp"
+            android:text="@string/unblock_room"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@color/background_color"
+            android:visibility="gone"
+            app:layout_anchor="@+id/emptyStateContainer"
+            app:layout_anchorGravity="bottom|center_horizontal" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </layout>

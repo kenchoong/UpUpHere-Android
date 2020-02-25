@@ -1,6 +1,7 @@
 package upuphere.com.upuphere.viewmodel;
 
 import android.app.Application;
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 import upuphere.com.upuphere.Interface.AuthListener;
+import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.repositories.UserRepo;
 
 public class LoginViewModel extends AndroidViewModel{
@@ -89,7 +91,19 @@ public class LoginViewModel extends AndroidViewModel{
     }
 
 
+    public void updateFirebaseToken(String firebaseToken, final StringCallBack callBack){
+        userRepo.updateFirebaseTokenToServer(firebaseToken, new StringCallBack() {
+            @Override
+            public void success(String item) {
+                callBack.success(item);
+            }
 
+            @Override
+            public void showError(String error) {
+                callBack.showError(error);
+            }
+        });
+    }
 
 
 }

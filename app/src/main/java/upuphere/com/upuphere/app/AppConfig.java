@@ -38,11 +38,20 @@ public class AppConfig {
 
     public static String URL_GET_SINGLE_POST = BASE_URL + "/api/posts/";
 
+    public static String URL_BLOCK_UNBLOCK = BASE_URL + "/api/exclude";
+
 
     // Notification stuff
     public static final int NOTIFICATION_TEXT = 100;
 
     public static final String PUSH_NOTIFICATION = "pushNotification";
 
+    // Block user
+    public static final int HIDE_POST = 1111;
 
+    public static final int BLOCK_USER = 2222;
+
+    public static final int HIDE_ROOM = 3333;
+
+    public static final int HIDE_COMMENT = 4444;
 }

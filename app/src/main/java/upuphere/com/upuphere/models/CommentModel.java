@@ -18,9 +18,17 @@ public class CommentModel{
     @Expose
     private String user;
 
+    @SerializedName("commenter_user_id")
+    @Expose
+    private String commenterUserId;
+
     @SerializedName("created_at")
     @Expose
     private String createdAt;
+
+    @SerializedName("comment_id")
+    @Expose
+    private String commentId;
 
     public String getCls() {
         return cls;
@@ -46,11 +54,27 @@ public class CommentModel{
         this.user = user;
     }
 
+    public String getCommenterUserId() {
+        return commenterUserId;
+    }
+
+    public void setCommenterUserId(String commenterUserId) {
+        this.commenterUserId = commenterUserId;
+    }
+
     public String getCreatedAt() {
         return createdAt;
     }
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getCommentId() {
+        return commentId;
+    }
+
+    public void setCommentId(String commentId) {
+        this.commentId = commentId;
     }
 }

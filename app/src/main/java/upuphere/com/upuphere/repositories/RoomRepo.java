@@ -30,6 +30,7 @@ import upuphere.com.upuphere.app.AppController;
 import upuphere.com.upuphere.database.PostDao;
 import upuphere.com.upuphere.database.RoomDao;
 import upuphere.com.upuphere.database.UpUpHereDatabase;
+import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.helper.VolleyMultipartRequest;
 import upuphere.com.upuphere.helper.VolleyRequest;
 import upuphere.com.upuphere.models.AllRooms;
@@ -53,7 +54,17 @@ public class RoomRepo {
     public MutableLiveData<List<AllRooms>> getRoomListMutableData(){
 
         if(AppController.getInstance().internetConnectionAvailable()){
-            JsonObjectRequest request = VolleyRequest.getJsonAccessRequestWithoutRetry(AppConfig.URL_GET_ROOM_LIST, new VolleyRequest.ResponseCallBack() {
+            PrefManager prefManager = new PrefManager(AppController.getContext());
+            String userId = prefManager.getUserId();
+
+            String url;
+            if(userId != null){
+                url = AppConfig.URL_GET_ROOM_LIST + "?user_public_id=" + userId;
+            }else{
+                url = AppConfig.URL_GET_ROOM_LIST;
+            }
+
+            JsonObjectRequest request = VolleyRequest.getJsonAccessRequestWithoutRetry(url, new VolleyRequest.ResponseCallBack() {
                 @Override
                 public void onSuccess(JSONObject response) {
 
@@ -79,6 +90,43 @@ public class RoomRepo {
         return roomMutableLiveData;
     }
 
+    public void blockUserOrHideRoom(String roomOrUserId,int operationType,final StringCallBack callBack){
+        JSONObject params;
+        switch (operationType){
+            case AppConfig.BLOCK_USER:
+                String[] keys = new String[]{"blocked_user_id"};
+                String[] values = new String[]{roomOrUserId};
+                params = VolleyRequest.getParams(keys,values);
+                break;
+            case AppConfig.HIDE_ROOM:
+            default:
+                String[] key = new String[]{"blocked_room_id"};
+                String[] value = new String[]{roomOrUserId};
+                params = VolleyRequest.getParams(key,value);
+                break;
+        }
+
+        JsonObjectRequest request = VolleyRequest.postJsonAccessRequestWithoutRetry(AppConfig.URL_BLOCK_UNBLOCK, params, new VolleyRequest.ResponseCallBack() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    String message = response.getString("message");
+                    callBack.success(message);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    callBack.showError(e.getMessage());
+                }
+            }
+            @Override
+            public void onError(String error) {
+                callBack.showError(error);
+            }
+        });
+
+        AppController.getInstance().addToRequestQueue(request);
+
+
+    }
 
     private void getAllRoomFromLocalDB(){
 

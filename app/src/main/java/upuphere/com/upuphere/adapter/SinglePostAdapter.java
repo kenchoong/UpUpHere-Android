@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import org.w3c.dom.Comment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -25,9 +26,14 @@ public class SinglePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private static final int COMMENT_TYPE = 2222;
 
     private LayoutInflater layoutInflater;
+
+    public SinglePostAdapter(SinglePostAdapterListener listener) {
+        this.listener = listener;
+    }
+
     private SinglePostAdapterListener listener;
 
-    private List<CommentModel> comment;
+    private List<CommentModel> commentList;
     private List<Post> post;
     private int size = 0;
 
@@ -37,13 +43,38 @@ public class SinglePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public void setComment(List<CommentModel> comment){
-        this.comment = comment;
+        this.commentList = comment;
         notifyDataSetChanged();
     }
 
+    public void removeHidedComment(CommentModel comment){
+        commentList.remove(comment);
+        notifyDataSetChanged();
+    }
+
+    public void removeCommentCreatedByBlockedUser(String userId){
+        List<CommentModel> shouldRemoveComment = new ArrayList<>();
+        for(CommentModel comment : commentList){
+            if(comment.getCommenterUserId().equals(userId)){
+                shouldRemoveComment.add(comment);
+            }
+        }
+        commentList.removeAll(shouldRemoveComment);
+        notifyDataSetChanged();
+    }
+
+    public void removeAllData(){
+        if(commentList !=null & post != null){
+            commentList.clear();
+            post.clear();
+            notifyDataSetChanged();
+        }
+    }
 
     public interface SinglePostAdapterListener{
-        //void onPostClick();
+        void onPostMoreButtonClick(Post post);
+
+        void onCommentMoreButtonClick(CommentModel comment);
     }
 
     public class SinglePostViewHolder extends RecyclerView.ViewHolder{
@@ -93,20 +124,34 @@ public class SinglePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         int viewType = holder.getItemViewType();
         switch (viewType){
             case COMMENT_TYPE:
                 CommentViewHolder commentViewHolder = (CommentViewHolder) holder;
-                if(position < post.size() + comment.size() - 1){
-                    commentViewHolder.commentBinding.setData(comment.get(position));
+                if(position < post.size() + commentList.size() - 1){
+                    commentViewHolder.commentBinding.setData(commentList.get(position));
                 }
+
+                ((CommentViewHolder) holder).commentBinding.moreButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        listener.onCommentMoreButtonClick(commentList.get(position));
+                    }
+                });
 
                 break;
             case POST_TYPE:
                 default:
                     SinglePostViewHolder singlePostViewHolder = (SinglePostViewHolder) holder;
                     singlePostViewHolder.binding.setData(post.get(position));
+
+                    ((SinglePostViewHolder) holder).binding.moreButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            listener.onPostMoreButtonClick(post.get(position));
+                        }
+                    });
                 break;
         }
 
@@ -114,8 +159,8 @@ public class SinglePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemCount() {
-        if(post != null && comment != null){
-            return post.size() + comment.size();
+        if(post != null && commentList != null){
+            return post.size() + commentList.size();
         }
         else if(post != null){
             return 1;

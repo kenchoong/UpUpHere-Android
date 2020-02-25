@@ -58,6 +58,7 @@ public class UserRepo{
 
                 PrefManager prefManager = new PrefManager(AppController.getContext());
                 prefManager.setUserID(user.getUserId());
+                prefManager.setUserRealId(user.getUserRealId());
                 prefManager.setUsername(user.getUsername());
                 prefManager.setUserSessionId(user.getUserSessionId());
                 prefManager.setUserDeviceId(user.getUserDeviceId());
@@ -112,6 +113,7 @@ public class UserRepo{
 
                 PrefManager prefManager = new PrefManager(AppController.getContext());
                 prefManager.setUserID(user.getUserId());
+                prefManager.setUserRealId(user.getUserRealId());
                 prefManager.setUsername(user.getUsername());
                 prefManager.setUserSessionId(user.getUserSessionId());
                 prefManager.setUserDeviceId(user.getUserDeviceId());
@@ -186,33 +188,27 @@ public class UserRepo{
 
     }
 
-    public void updateFirebaseTokenToServer(Context mContext, final String newToken){
-
-        final PrefManager prefManager = new PrefManager(mContext);
-        String accessToken = prefManager.getUserAccessToken();
-
+    public void updateFirebaseTokenToServer(String firebaseToken, final StringCallBack callback){
         String[] key = new String[]{"firebase_token"};
-        String[] value = new String[]{newToken};
+        String[] value = new String[]{firebaseToken};
         JSONObject params = VolleyRequest.getParams(key,value);
 
-        if(!TextUtils.isEmpty(accessToken)){
-            JsonObjectRequest request = VolleyRequest.putJsonRequestWithAccessToken(AppConfig.URL_UPDATE_USER_DETAILS, params, new VolleyRequest.ResponseCallBack() {
-                @Override
-                public void onSuccess(JSONObject response) {
-                    Log.d("Update token","Successful");
-                    prefManager.setFirebaseToken(newToken);
-                }
 
-                @Override
-                public void onError(String error) {
+        JsonObjectRequest request = VolleyRequest.putJsonRequestWithAccessToken(AppConfig.URL_UPDATE_USER_DETAILS, params, new VolleyRequest.ResponseCallBack() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                Log.d("Update token","Successful");
+                //prefManager.setFirebaseToken(newToken);
+                callback.success("Update token sucess");
+            }
 
-                }
-            });
+            @Override
+            public void onError(String error) {
+                callback.showError(error);
+            }
+        });
 
-            AppController.getInstance().addToRequestQueue(request);
-        }else{
-            Log.d("New user","No need update token");
-        }
+        AppController.getInstance().addToRequestQueue(request);
     }
 
     public void revokedAccessToken(final CommonCallBack callBack){

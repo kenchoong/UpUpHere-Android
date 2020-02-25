@@ -10,13 +10,17 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
+import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import upuphere.com.upuphere.models.AllRooms;
 import upuphere.com.upuphere.models.NotificationModel;
 import upuphere.com.upuphere.models.Post;
 
+import static android.graphics.PorterDuff.Mode.ADD;
+import static androidx.room.ColumnInfo.TEXT;
+
 @Database(entities = {AllRooms.class,
-                    NotificationModel.class, Post.class}, version = 1,exportSchema = false)
+                    NotificationModel.class, Post.class}, version = 2,exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class UpUpHereDatabase extends RoomDatabase {
 
@@ -34,13 +38,25 @@ public abstract class UpUpHereDatabase extends RoomDatabase {
             synchronized (UpUpHereDatabase .class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            UpUpHereDatabase.class, "UpUpHereDb")
+                            UpUpHereDatabase.class, "UpUpHereDb").addMigrations(FROM_1_TO_2)
                             .build();
                 }
             }
         }
         return INSTANCE;
     }
+
+    private static final Migration FROM_1_TO_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(final SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE room_table "
+                    + " ADD COLUMN room_owner_user_id TEXT");
+
+            database.execSQL("ALTER TABLE post_table "
+                    + " ADD COLUMN author_user_id TEXT");
+        }
+    };
+
 
     private static RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback() {
         @Override

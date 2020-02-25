@@ -20,12 +20,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
+import upuphere.com.upuphere.Interface.GetResultListener;
 import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.app.AppController;
 import upuphere.com.upuphere.database.PostDao;
 import upuphere.com.upuphere.database.UpUpHereDatabase;
+import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.helper.VolleyMultipartRequest;
 import upuphere.com.upuphere.helper.VolleyRequest;
 import upuphere.com.upuphere.models.CommentModel;
@@ -109,23 +112,49 @@ public class PostRepo {
         }
     }
 
-    public MutableLiveData<List<Post>> getSinglePostByPostId(final String postId){
+    public MutableLiveData<List<Post>> getSinglePostByPostId(final String postId, final GetResultListener listener){
 
         if(AppController.getInstance().internetConnectionAvailable()){
-            String url = AppConfig.URL_GET_SINGLE_POST + postId;
+            PrefManager prefManager = new PrefManager(AppController.getContext());
+            String userId = prefManager.getUserId();
+
+            String url = "";
+            if(userId != null){
+                url = AppConfig.URL_GET_SINGLE_POST + postId + "?user_public_id=" + userId;
+            }else{
+                url = AppConfig.URL_GET_SINGLE_POST + postId;
+            }
 
             JsonObjectRequest request = VolleyRequest.getJsonAccessRequestWithoutRetry(url, new VolleyRequest.ResponseCallBack() {
                 @Override
                 public void onSuccess(JSONObject response) {
-                    Gson gson = new Gson();
-                    PostModel postModel = gson.fromJson(response.toString(),PostModel.class);
+                    if(!response.has("error")){
+                        Gson gson = new Gson();
+                        PostModel postModel = gson.fromJson(response.toString(),PostModel.class);
 
-                    postMutableLiveData.setValue(postModel.getSinglePost());
+                        postMutableLiveData.setValue(postModel.getSinglePost());
+                    }else{
+                        try {
+                            String message = response.getString("message");
+                            int blockType = response.getInt("block_type");
+
+                            if(response.has("blocked_user_id")){
+                                String blockUserId = response.getString("blocked_user_id");
+
+                                listener.onBlockedUser(message,blockType,blockUserId);
+                            }else{
+                                listener.onHidedItem(message,blockType);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
 
                 @Override
                 public void onError(String error) {
-                    getSinglePostByPostId(postId);
+                    getPostByPostIdFromLocalDb(postId);
                 }
             });
 
@@ -137,22 +166,189 @@ public class PostRepo {
         return postMutableLiveData;
     }
 
+    public void blockSomething(String itemIdWannaBlock, @Nullable String postIdForHideComment, int operationType, final StringCallBack callBack){
+        JSONObject params = null;
+        switch (operationType){
+            case AppConfig.BLOCK_USER:
+                String[] keys = new String[]{"blocked_user_id"};
+                String[] values = new String[]{itemIdWannaBlock};
+                params = VolleyRequest.getParams(keys,values);
+                break;
+            case AppConfig.HIDE_ROOM:
+                String[] keys2 = new String[]{"blocked_room_id"};
+                String[] values2 = new String[]{itemIdWannaBlock};
+                params = VolleyRequest.getParams(keys2,values2);
+                break;
+            case AppConfig.HIDE_COMMENT:
+                if(postIdForHideComment != null){
+                    String[] keys1 = new String[]{"blocked_comment_id","post_id"};
+                    String[] values1 = new String[]{itemIdWannaBlock,postIdForHideComment};
+                    params = VolleyRequest.getParams(keys1,values1);
+                }else{
+                    callBack.showError("Post not exists!");
+                }
+                break;
+            case AppConfig.HIDE_POST:
+            default:
+                String[] key = new String[]{"blocked_post_id"};
+                String[] value = new String[]{itemIdWannaBlock};
+                params = VolleyRequest.getParams(key,value);
+                break;
+        }
 
-    public MutableLiveData<List<Post>> getAllPostWithRoomId(final String roomId){
+        if(params != null) {
+            JsonObjectRequest request = VolleyRequest.postJsonAccessRequestWithoutRetry(AppConfig.URL_BLOCK_UNBLOCK, params, new VolleyRequest.ResponseCallBack() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    try {
+                        String message = response.getString("message");
+                        callBack.success(message);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        callBack.showError(e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onError(String error) {
+                    callBack.showError(error);
+                }
+            });
+
+            AppController.getInstance().addToRequestQueue(request);
+
+        }
+    }
+
+    public void unHideSomething(String unHideItemId,int unhideType,final StringCallBack callback){
+        JSONObject params = null;
+        switch (unhideType) {
+            case AppConfig.BLOCK_USER:
+                String[] keys = new String[]{"blocked_user_id"};
+                String[] values = new String[]{unHideItemId};
+                params = VolleyRequest.getParams(keys, values);
+                break;
+            case AppConfig.HIDE_ROOM:
+                String[] keys1 = new String[]{"blocked_room_id"};
+                String[] values1 = new String[]{unHideItemId};
+                params = VolleyRequest.getParams(keys1, values1);
+                break;
+            case AppConfig.HIDE_POST:
+            default:
+                String[] key = new String[]{"blocked_post_id"};
+                String[] value = new String[]{unHideItemId};
+                params = VolleyRequest.getParams(key, value);
+                break;
+        }
+
+        JsonObjectRequest request = VolleyRequest.putJsonRequestWithAccessToken(AppConfig.URL_BLOCK_UNBLOCK, params, new VolleyRequest.ResponseCallBack() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    String message = response.getString("message");
+                    callback.success(message);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    callback.showError(e.getMessage());
+                }
+            }
+            @Override
+            public void onError(String error) {
+                callback.showError(error);
+            }
+        });
+
+        AppController.getInstance().addToRequestQueue(request);
+    }
+
+    public void unHidePost(String postId, final StringCallBack callBack){
+        String[] key = new String[]{"blocked_post_id"};
+        String[] value = new String[]{postId};
+        JSONObject params = VolleyRequest.getParams(key,value);
+        JsonObjectRequest request = VolleyRequest.putJsonRequestWithAccessToken(AppConfig.URL_BLOCK_UNBLOCK, params, new VolleyRequest.ResponseCallBack() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    String message = response.getString("message");
+                    callBack.success(message);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    callBack.showError(e.getMessage());
+                }
+            }
+            @Override
+            public void onError(String error) {
+                callBack.showError(error);
+            }
+        });
+
+        AppController.getInstance().addToRequestQueue(request);
+    }
+
+    public void unHideRoom(String roomId,final StringCallBack callback){
+        String[] key = new String[]{"blocked_room_id"};
+        String[] value = new String[]{roomId};
+        JSONObject params = VolleyRequest.getParams(key,value);
+        JsonObjectRequest request = VolleyRequest.putJsonRequestWithAccessToken(AppConfig.URL_BLOCK_UNBLOCK, params, new VolleyRequest.ResponseCallBack() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    String message = response.getString("message");
+                    callback.success(message);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    callback.showError(e.getMessage());
+                }
+            }
+            @Override
+            public void onError(String error) {
+                callback.showError(error);
+            }
+        });
+
+        AppController.getInstance().addToRequestQueue(request);
+    }
+
+    public MutableLiveData<List<Post>> getAllPostWithRoomId(final String roomId, final GetResultListener listener){
 
         if(AppController.getInstance().internetConnectionAvailable()){
 
-            String url = AppConfig.URL_GET_POST_IN_SPECIFIC_ROOM + roomId;
+            PrefManager prefManager = new PrefManager(AppController.getContext());
+            String userId = prefManager.getUserId();
+
+            String url;
+            if(userId != null){
+                url = AppConfig.URL_GET_POST_IN_SPECIFIC_ROOM + roomId + "?user_public_id=" + userId;
+            }else{
+                url = AppConfig.URL_GET_POST_IN_SPECIFIC_ROOM + roomId;
+            }
 
             JsonObjectRequest request = VolleyRequest.getJsonAccessRequestWithoutRetry(url, new VolleyRequest.ResponseCallBack() {
                 @Override
                 public void onSuccess(JSONObject response) {
 
-                    Gson gson = new Gson();
-                    PostModel postModel = gson.fromJson(response.toString(), PostModel.class);
+                    if(!response.has("error")){
+                        Gson gson = new Gson();
+                        PostModel postModel = gson.fromJson(response.toString(), PostModel.class);
 
-                    insertNewFetchPostOfARoomIntoLocalDb(postModel.getPost());
-                    postMutableLiveData.setValue(postModel.getPost());
+                        insertNewFetchPostOfARoomIntoLocalDb(postModel.getPost());
+                        postMutableLiveData.setValue(postModel.getPost());
+                    }else{
+                        try {
+                            String message = response.getString("message");
+                            int blockType = response.getInt("block_type");
+
+                            if(response.has("blocked_user_id")){
+                                String blockUserId = response.getString("blocked_user_id");
+
+                                listener.onBlockedUser(message,blockType,blockUserId);
+                            }else{
+                                listener.onHidedItem(message,blockType);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
 
                 @Override

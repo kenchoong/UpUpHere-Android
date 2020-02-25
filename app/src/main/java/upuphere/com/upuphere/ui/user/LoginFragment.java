@@ -28,6 +28,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
+import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.helper.SharedPreferenceBooleanLiveData;
 import upuphere.com.upuphere.databinding.FragmentLoginBinding;
@@ -149,10 +150,25 @@ public class LoginFragment extends Fragment implements LoginViewModel.LoginInter
             public void onChanged(Boolean isLoggedIn) {
                 Log.d("LOGIN 1",String.valueOf(isLoggedIn));
                 if(isLoggedIn){
-                    NavController navController = Navigation.findNavController(rootView);
-                    navController.popBackStack(R.id.loginFragment,true);
-                    navController.navigate(R.id.mainFragment);
+                    updateFirebaseToken();
                 }
+            }
+        });
+    }
+
+    private void updateFirebaseToken() {
+        viewModel.updateFirebaseToken(prefManager.getFirebaseToken(), new StringCallBack() {
+            @Override
+            public void success(String item) {
+                Log.d("Update firebase token",item);
+                NavController navController = Navigation.findNavController(rootView);
+                navController.popBackStack(R.id.loginFragment,true);
+                navController.navigate(R.id.mainFragment);
+            }
+
+            @Override
+            public void showError(String error) {
+                Log.d("Update firebase token",error);
             }
         });
     }

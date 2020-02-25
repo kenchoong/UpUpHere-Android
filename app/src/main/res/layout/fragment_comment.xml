@@ -20,6 +20,14 @@
         tools:context=".ui.CommentFragment">
 
 
+        <ProgressBar
+            android:id="@+id/progressBar8"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/emptyStateComment"
             android:layout_width="match_parent"

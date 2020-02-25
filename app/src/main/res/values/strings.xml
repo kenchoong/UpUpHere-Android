@@ -50,6 +50,7 @@
     <string name="room_name_hint">Give this room an interesting name</string>
 
     <string name="content_description">Image</string>
+    <string name="more_content_description">More Button</string>
 
     <string name="take_photo">Take Photo</string>
     <string name="choose_photo_from_album">Choose from Album</string>
@@ -101,5 +102,18 @@
     <string name="empty_state_notification">No notification at the moment.</string>
     <string name="empty_state_single_post">Oops! Post Not found</string>
     <string name="empty_state_room">Wow! Is empty.</string>
+
+    <string name="unhide">Unhide</string>
+    <string name="unblock_room">Unblock</string>
+
+    <string name="block_user">Block user</string>
+    <string name="hide">Hide</string>
+    <string name="report">Report</string>
+
+    <string name="post_success_hide">Post already hided</string>
+    <string name="user_success_block">User already block</string>
+    <string name="user_success_report">Successfully report user</string>
+
+    <string name="undo">Undo</string>
 
 </resources>
