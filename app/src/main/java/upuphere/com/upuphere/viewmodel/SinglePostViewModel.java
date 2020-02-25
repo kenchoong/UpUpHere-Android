@@ -60,7 +60,7 @@ public class SinglePostViewModel extends AndroidViewModel {
         return postRepo.getSinglePostByPostId(postId, new GetResultListener() {
 
             @Override
-            public void onHidedPost(String message,int blockType) {
+            public void onHidedItem(String message,int blockType) {
                 commentInterface.onPostOrUserBlock(message,blockType,postId);
             }
 

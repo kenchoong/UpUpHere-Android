@@ -13,7 +13,8 @@
             type="upuphere.com.upuphere.viewmodel.DisplayRoomViewModel" />
     </data>
 
-    <RelativeLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/root_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.room.DisplayRoomFragment">
@@ -23,7 +24,7 @@
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_gravity="center"
             android:visibility="gone" />
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -44,8 +45,7 @@
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
+            android:layout_gravity="end|bottom"
             android:layout_margin="16dp"
             android:contentDescription="@string/add_group"
             app:srcCompat="@drawable/ic_add_white"
@@ -58,7 +58,7 @@
             android:id="@+id/emptyStateContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_gravity="center"
             android:layout_marginTop="10dp"
             android:drawableTop="@drawable/empty2"
             android:paddingTop="10dp"
@@ -71,8 +71,7 @@
             android:id="@+id/unblockRoomButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/emptyStateContainer"
-            android:layout_centerInParent="true"
+            android:layout_gravity="bottom|center_horizontal"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
@@ -84,8 +83,10 @@
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@color/background_color"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:layout_anchor="@+id/emptyStateContainer"
+            app:layout_anchorGravity="bottom|center_horizontal" />
 
-    </RelativeLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </layout>

@@ -6,7 +6,7 @@ public interface GetResultListener {
 
     //void showError(String error, int blockType, String blockItemId);
 
-    void onHidedPost(String message,int blockType);
+    void onHidedItem(String message,int blockType);
 
     void onBlockedUser(String message,int blockType,String blockUserId);
 }

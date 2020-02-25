@@ -143,7 +143,7 @@ public class PostRepo {
 
                                 listener.onBlockedUser(message,blockType,blockUserId);
                             }else{
-                                listener.onHidedPost(message,blockType);
+                                listener.onHidedItem(message,blockType);
                             }
 
                         } catch (JSONException e) {
@@ -173,6 +173,11 @@ public class PostRepo {
                 String[] keys = new String[]{"blocked_user_id"};
                 String[] values = new String[]{itemIdWannaBlock};
                 params = VolleyRequest.getParams(keys,values);
+                break;
+            case AppConfig.HIDE_ROOM:
+                String[] keys2 = new String[]{"blocked_room_id"};
+                String[] values2 = new String[]{itemIdWannaBlock};
+                params = VolleyRequest.getParams(keys2,values2);
                 break;
             case AppConfig.HIDE_COMMENT:
                 if(postIdForHideComment != null){
@@ -304,7 +309,7 @@ public class PostRepo {
         AppController.getInstance().addToRequestQueue(request);
     }
 
-    public MutableLiveData<List<Post>> getAllPostWithRoomId(final String roomId, final StringCallBack callback){
+    public MutableLiveData<List<Post>> getAllPostWithRoomId(final String roomId, final GetResultListener listener){
 
         if(AppController.getInstance().internetConnectionAvailable()){
 
@@ -331,7 +336,15 @@ public class PostRepo {
                     }else{
                         try {
                             String message = response.getString("message");
-                            callback.showError(message);
+                            int blockType = response.getInt("block_type");
+
+                            if(response.has("blocked_user_id")){
+                                String blockUserId = response.getString("blocked_user_id");
+
+                                listener.onBlockedUser(message,blockType,blockUserId);
+                            }else{
+                                listener.onHidedItem(message,blockType);
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
