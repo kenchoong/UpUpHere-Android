@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String refreshToken = prefManager.getUserRefreshToken();
 
         if(accessToken == null && refreshToken == null){
-            prefManager.removeAllSharedPrefrences();
+            prefManager.setIsLoggedIn(false);
             navController.navigate(R.id.loginFragment);
         }
         else if(!DecodeToken.jwtTokenStillValid(accessToken) && !DecodeToken.jwtTokenStillValid(refreshToken)){
@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void success() {
                         Log.d("Revoked refresh","Successful");
 
-                        prefManager.removeAllSharedPrefrences();
+                        prefManager.setIsLoggedIn(false);
                         navController.navigate(R.id.loginFragment);
                     }
 

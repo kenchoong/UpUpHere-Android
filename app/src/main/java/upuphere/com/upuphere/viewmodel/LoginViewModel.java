@@ -92,14 +92,17 @@ public class LoginViewModel extends AndroidViewModel{
 
 
     public void updateFirebaseToken(String firebaseToken, final StringCallBack callBack){
+        setIsLoading(true);
         userRepo.updateFirebaseTokenToServer(firebaseToken, new StringCallBack() {
             @Override
             public void success(String item) {
+                setIsLoading(false);
                 callBack.success(item);
             }
 
             @Override
             public void showError(String error) {
+                setIsLoading(false);
                 callBack.showError(error);
             }
         });
