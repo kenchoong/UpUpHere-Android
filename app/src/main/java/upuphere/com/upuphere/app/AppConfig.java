@@ -40,6 +40,10 @@ public class AppConfig {
 
     public static String URL_BLOCK_UNBLOCK = BASE_URL + "/api/exclude";
 
+    public static String URL_PRIVACY_POLICY = BASE_URL + "/terms/privacy-policy";
+
+    public static String URL_TERM_AND_CONDITION = BASE_URL + "/terms/terms-and-conditions";
+
 
     // Notification stuff
     public static final int NOTIFICATION_TEXT = 100;

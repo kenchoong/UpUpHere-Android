@@ -116,4 +116,9 @@
 
     <string name="undo">Undo</string>
 
+    <string name="welcome_text">Tap \"Agree and continue\" to use UpUpHere</string>
+    <string name="term_of_use">Terms of use</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="agree_continue">Agree &amp; Continue</string>
+
 </resources>

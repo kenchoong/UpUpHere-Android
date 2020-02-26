@@ -38,6 +38,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -93,28 +94,6 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        SharedPreferences sharedPreferences = new PrefManager(getActivity()).getPref();
-        SharedPreferenceBooleanLiveData sharedPreferenceBooleanLiveData = new SharedPreferenceBooleanLiveData(sharedPreferences,PrefManager.IS_LOGGED_IN,false);
-
-        sharedPreferenceBooleanLiveData.getBooleanLiveData(PrefManager.IS_LOGGED_IN,false).observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean isLoggedIn) {
-                Log.d("LOGIN 2",String.valueOf(isLoggedIn));
-                if(!isLoggedIn){
-                    NavController navController = Navigation.findNavController(view);
-                    navController.navigate(R.id.loginFragment);
-                }
-            }
-        });
-
-        mainViewModel.setMainFragmentInterface(new MainViewModel.MainFragmentInterface() {
-            @Override
-            public void onFabClick() {
-                NavDirections action = MainFragmentDirections.actionMainFragmentToCreateRoomFragment();
-                Navigation.findNavController(view).navigate(action);
-            }
-        });
-
         prefManager = new PrefManager(getActivity());
 
         observeProgressBar();
@@ -123,11 +102,43 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
 
         setUpSwipeRefreshLayout();
 
-        mSwipeRreshLayout.post(new Runnable() {
+        prefManager = new PrefManager(getActivity());
+        if(!prefManager.isUserAgreeTerm()){
+            NavDirections directions = MainFragmentDirections.actionMainFragmentToWelcomeFragment();
+            NavOptions options = new NavOptions.Builder().setPopUpTo(R.id.mainFragment,true).build();
+            Navigation.findNavController(view).navigate(directions,options);
+
+        }
+
+        SharedPreferences sharedPreferences = prefManager.getPref();
+        SharedPreferenceBooleanLiveData sharedPreferenceBooleanLiveData = new SharedPreferenceBooleanLiveData(sharedPreferences, PrefManager.IS_LOGGED_IN, false);
+
+        sharedPreferenceBooleanLiveData.getBooleanLiveData(PrefManager.IS_LOGGED_IN, false).observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
-            public void run() {
-                mSwipeRreshLayout.setRefreshing(true);
-                getRoomList();
+            public void onChanged(Boolean isLoggedIn) {
+                Log.d("LOGIN 2", String.valueOf(isLoggedIn));
+                if (!isLoggedIn) {
+                    NavController navController = Navigation.findNavController(view);
+                    navController.popBackStack(R.id.mainFragment,true);
+                    navController.navigate(R.id.loginFragment);
+                }else{
+                    mSwipeRreshLayout.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSwipeRreshLayout.setRefreshing(true);
+                            getRoomList();
+                        }
+                    });
+                }
+            }
+        });
+
+
+        mainViewModel.setMainFragmentInterface(new MainViewModel.MainFragmentInterface() {
+            @Override
+            public void onFabClick() {
+                NavDirections action = MainFragmentDirections.actionMainFragmentToCreateRoomFragment();
+                Navigation.findNavController(view).navigate(action);
             }
         });
 

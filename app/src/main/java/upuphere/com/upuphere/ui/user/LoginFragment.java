@@ -88,7 +88,7 @@ public class LoginFragment extends Fragment implements LoginViewModel.LoginInter
 
 
         final NavController navController = Navigation.findNavController(view);
-
+/*
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
                 new OnBackPressedCallback(true) {
                     @Override
@@ -96,7 +96,7 @@ public class LoginFragment extends Fragment implements LoginViewModel.LoginInter
                         //viewModel.refuseAuthentication();
                         navController.popBackStack(R.id.mainFragment, false);
                     }
-                });
+                });*/
 
 
     }
