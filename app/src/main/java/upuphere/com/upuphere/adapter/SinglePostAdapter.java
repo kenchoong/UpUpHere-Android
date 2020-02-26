@@ -129,9 +129,8 @@ public class SinglePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         switch (viewType){
             case COMMENT_TYPE:
                 CommentViewHolder commentViewHolder = (CommentViewHolder) holder;
-                if(position < post.size() + commentList.size() - 1){
-                    commentViewHolder.commentBinding.setData(commentList.get(position));
-                }
+                commentViewHolder.commentBinding.setData(commentList.get(position-1)); // minus 1,cause 1 is single post
+
 
                 ((CommentViewHolder) holder).commentBinding.moreButton.setOnClickListener(new View.OnClickListener() {
                     @Override

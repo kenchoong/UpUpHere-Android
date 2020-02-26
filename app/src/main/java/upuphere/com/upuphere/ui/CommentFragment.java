@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -132,31 +133,37 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
 
     @Override
     public void onSend() {
+        String commentString = commentViewModel.commentText;
+        if(!TextUtils.isEmpty(commentString)) {
+            sendCommentToServer(commentString);
 
-        appendNewCommentToCommentList();
+            appendNewCommentToCommentList(commentString);
 
-        binding.commentField.setText("");
+            binding.commentField.setText("");
+        }else{
+            Toast.makeText(getActivity(),"Please enter your comment",Toast.LENGTH_SHORT).show();
+        }
 
-        sendCommentToServer();
     }
 
-    private void appendNewCommentToCommentList() {
+    private void appendNewCommentToCommentList(String commentString) {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.US);
         String date = formatter.format(new Date(System.currentTimeMillis()));
 
         CommentModel comment = new CommentModel();
-        comment.setTextComment(commentViewModel.commentText);
+        comment.setTextComment(commentString);
         comment.setUser(new PrefManager(getActivity()).getUsername());
+        comment.setCommenterUserId(new PrefManager(getActivity()).getUserRealId());
         comment.setCreatedAt(date);
         commentViewModel.appendNewCommentToMutableLiveData(postList,postId,comment);
     }
 
-    private void sendCommentToServer() {
+    private void sendCommentToServer(final String commentString) {
         DecodeToken decodeToken = DecodeToken.newInstance();
         decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
             @Override
             public void onTokenValid() {
-                commentViewModel.createComment(postId, commentViewModel.commentText);
+                commentViewModel.createComment(postId, commentString);
             }
 
             @Override
