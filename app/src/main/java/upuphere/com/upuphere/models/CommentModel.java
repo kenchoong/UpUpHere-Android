@@ -10,6 +10,17 @@ public class CommentModel{
     @Expose
     private String cls;
 
+    public CommentModel(String textComment, String user, String commenterUserId, String createdAt) {
+        this.textComment = textComment;
+        this.user = user;
+        this.commenterUserId = commenterUserId;
+        this.createdAt = createdAt;
+    }
+
+    public CommentModel(){
+
+    }
+
     @SerializedName("text_comment")
     @Expose
     private String textComment;

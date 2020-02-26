@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -90,7 +91,7 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
 
         populatePostToRecycleView();
 
-        populateCommentToRecycleView(singlePostList);
+        //populateCommentToRecycleView(singlePostList);
 
     }
 
@@ -149,11 +150,18 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
 
     @Override
     public void onSend() {
-        appendNewCommentToCommentList();
+        String commentString = viewModel.commentText;
+        if(!TextUtils.isEmpty(commentString)) {
+            sendCommentToServer(commentString);
 
-        binding.commentField.setText("");
+            appendNewCommentToCommentList(commentString);
 
-        sendCommentToServer();
+            binding.commentField.setText("");
+
+            Toast.makeText(getActivity(),"Comment sent",Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(getActivity(),"Please enter your comment",Toast.LENGTH_SHORT).show();
+        }
     }
 
     int blockTypeRecord;
@@ -216,23 +224,24 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
         decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
     }
 
-    private void appendNewCommentToCommentList() {
+    private void appendNewCommentToCommentList(String commentString) {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
         String date = formatter.format(new Date(System.currentTimeMillis()));
 
         CommentModel comment = new CommentModel();
-        comment.setTextComment(viewModel.commentText);
+        comment.setTextComment(commentString);
         comment.setUser(new PrefManager(getActivity()).getUsername());
+        comment.setCommenterUserId(new PrefManager(getActivity()).getUserRealId());
         comment.setCreatedAt(date);
         viewModel.appendNewCommentToMutableLiveData(singlePostList,postId,comment);
     }
 
-    private void sendCommentToServer() {
+    private void sendCommentToServer(final String commentString) {
         DecodeToken decodeToken = DecodeToken.newInstance();
         decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
             @Override
             public void onTokenValid() {
-                viewModel.createComment(postId,viewModel.commentText);
+                viewModel.createComment(postId,commentString);
             }
 
             @Override
