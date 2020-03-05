@@ -199,7 +199,7 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
 
     @Override
     public void onRoomClicked(AllRooms room) {
-        Toast.makeText(getActivity(),room.getId(),Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(),room.getId(),Toast.LENGTH_SHORT).show();
         NavDirections action = MainFragmentDirections.actionMainFragmentToRoomFragment(room);
         Navigation.findNavController(view).navigate(action);
     }
