@@ -60,11 +60,11 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         postId = SinglePostFragmentArgs.fromBundle(Objects.requireNonNull(getArguments())).getPostId();
-        Toast.makeText(getActivity(),postId,Toast.LENGTH_LONG).show();
+        //Toast.makeText(getActivity(),postId,Toast.LENGTH_LONG).show();
         Log.d("SINGLEPOSTFRAGMENT",postId);
 
         // Inflate the layout for this fragment

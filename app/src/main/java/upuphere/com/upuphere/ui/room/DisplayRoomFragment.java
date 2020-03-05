@@ -242,7 +242,7 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
 
     @Override
     public void onCommentClicked(Post post) {
-        Toast.makeText(getActivity(),post.getId(),Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(),post.getId(),Toast.LENGTH_SHORT).show();
 
         //NavDirections action = DisplayRoomFragmentDirections.actionRoomFragmentToCommentFragment(post.getId(),fetchedPost);
         Bundle bundle = new Bundle();
