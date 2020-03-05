@@ -10,6 +10,12 @@ buildscript {
         classpath 'com.android.tools.build:gradle:3.5.3'
         classpath 'com.google.gms:google-services:4.3.3'
 
+        // Crashlytics Gradle plugin.
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.0.0-beta02'
+
+        //Firebase performance plugin
+        classpath 'com.google.firebase:perf-plugin:1.3.1'
+
         def nav_version = "2.1.0"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
 
