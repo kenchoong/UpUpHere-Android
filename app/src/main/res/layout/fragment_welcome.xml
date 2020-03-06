@@ -14,7 +14,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="93dp"
         android:contentDescription="@string/app_name"
-        app:srcCompat="@drawable/ic_logo" />
+        app:srcCompat="@drawable/upupherelogo" />
 
     <TextView
         android:id="@+id/textView22"
