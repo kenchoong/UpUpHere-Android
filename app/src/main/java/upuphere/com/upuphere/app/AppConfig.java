@@ -44,6 +44,8 @@ public class AppConfig {
 
     public static String URL_TERM_AND_CONDITION = BASE_URL + "/terms/terms-and-conditions";
 
+    public static String URL_FEEDBACK_FORM = "https://docs.google.com/forms/d/e/1FAIpQLSesbW8xhisMBWOjjG8vCUQlEboXg93Yvgivgxv-3WFpxEsk4A/viewform?usp=sf_link";
+
 
     // Notification stuff
     public static final int NOTIFICATION_TEXT = 100;
