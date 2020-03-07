@@ -253,7 +253,7 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
 
     @Override
     public void onShareClicked(Post post) {
-        Toast.makeText(getActivity(), post.getAuthor(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(), post.getAuthor(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
