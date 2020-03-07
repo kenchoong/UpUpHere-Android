@@ -9,6 +9,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -36,6 +37,7 @@ import upuphere.com.upuphere.helper.NotificationUtils;
 import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.models.NotificationModel;
 import upuphere.com.upuphere.repositories.UserRepo;
+import upuphere.com.upuphere.ui.onboarding.AgreementFragment;
 import upuphere.com.upuphere.viewmodel.NotificationViewModel;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -135,11 +137,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = menuItem.getItemId();
 
         switch (id) {
-
+            /*
             case R.id.profile:
                 navController.navigate(R.id.profileFragment);
                 break;
-
+            */
+            case R.id.feedback:
+                Bundle bundle = new Bundle();
+                bundle.putInt("agreementType", AgreementFragment.FEEDBACK_FORM);
+                navController.navigate(R.id.agreementFragment, bundle);
+                break;
             case R.id.logout:
                 logoutUser();
                 break;

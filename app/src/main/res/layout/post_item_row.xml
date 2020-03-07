@@ -92,13 +92,13 @@
                     <Button
                         android:id="@+id/commentButton"
                         style="@style/Widget.AppCompat.ButtonBar"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@null"
                         android:text="@string/comment"
                         android:textAppearance="@style/TextAppearance.AppCompat.Small" />
-
+                    <!--
                     <Button
                         android:id="@+id/shareButton"
                         style="@style/Widget.AppCompat.ButtonBar"
@@ -108,6 +108,7 @@
                         android:background="@null"
                         android:text="@string/share"
                         android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+                        -->
                 </LinearLayout>
             </RelativeLayout>
         </androidx.cardview.widget.CardView>

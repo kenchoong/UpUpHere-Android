@@ -86,13 +86,13 @@ public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.PostViewHolde
                 listener.onCommentClicked(postList.get(position));
             }
         });
-
+        /*
         holder.binding.shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listener.onShareClicked(postList.get(position));
             }
-        });
+        });*/
 
         holder.binding.moreButton.setOnClickListener(new View.OnClickListener() {
             @Override

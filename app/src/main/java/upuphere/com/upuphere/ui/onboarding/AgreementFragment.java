@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ public class AgreementFragment extends Fragment {
 
     public static final int PRIVACY_POLICY = 1111;
     public static final int TERM_OF_USE = 2222;
+    public static final int FEEDBACK_FORM = 3333;
 
     public AgreementFragment() {
         // Required empty public constructor
@@ -75,6 +77,11 @@ public class AgreementFragment extends Fragment {
         else if(agreementType == TERM_OF_USE){
             Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).setTitle(R.string.term_of_use);
             webView.loadUrl(AppConfig.URL_TERM_AND_CONDITION);
+        }
+        else if(agreementType == FEEDBACK_FORM){
+            Log.d("ABC","feedback");
+            Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).setTitle(R.string.feedback);
+            webView.loadUrl(AppConfig.URL_FEEDBACK_FORM);
         }
 
         return view;
