@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "868193400665-pkfc5othoniieh2k2daeu89a1ft1meat.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "upuphere.com.upuphere",
+            "certificate_hash": "8942fe420fc95ac5bdf7d8903353acd222a20390"
+          }
+        },
+        {
+          "client_id": "868193400665-0pasc0l2i600pbrslqkbek6fnosm0qe3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "upuphere.com.upuphere",
+            "certificate_hash": "fdf85658838daff3aa314d986d8679f989777694"
+          }
+        },
+        {
           "client_id": "868193400665-v8deepffcp28lh3nrpvrlfhidkk4tkpk.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
