@@ -56,7 +56,12 @@ public class PhoneAuthViewModel extends AndroidViewModel {
     }
 
     public MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+
     public MutableLiveData<String> status = new MutableLiveData<>("");
+
+    public void setStatus(String realTimeStatus) {
+        status.setValue(realTimeStatus);
+    }
 
     public void setIsLoading(boolean isLoadingOrNot){
         isLoading.setValue(isLoadingOrNot);

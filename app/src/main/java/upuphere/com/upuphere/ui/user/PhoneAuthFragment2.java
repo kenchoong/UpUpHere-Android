@@ -122,7 +122,7 @@ public class PhoneAuthFragment2 extends Fragment {
                 switch (previousFragmentCode){
                     case FROM_LOGIN_FRAGMENT:
                         if(existed){
-                            statusText.setText(R.string.phone_number_registered);
+                            viewModel.setStatus(getResources().getString(R.string.phone_number_registered));
                             continueButton.setText(R.string.login_instead);
                             continueButton.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -131,17 +131,32 @@ public class PhoneAuthFragment2 extends Fragment {
                                 }
                             });
                         }else{
-                            NavDirections directions = PhoneAuthFragment2Directions.actionPhoneAuthFragment2ToSignUpFragment(phone_number);
-                            Navigation.findNavController(rootView).navigate(directions);
+                            viewModel.setStatus(getResources().getString(R.string.phone_number_verify_success));
+                            statusText.setTextColor(getResources().getColor(R.color.redirect_color));
+                            continueButton.setText(R.string.proceed_to_sign_up);
+                            continueButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    NavDirections directions = PhoneAuthFragment2Directions.actionPhoneAuthFragment2ToSignUpFragment(phone_number);
+                                    Navigation.findNavController(rootView).navigate(directions);
+                                }
+                            });
                         }
-
                         break;
                     case FROM_FORGOT_PASSWORD:
                         if(existed){
-                            NavDirections directions1 = PhoneAuthFragment2Directions.actionPhoneAuthFragment2ToResetPasswordFragment(phone_number);
-                            Navigation.findNavController(rootView).navigate(directions1);
+                            viewModel.setStatus(getResources().getString(R.string.phone_number_verify_success));
+                            statusText.setTextColor(getResources().getColor(R.color.redirect_color));
+                            continueButton.setText(R.string.proceed_to_sign_up);
+                            continueButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    NavDirections directions1 = PhoneAuthFragment2Directions.actionPhoneAuthFragment2ToResetPasswordFragment(phone_number);
+                                    Navigation.findNavController(rootView).navigate(directions1);
+                                }
+                            });
                         }else{
-                            statusText.setText(R.string.phone_number_not_registered);
+                            viewModel.setStatus(getResources().getString(R.string.phone_number_not_registered));
                             continueButton.setText(R.string.try_again);
                         }
                         break;
@@ -220,5 +235,11 @@ public class PhoneAuthFragment2 extends Fragment {
     public void onResume() {
         super.onResume();
         Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        viewModel.setStatus("");
     }
 }
