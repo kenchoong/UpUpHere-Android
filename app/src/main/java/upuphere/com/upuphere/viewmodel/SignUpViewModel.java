@@ -44,13 +44,13 @@ public class SignUpViewModel extends ViewModel {
         void onStartSignUp();
         void onSignUpSuccess();
         void onSignUpError();
-        void onEmailInvalid();
-        void onUsernameTooShort();
-        void onPasswordTooShort();
-        void onPasswordNotMatch();
-        void onUsernameInvalid();
-        void onUsernameTaken();
-        void onEmailTaken();
+        void onEmailValid(Boolean validOrNot);
+        void onUsernameTooShort(Boolean tooShortOrNot);
+        void onPasswordTooShort(Boolean tooShortOrNot);
+        void onPasswordMatch(Boolean matchOrNot);
+        void onUsernameValid(Boolean validOrNot);
+        void onUsernameTaken(Boolean takenOrNot);
+        void onEmailTaken(Boolean takenOrNot);
     }
 
 
@@ -82,15 +82,14 @@ public class SignUpViewModel extends ViewModel {
         switch (fieldTypes){
             case EMAIL_FIELD:
                 if (!isEmailValid(credential)){
-                    signUpInterface.onEmailInvalid();
+                    signUpInterface.onEmailValid(false);
+                }else{
+                    signUpInterface.onEmailValid(true);
+                    checkIfCredentialExisted(credential,EMAIL_FIELD);
                 }
-
-                checkIfCredentialExisted(credential,EMAIL_FIELD);
                 break;
             case USERNAME_FIELD:
-                if(credential.length() < 6){
-                    signUpInterface.onUsernameTooShort();
-                }
+
                 Pattern pattern = Pattern.compile("^(?=.{6,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$");
                 //username is 8-20 characters long
                 //no _ or . at the beginning
@@ -101,28 +100,32 @@ public class SignUpViewModel extends ViewModel {
                 boolean valid =  pattern.matcher(credential).matches();
 
                 if(!valid){
-                    signUpInterface.onUsernameInvalid();
+                    if(credential.length() < 6){
+                        signUpInterface.onUsernameTooShort(true);
+                    }else {
+                        signUpInterface.onUsernameTooShort(false);
+                        signUpInterface.onUsernameValid(false);
+                    }
+                }else {
+
+                    signUpInterface.onUsernameValid(true);
+                    checkIfCredentialExisted(credential,USERNAME_FIELD);
                 }
-
-                checkIfCredentialExisted(credential,USERNAME_FIELD);
-
                 break;
             case PASSWORD_FIELD:
                 if(credential.length()< 6){
-                    signUpInterface.onPasswordTooShort();
+                    signUpInterface.onPasswordTooShort(true);
+                }else {
+                    signUpInterface.onPasswordTooShort(false);
                 }
                 break;
 
             case REENTER_PASSWORD_FIELD:
-                //todo :: check for password and reenter is the same
-                if(credential.length() < 6) {
-                    signUpInterface.onPasswordTooShort();
-                }
-
                 if(!credential.equals(password)){
-                    signUpInterface.onPasswordNotMatch();
+                    signUpInterface.onPasswordMatch(false);
+                }else{
+                    signUpInterface.onPasswordMatch(true);
                 }
-
                 break;
         }
     }
@@ -133,16 +136,24 @@ public class SignUpViewModel extends ViewModel {
         userRepo.checkDetailsExisted(credential, 222,new BoolCallBack() {
             @Override
             public void success(boolean existed) {
-                if(existed){
-                    switch (identityType){
-                        case EMAIL_FIELD:
-                            signUpInterface.onEmailTaken();
-                            break;
-                        case USERNAME_FIELD:
-                            signUpInterface.onUsernameTaken();
-                            break;
-                    }
+                switch (identityType){
+                    case EMAIL_FIELD:
+                        if(existed){
+                            signUpInterface.onEmailTaken(true);
+                        }else{
+                            signUpInterface.onEmailTaken(false);
+                        }
+
+                        break;
+                    case USERNAME_FIELD:
+                        if(existed){
+                            signUpInterface.onUsernameTaken(true);
+                        }else{
+                            signUpInterface.onUsernameTaken(false);                        }
+                        break;
                 }
+
+
             }
 
             @Override
