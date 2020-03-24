@@ -81,7 +81,7 @@ public class SignUpFragment extends Fragment implements SignUpViewModel.SignUpIn
 
         prefManager = new PrefManager(getActivity());
 
-        requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 signUpViewModel.signUpInterface.onBackToLogin();
