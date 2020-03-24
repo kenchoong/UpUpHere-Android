@@ -76,8 +76,8 @@ public class LoginFragment extends Fragment implements LoginViewModel.LoginInter
 
         final PrefManager prefManager = new PrefManager(getActivity());
         if (prefManager.isLoggedIn()){
-            NavController navController = Navigation.findNavController(rootView);
-            navController.popBackStack(R.id.loginFragment,true);
+            NavController navController = Navigation.findNavController(view);
+            navController.popBackStack(R.id.mainFragment,true);
             navController.navigate(R.id.mainFragment);
         }
 

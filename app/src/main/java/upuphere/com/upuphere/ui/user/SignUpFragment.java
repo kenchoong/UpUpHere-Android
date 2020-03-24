@@ -81,7 +81,7 @@ public class SignUpFragment extends Fragment implements SignUpViewModel.SignUpIn
 
         prefManager = new PrefManager(getActivity());
 
-        requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 signUpViewModel.signUpInterface.onBackToLogin();
@@ -179,38 +179,80 @@ public class SignUpFragment extends Fragment implements SignUpViewModel.SignUpIn
     }
 
     @Override
-    public void onEmailInvalid() {
-        binding.emailField.setError("Invalid email");
+    public void onEmailValid(Boolean valid) {
+        if(!valid){
+            binding.email.setErrorEnabled(true);
+            binding.email.setError("Invalid email");
+        }else{
+            binding.email.setError(null);
+            binding.email.setErrorEnabled(false);
+        }
     }
 
     @Override
-    public void onUsernameTooShort() {
-        binding.usernameField.setError("Username must at least 6 character");
+    public void onUsernameTooShort(Boolean tooShort) {
+        if(tooShort){
+            binding.username.setErrorEnabled(true);
+            binding.username.setError("Username must at least 6 character");
+        }else{
+            binding.username.setError(null);
+            binding.username.setErrorEnabled(false);
+        }
     }
 
     @Override
-    public void onPasswordTooShort() {
-        binding.passwordField.setError("Password must at least 6 character");
+    public void onPasswordTooShort(Boolean tooShort) {
+        if(tooShort){
+            binding.password.setErrorEnabled(true);
+            binding.password.setError("Password must at least 6 character");
+        }else{
+            binding.password.setError(null);
+            binding.password.setErrorEnabled(false);
+        }
     }
 
     @Override
-    public void onPasswordNotMatch() {
-        binding.reenterPasswordField.setError("Password not match");
+    public void onPasswordMatch(Boolean match) {
+        if(!match){
+            binding.confirmPassword.setErrorEnabled(true);
+            binding.confirmPassword.setError("Password not match");
+        }else{
+            binding.confirmPassword.setError(null);
+            binding.confirmPassword.setErrorEnabled(false);
+        }
     }
 
     @Override
-    public void onUsernameInvalid() {
-        binding.usernameField.setError("Invalid username");
+    public void onUsernameValid(Boolean valid) {
+        if(!valid){
+            binding.username.setErrorEnabled(true);
+            binding.username.setError("Invalid username");
+        }else{
+            binding.username.setError(null);
+            binding.username.setErrorEnabled(false);
+        }
     }
 
     @Override
-    public void onUsernameTaken() {
-        binding.usernameField.setError("Username is taken");
+    public void onUsernameTaken(Boolean taken) {
+        if(taken){
+            binding.username.setErrorEnabled(true);
+            binding.username.setError("Username is taken");
+        }else{
+            binding.username.setError(null);
+            binding.username.setErrorEnabled(false);
+        }
     }
 
     @Override
-    public void onEmailTaken() {
-        binding.emailField.setError("Email is taken");
+    public void onEmailTaken(Boolean taken) {
+        if(taken){
+            binding.email.setErrorEnabled(true);
+            binding.email.setError("Email is taken");
+        }else {
+            binding.email.setError(null);
+            binding.email.setErrorEnabled(false);
+        }
     }
 }
 

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_color"
     tools:context=".ui.onboarding.WelcomeFragment">
 
     <ImageView
@@ -20,42 +21,51 @@
         android:id="@+id/textView22"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_below="@+id/imageView5"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp"
         android:text="@string/welcome_text"
         android:textAlignment="center"
         android:textSize="18sp" />
 
-    <TextView
+    <Button
         android:id="@+id/termOfUse"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView22"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="31dp"
         android:text="@string/term_of_use"
+        android:textAlignment="center"
         android:textColor="@color/redirect_color"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:textStyle="bold" />
 
-    <TextView
+    <Button
         android:id="@+id/privacyPolicy"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/termOfUse"
         android:layout_alignStart="@+id/termOfUse"
         android:layout_marginTop="21dp"
         android:text="@string/privacy_policy"
-        android:textColor="@color/redirect_color" />
+        android:textColor="@color/redirect_color"
+        android:textSize="14sp"
+        android:textStyle="bold" />
 
-    <TextView
+    <Button
         android:id="@+id/agreeContinue"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/privacyPolicy"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="62dp"
         android:text="@string/agree_continue"
-        android:textColor="@color/redirect_color" />
+        android:textColor="@color/redirect_color"
+        android:textSize="14sp"
+        android:textStyle="bold" />
 
 </RelativeLayout>
