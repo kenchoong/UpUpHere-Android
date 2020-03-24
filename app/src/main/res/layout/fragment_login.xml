@@ -22,7 +22,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="25dp"
             android:contentDescription="@string/logo"
             app:srcCompat="@drawable/upupherelogo" />
 
@@ -30,36 +30,51 @@
             android:id="@+id/fieldContainer"
             android:layout_width="318dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_below="@+id/logo"
             android:layout_centerHorizontal="true"
-            android:layout_below="@+id/logo">
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/identityField"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
-                android:autofillHints=""
-                android:drawableStart="@drawable/ic_profile"
-                android:drawablePadding="10dp"
-                android:ems="10"
-                android:hint="@string/login_hint"
-                android:inputType="text|textEmailSubject"
-                android:text="@={loginViewModel.identityString}"
-                tools:targetApi="o" />
-
-            <EditText
-                android:id="@+id/passwordField"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textField1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:drawableStart="@drawable/ic_password"
-                android:drawablePadding="10dp"
-                android:ems="10"
+                android:hint="@string/login_hint"
+                app:startIconContentDescription="@string/content_description_end_icon"
+                app:startIconTint="@color/colorPrimary"
+
+                app:startIconDrawable="@drawable/ic_profile">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/identityField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints=""
+                    android:ems="10"
+                    android:inputType="text|textEmailSubject"
+                    android:text="@={loginViewModel.identityString}"
+                    tools:targetApi="o" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textField2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:hint="@string/password_hint"
-                android:importantForAutofill="no"
-                android:inputType="textPassword"
-                android:text="@={loginViewModel.passwordString}" />
+                app:startIconTint="@color/colorPrimary"
+                app:startIconContentDescription="@string/content_description_end_icon"
+                app:startIconDrawable="@drawable/ic_password">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/passwordField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:importantForAutofill="no"
+                    android:inputType="textPassword"
+                    android:text="@={loginViewModel.passwordString}" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/loginButton"
@@ -72,29 +87,34 @@
                 android:text="@string/login_button_text"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textColor="@color/secondaryTextColor" />
+                android:textColor="@color/secondaryTextColor"
+                android:textStyle="bold" />
 
-            <TextView
+            <Button
                 android:id="@+id/redirectText"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
                 android:fontFamily="@font/open_sans"
                 android:onClick="@{loginViewModel::onRedirectTextClick}"
                 android:text="@string/direct_to_sign_up"
                 android:textAlignment="center"
-                android:textColor="@color/redirect_color" />
+                android:textColor="@color/redirect_color"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
-            <TextView
+            <Button
                 android:id="@+id/forgotPasswordLink"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:fontFamily="@font/open_sans"
+                android:onClick="@{loginViewModel::onForgotPassword}"
                 android:text="@string/forgot_password"
                 android:textAlignment="center"
                 android:textColor="@color/redirect_color"
-                android:onClick="@{loginViewModel::onForgotPassword}"/>
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
@@ -112,6 +132,7 @@
                 android:fontFamily="@font/open_sans"
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
+                android:textStyle="bold"
                 android:visibility="gone" />
         </LinearLayout>
 

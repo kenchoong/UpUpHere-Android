@@ -147,7 +147,7 @@ public class PhoneAuthFragment2 extends Fragment {
                         if(existed){
                             viewModel.setStatus(getResources().getString(R.string.phone_number_verify_success));
                             statusText.setTextColor(getResources().getColor(R.color.redirect_color));
-                            continueButton.setText(R.string.proceed_to_sign_up);
+                            continueButton.setText(R.string.continue_to_reset_password);
                             continueButton.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {

@@ -18,6 +18,7 @@
         android:id="@+id/root_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@android:color/white"
         tools:context=".ui.user.SignUpFragment">
 
         <ImageView
@@ -38,66 +39,96 @@
             android:layout_marginTop="10dp"
             android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/emailField"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textField1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:afterTextChanged="@{viewModel::afterEmailChanged}"
-                android:drawableStart="@drawable/ic_email"
-                android:drawablePadding="10dp"
-                android:ems="10"
                 android:hint="@string/set_email_hint"
-                android:importantForAutofill="no"
-                android:inputType="textEmailAddress"
-                android:text="@={viewModel.email}" />
+                app:startIconContentDescription="@string/content_description_end_icon"
+                app:startIconDrawable="@drawable/ic_email"
+                app:startIconTint="@color/colorPrimary">
 
-            <EditText
-                android:id="@+id/usernameField"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/emailField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:afterTextChanged="@{viewModel::afterEmailChanged}"
+                    android:ems="10"
+                    android:importantForAutofill="no"
+                    android:inputType="textEmailAddress"
+                    android:text="@={viewModel.email}" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textField2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-                android:afterTextChanged="@{viewModel::afterUsernameChanged}"
-                android:drawableStart="@drawable/ic_profile"
-                android:drawablePadding="10dp"
-                android:ems="10"
                 android:hint="@string/set_username_hint"
-                android:importantForAutofill="no"
-                android:inputType="textEmailAddress"
-                android:text="@={viewModel.username}" />
+                app:startIconContentDescription="@string/content_description_end_icon"
+                app:startIconDrawable="@drawable/ic_profile"
+                app:startIconTint="@color/colorPrimary">
 
-            <EditText
-                android:id="@+id/passwordField"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/usernameField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:afterTextChanged="@{viewModel::afterUsernameChanged}"
+                    android:ems="10"
+                    android:importantForAutofill="no"
+                    android:inputType="textEmailAddress"
+                    android:text="@={viewModel.username}" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textField3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-                android:afterTextChanged="@{viewModel::afterPasswordChanged}"
-                android:drawableStart="@drawable/ic_password"
-                android:drawablePadding="10dp"
-                android:ems="10"
                 android:hint="@string/password_hint"
-                android:importantForAutofill="no"
-                android:inputType="textPassword"
-                android:text="@={viewModel.password}" />
+                app:startIconContentDescription="@string/content_description_end_icon"
+                app:startIconDrawable="@drawable/ic_password"
+                app:startIconTint="@color/colorPrimary">
 
-            <EditText
-                android:id="@+id/reenterPasswordField"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/passwordField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:afterTextChanged="@{viewModel::afterPasswordChanged}"
+                    android:ems="10"
+                    android:importantForAutofill="no"
+                    android:inputType="textPassword"
+                    android:text="@={viewModel.password}" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textField4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:afterTextChanged="@{viewModel::afterConfirmPasswordChanged}"
-                android:drawableStart="@drawable/ic_password"
-                android:drawablePadding="10dp"
-                android:ems="10"
                 android:hint="@string/reenter_password_hint"
-                android:importantForAutofill="no"
-                android:inputType="textPassword"
-                android:text="@={viewModel.confirmPassword}" />
+                app:startIconContentDescription="@string/content_description_end_icon"
+                app:startIconDrawable="@drawable/ic_password"
+                app:startIconTint="@color/colorPrimary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/reenterPasswordField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:afterTextChanged="@{viewModel::afterConfirmPasswordChanged}"
+                    android:ems="10"
+                    android:importantForAutofill="no"
+                    android:inputType="textPassword"
+                    android:text="@={viewModel.confirmPassword}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/createAccountButton"
@@ -109,10 +140,12 @@
                 android:fontFamily="@font/open_sans"
                 android:onClick="@{viewModel::OnClickCreateAccountButton}"
                 android:text="@string/create_account_text"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textStyle="bold" />
 
-            <TextView
+            <Button
                 android:id="@+id/redirect_login_text"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -120,7 +153,9 @@
                 android:onClick="@{viewModel::OnClickRedirectLoginText}"
                 android:text="@string/redirect_sign_in"
                 android:textAlignment="center"
-                android:textColor="@color/redirect_color" />
+                android:textColor="@color/redirect_color"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
             <ProgressBar
                 android:id="@+id/progressBar"

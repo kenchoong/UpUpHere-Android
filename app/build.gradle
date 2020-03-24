@@ -4,15 +4,38 @@ apply plugin: "androidx.navigation.safeargs"
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.firebase.firebase-perf'
 
+ext.versionMajor = 1
+ext.versionMinor = 0
+ext.versionPatch = 3
+ext.versionClassifier = null
+ext.isSnapshot = true
+ext.minimumSdkVersion = 21
+
+private Integer generateVersionCode() {
+    return ext.minimumSdkVersion * 10000000 + ext.versionMajor * 10000 + ext.versionMinor * 100 + ext.versionPatch
+}
+
+private String generateVersionName() {
+    String versionName = "${ext.versionMajor}.${ext.versionMinor}.${ext.versionPatch}"
+    if (ext.versionClassifier == null && ext.isSnapshot) {
+        ext.versionClassifier = "SNAPSHOT"
+    }
+
+    if (ext.versionClassifier != null) {
+        versionName += "-" + ext.versionClassifier
+    }
+    return versionName;
+}
+
 android {
     compileSdkVersion 29
     defaultConfig {
         applicationId "upuphere.com.upuphere"
         multiDexEnabled true
-        minSdkVersion 21
+        minSdkVersion project.ext.minimumSdkVersion
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0.2"
+        versionCode generateVersionCode()
+        versionName generateVersionName()
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -43,7 +66,7 @@ android {
                 // Set this flag to 'false' to disable @AddTrace annotation processing and
                 // automatic HTTP/S network request monitoring
                 // for a specific build variant at compile time.
-                instrumentationEnabled true
+                instrumentationEnabled false
             }
         }
     }
