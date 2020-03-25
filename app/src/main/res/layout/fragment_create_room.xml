@@ -39,7 +39,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="40dp"
             app:srcCompat="@drawable/ic_image"
-            android:contentDescription="@string/content_description"
+            android:contentDescription="@string/choose_image_for_room"
             android:onClick="@{viewmodel::onImageClick}"/>
 
         <ImageView
@@ -51,7 +51,7 @@
             android:layout_marginTop="40dp"
             android:visibility="gone"
             tools:srcCompat="@tools:sample/avatars"
-            android:contentDescription="@string/content_description"
+            android:contentDescription="@string/chosen_image_for_room"
             android:onClick="@{viewmodel::onClickImageChosen}"/>
 
         <TextView

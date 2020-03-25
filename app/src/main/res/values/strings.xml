@@ -50,9 +50,18 @@
 
     <string name="room_name_hint">Give this room an interesting name</string>
 
+    <!--Content description-->
     <string name="content_description">Image</string>
     <string name="content_description_end_icon">Edit text icon</string>
     <string name="more_content_description">More Button</string>
+    <string name="loading_content_description">Loading</string>
+    <string name="choose_image_button">Choose an image for your post</string>
+    <string name="chosen_image_description">Image you chosen</string>
+    <string name="choose_image_for_room">Choose an image to create room</string>
+    <string name="chosen_image_for_room">Chosen image for your room</string>
+    <string name="amount_of_notification">Amount of notification</string>
+    <string name="post_image_description">Image of a particular post</string>
+    <string name="room_image_description">Image present a particular room</string>
 
     <string name="take_photo">Take Photo</string>
     <string name="choose_photo_from_album">Choose from Album</string>

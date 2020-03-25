@@ -74,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/statusText"
                     android:layout_marginTop="10dp"
-                    android:contentDescription="@string/content_description"
+                    android:contentDescription="@string/post_image_description"
                     android:scaleType="fitCenter"
                     app:roomImageUrl="@{data.imagePath}"
                     tools:srcCompat="@tools:sample/avatars" />

@@ -43,7 +43,6 @@
                 android:id="@+id/email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/set_email_hint"
                 app:startIconContentDescription="@string/content_description_end_icon"
                 app:startIconDrawable="@drawable/ic_email"
                 app:startIconTint="@color/colorPrimary">
@@ -58,14 +57,14 @@
                     android:ems="10"
                     android:importantForAutofill="no"
                     android:inputType="textEmailAddress"
-                    android:text="@={viewModel.email}" />
+                    android:text="@={viewModel.email}"
+                    android:hint="@string/set_email_hint"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/set_username_hint"
                 app:startIconContentDescription="@string/content_description_end_icon"
                 app:startIconDrawable="@drawable/ic_profile"
                 app:startIconTint="@color/colorPrimary">
@@ -80,14 +79,14 @@
                     android:ems="10"
                     android:importantForAutofill="no"
                     android:inputType="textEmailAddress"
-                    android:text="@={viewModel.username}" />
+                    android:text="@={viewModel.username}"
+                    android:hint="@string/set_username_hint"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/password_hint"
                 app:startIconContentDescription="@string/content_description_end_icon"
                 app:startIconDrawable="@drawable/ic_password"
                 app:startIconTint="@color/colorPrimary">
@@ -102,14 +101,14 @@
                     android:ems="10"
                     android:importantForAutofill="no"
                     android:inputType="textPassword"
-                    android:text="@={viewModel.password}" />
+                    android:text="@={viewModel.password}"
+                    android:hint="@string/password_hint"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/confirmPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/reenter_password_hint"
                 app:startIconContentDescription="@string/content_description_end_icon"
                 app:startIconDrawable="@drawable/ic_password"
                 app:startIconTint="@color/colorPrimary">
@@ -124,7 +123,8 @@
                     android:ems="10"
                     android:importantForAutofill="no"
                     android:inputType="textPassword"
-                    android:text="@={viewModel.confirmPassword}" />
+                    android:text="@={viewModel.confirmPassword}"
+                    android:hint="@string/reenter_password_hint"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -139,6 +139,7 @@
                 android:fontFamily="@font/open_sans"
                 android:onClick="@{viewModel::OnClickCreateAccountButton}"
                 android:text="@string/create_account_text"
+                android:contentDescription="@string/create_account_text"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textStyle="bold" />
 

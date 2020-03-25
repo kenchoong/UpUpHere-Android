@@ -36,9 +36,9 @@
             android:layout_below="@id/statusField"
             android:layout_marginStart="20dp"
             android:layout_marginTop="40dp"
-            app:srcCompat="@drawable/ic_image"
-            android:contentDescription="@string/content_description"
-            android:onClick="@{viewmodel::onImageClick}"/>
+            android:contentDescription="@string/choose_image_button"
+            android:onClick="@{viewmodel::onImageClick}"
+            app:srcCompat="@drawable/ic_image" />
 
         <ImageView
             android:id="@+id/chosenImageShown"
@@ -49,7 +49,7 @@
             android:layout_marginTop="40dp"
             android:visibility="gone"
             tools:srcCompat="@tools:sample/avatars"
-            android:contentDescription="@string/content_description"
+            android:contentDescription="@string/chosen_image_description"
             android:onClick="@{viewmodel::onClickImageChosen}"/>
 
         <ProgressBar

@@ -39,10 +39,8 @@
                 android:id="@+id/textField1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/login_hint"
                 app:startIconContentDescription="@string/content_description_end_icon"
                 app:startIconTint="@color/colorPrimary"
-
                 app:startIconDrawable="@drawable/ic_profile">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -50,9 +48,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:autofillHints=""
+                    android:backgroundTint="@android:color/black"
                     android:ems="10"
                     android:inputType="text|textEmailSubject"
                     android:text="@={loginViewModel.identityString}"
+                    android:hint="@string/login_hint"
                     tools:targetApi="o" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -61,7 +61,6 @@
                 android:id="@+id/textField2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/password_hint"
                 app:startIconTint="@color/colorPrimary"
                 app:startIconContentDescription="@string/content_description_end_icon"
                 app:startIconDrawable="@drawable/ic_password">
@@ -70,10 +69,12 @@
                     android:id="@+id/passwordField"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@android:color/black"
                     android:ems="10"
                     android:importantForAutofill="no"
                     android:inputType="textPassword"
-                    android:text="@={loginViewModel.passwordString}" />
+                    android:text="@={loginViewModel.passwordString}"
+                    android:hint="@string/password_hint"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
