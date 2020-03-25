@@ -59,7 +59,7 @@
         android:id="@+id/agreeContinue"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_below="@+id/privacyPolicy"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="62dp"
