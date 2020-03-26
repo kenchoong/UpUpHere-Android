@@ -46,6 +46,7 @@ import upuphere.com.upuphere.databinding.FragmentCreateRoomBinding;
 import upuphere.com.upuphere.fragment.DisplayPhotoFragment;
 import upuphere.com.upuphere.fragment.PhotoBottomSheetDialogFragment;
 import upuphere.com.upuphere.helper.DecodeToken;
+import upuphere.com.upuphere.helper.KeyboardHelper;
 import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.models.AllRooms;
 import upuphere.com.upuphere.repositories.RoomRepo;
@@ -320,6 +321,7 @@ public class CreateRoomFragment extends Fragment implements CreateRoomViewModel.
         viewModel.setStatus("");
         binding.roomNameField.setText("");
         viewModel.getSelectedPhoto().setValue(null);
+        hideKeyBoard();
     }
 
     private void enableAllUi() {
@@ -373,5 +375,15 @@ public class CreateRoomFragment extends Fragment implements CreateRoomViewModel.
                 }
             }
         });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        clearState();
+    }
+
+    private void hideKeyBoard(){
+        KeyboardHelper.hideKeyboard(getActivity());
     }
 }

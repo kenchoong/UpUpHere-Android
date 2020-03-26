@@ -13,27 +13,39 @@
         android:id="@+id/root_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/background_color"
         tools:context=".ui.room.CreatePostFragment">
 
-        <EditText
-            android:id="@+id/statusField"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:background="@null"
-            android:ems="10"
-            android:hint="@string/crete_post_hint"
-            android:importantForAutofill="no"
-            android:inputType="textPersonName"
-            android:text="@={viewmodel.statusText}" />
+            android:layout_marginEnd="20dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/statusField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/edit_text_no_bg"
+                android:ems="10"
+                android:hint="@string/crete_post_hint"
+                android:importantForAutofill="no"
+                android:inputType="text|textMultiLine"
+                android:scrollHorizontally="false"
+                android:text="@={viewmodel.statusText}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <ImageView
             android:id="@+id/chooseImageButton"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_below="@id/statusField"
+            android:layout_below="@id/textInputLayout"
             android:layout_marginStart="20dp"
             android:layout_marginTop="40dp"
             android:contentDescription="@string/choose_image_button"
@@ -44,13 +56,13 @@
             android:id="@+id/chosenImageShown"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:layout_below="@id/statusField"
+            android:layout_below="@id/textInputLayout"
             android:layout_marginStart="20dp"
             android:layout_marginTop="40dp"
-            android:visibility="gone"
-            tools:srcCompat="@tools:sample/avatars"
             android:contentDescription="@string/chosen_image_description"
-            android:onClick="@{viewmodel::onClickImageChosen}"/>
+            android:onClick="@{viewmodel::onClickImageChosen}"
+            android:visibility="gone"
+            tools:srcCompat="@tools:sample/avatars" />
 
         <ProgressBar
             android:id="@+id/progressBar4"

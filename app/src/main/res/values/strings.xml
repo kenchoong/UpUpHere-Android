@@ -53,7 +53,7 @@
     <!--Content description-->
     <string name="content_description">Image</string>
     <string name="content_description_end_icon">Edit text icon</string>
-    <string name="more_content_description">More Button</string>
+    <string name="more_content_description">More Option</string>
     <string name="loading_content_description">Loading</string>
     <string name="choose_image_button">Choose an image for your post</string>
     <string name="chosen_image_description">Image you chosen</string>

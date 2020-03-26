@@ -30,6 +30,7 @@ import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.R;
+import upuphere.com.upuphere.helper.KeyboardHelper;
 import upuphere.com.upuphere.helper.SharedPreferenceBooleanLiveData;
 import upuphere.com.upuphere.databinding.FragmentLoginBinding;
 import upuphere.com.upuphere.helper.PrefManager;
@@ -188,5 +189,17 @@ public class LoginFragment extends Fragment implements LoginViewModel.LoginInter
     public void onRegisterClick() {
         NavDirections directions = LoginFragmentDirections.actionLoginFragmentToPhoneAuthFragment2(PhoneAuthFragment2.FROM_LOGIN_FRAGMENT);
         Navigation.findNavController(rootView).navigate(directions);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        hideKeyBoard();
+        binding.identityField.setText("");
+        binding.passwordField.setText("");
+    }
+
+    private void hideKeyBoard(){
+        KeyboardHelper.hideKeyboard(getActivity());
     }
 }

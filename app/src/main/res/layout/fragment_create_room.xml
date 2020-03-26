@@ -14,51 +14,60 @@
         android:id="@+id/root_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/background_color"
         tools:context=".ui.room.CreateRoomFragment">
 
 
-        <EditText
-            android:id="@+id/room_name_field"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:background="@null"
-            android:ems="10"
-            android:hint="@string/room_name_hint"
-            android:inputType="textPersonName"
-            android:importantForAutofill="no"
-            android:text="@={viewmodel.roomName}"/>
+            android:layout_marginEnd="20dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/room_name_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edit_text_no_bg"
+                android:ems="10"
+                android:hint="@string/room_name_hint"
+                android:importantForAutofill="no"
+                android:inputType="text|textMultiLine"
+                android:scrollHorizontally="false"
+                android:maxLines="20"
+                android:text="@={viewmodel.roomName}" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <ImageView
             android:id="@+id/chooseImageButton"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_below="@id/room_name_field"
+            android:layout_below="@id/textInputLayout"
             android:layout_marginStart="20dp"
             android:layout_marginTop="40dp"
-            app:srcCompat="@drawable/ic_image"
             android:contentDescription="@string/choose_image_for_room"
-            android:onClick="@{viewmodel::onImageClick}"/>
+            android:onClick="@{viewmodel::onImageClick}"
+            app:srcCompat="@drawable/ic_image" />
 
         <ImageView
             android:id="@+id/chosenImageShown"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:layout_below="@id/room_name_field"
+            android:layout_below="@id/textInputLayout"
             android:layout_marginStart="20dp"
             android:layout_marginTop="40dp"
-            android:visibility="gone"
-            tools:srcCompat="@tools:sample/avatars"
             android:contentDescription="@string/chosen_image_for_room"
-            android:onClick="@{viewmodel::onClickImageChosen}"/>
+            android:onClick="@{viewmodel::onClickImageChosen}"
+            android:visibility="gone"
+            tools:srcCompat="@tools:sample/avatars" />
 
         <TextView
             android:id="@+id/feedbackText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/room_name_field"
+            android:layout_below="@+id/textInputLayout"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="180dp"
             android:fontFamily="@font/open_sans"
@@ -72,7 +81,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
     </RelativeLayout>
 </layout>

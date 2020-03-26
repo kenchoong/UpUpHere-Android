@@ -31,6 +31,7 @@ import androidx.navigation.Navigation;
 import upuphere.com.upuphere.Interface.BoolCallBack;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.databinding.FragmentForgotPasswordBinding;
+import upuphere.com.upuphere.helper.KeyboardHelper;
 import upuphere.com.upuphere.repositories.UserRepo;
 import upuphere.com.upuphere.viewmodel.ForgotPasswordViewModel;
 import upuphere.com.upuphere.viewmodel.LoginViewModel;
@@ -170,9 +171,14 @@ public class ForgotPasswordFragment extends Fragment implements ForgotPasswordVi
     @Override
     public void onStop() {
         super.onStop();
+        hideKeyBoard();
         binding.email.setText("");
         binding.statusText.setText("");
         enableSendButton();
+    }
+
+    private void hideKeyBoard(){
+        KeyboardHelper.hideKeyboard(getActivity());
     }
 
     @Override

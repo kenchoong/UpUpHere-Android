@@ -35,6 +35,7 @@ import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.databinding.FragmentCommentBinding;
 import upuphere.com.upuphere.fragment.MoreOptionBottomSheetDialogFragment;
 import upuphere.com.upuphere.helper.DecodeToken;
+import upuphere.com.upuphere.helper.KeyboardHelper;
 import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.models.CommentModel;
 import upuphere.com.upuphere.models.Post;
@@ -316,5 +317,10 @@ public class CommentFragment extends Fragment implements CommentViewModel.Commen
     public void onStop() {
         super.onStop();
         commentAdapter.removeAllComment();
+        hideKeyBoard();
+    }
+
+    private void hideKeyBoard(){
+        KeyboardHelper.hideKeyboard(getActivity());
     }
 }

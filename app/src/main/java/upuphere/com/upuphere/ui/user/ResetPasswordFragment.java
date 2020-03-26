@@ -27,6 +27,7 @@ import androidx.navigation.Navigation;
 import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.databinding.FragmentResetPasswordBinding;
+import upuphere.com.upuphere.helper.KeyboardHelper;
 import upuphere.com.upuphere.repositories.UserRepo;
 import upuphere.com.upuphere.viewmodel.LoginViewModel;
 import upuphere.com.upuphere.viewmodel.ResetPasswordViewModel;
@@ -158,6 +159,11 @@ public class ResetPasswordFragment extends Fragment implements ResetPasswordView
         super.onStop();
         binding.newPassword.setText("");
         binding.confirmNewPassword.setText("");
+        hideKeyBoard();
+    }
+
+    private void hideKeyBoard(){
+        KeyboardHelper.hideKeyboard(getActivity());
     }
 
     @Override
