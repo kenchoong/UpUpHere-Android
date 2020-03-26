@@ -62,7 +62,7 @@
         android:layout_height="50dp"
         android:layout_below="@+id/privacyPolicy"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="62dp"
+        android:layout_marginTop="50dp"
         android:text="@string/agree_continue"
         android:textColor="@color/redirect_color"
         android:textSize="14sp"

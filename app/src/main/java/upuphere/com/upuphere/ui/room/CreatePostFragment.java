@@ -47,6 +47,7 @@ import upuphere.com.upuphere.databinding.FragmentCreatePostBinding;
 import upuphere.com.upuphere.fragment.DisplayPhotoFragment;
 import upuphere.com.upuphere.fragment.PhotoBottomSheetDialogFragment;
 import upuphere.com.upuphere.helper.DecodeToken;
+import upuphere.com.upuphere.helper.KeyboardHelper;
 import upuphere.com.upuphere.repositories.PostRepo;
 import upuphere.com.upuphere.viewmodel.CreatePostViewModel;
 import upuphere.com.upuphere.viewmodel.CreateRoomViewModel;
@@ -278,6 +279,7 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
     private void clearState() {
         binding.statusField.setText("");
         viewModel.getSelectedPhoto().setValue(null);
+        hideKeyBoard();
     }
 
     private void initializeProgressBar() {
@@ -357,5 +359,15 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
                         Toast.makeText(getActivity(),error,Toast.LENGTH_LONG).show();
                     }
                 });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        clearState();
+    }
+
+    private void hideKeyBoard(){
+        KeyboardHelper.hideKeyboard(getActivity());
     }
 }

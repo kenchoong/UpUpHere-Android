@@ -31,6 +31,7 @@ import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.databinding.FragmentSignUpBinding;
 
+import upuphere.com.upuphere.helper.KeyboardHelper;
 import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.helper.SharedPreferenceBooleanLiveData;
 import upuphere.com.upuphere.repositories.UserRepo;
@@ -88,6 +89,16 @@ public class SignUpFragment extends Fragment implements SignUpViewModel.SignUpIn
             }
         });
 
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        hideKeyBoard();
+    }
+
+    private void hideKeyBoard(){
+        KeyboardHelper.hideKeyboard(getActivity());
     }
 
     private void initProgressBar() {

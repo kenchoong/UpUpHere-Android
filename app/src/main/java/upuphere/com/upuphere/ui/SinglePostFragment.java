@@ -34,6 +34,7 @@ import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.databinding.FragmentSinglePostBinding;
 import upuphere.com.upuphere.fragment.MoreOptionBottomSheetDialogFragment;
 import upuphere.com.upuphere.helper.DecodeToken;
+import upuphere.com.upuphere.helper.KeyboardHelper;
 import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.models.CommentModel;
 import upuphere.com.upuphere.models.Post;
@@ -257,6 +258,11 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
     public void onStop() {
         super.onStop();
         singlePostAdapter.removeAllData();
+        hideKeyBoard();
+    }
+
+    private void hideKeyBoard(){
+        KeyboardHelper.hideKeyboard(getActivity());
     }
 
     @Override

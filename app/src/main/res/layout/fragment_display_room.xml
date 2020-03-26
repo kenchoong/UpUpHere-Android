@@ -65,6 +65,7 @@
             android:text="@string/empty_state_post"
             android:textAlignment="center"
             android:textSize="18sp"
+            android:textStyle="bold"
             android:visibility="gone" />
 
         <Button

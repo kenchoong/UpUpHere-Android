@@ -45,6 +45,7 @@
                 android:layout_marginTop="20dp"
                 android:text="@string/empty_state_notification"
                 android:textAlignment="center"
+                android:textColor="@android:color/black"
                 android:textSize="18sp" />
         </LinearLayout>
 
