@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
@@ -96,17 +97,26 @@ public class PhoneAuthFragment2 extends Fragment {
                 // Successfully signed in
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-                final String phone_number = response.getPhoneNumber();
+                final String phone_number;
+                if (user != null) {
+                    phone_number = user.getPhoneNumber();
+                    if (phone_number != null) {
+                        Log.d("Phone Auth",phone_number);
+                        checkPhoneNumberExistedInOurDb(phone_number);
+                    }else{
+                        viewModel.setStatus("Unable to verified your phone number");
+                    }
 
-                Log.d("Phone Auth",phone_number);
-
-                checkPhoneNumberExistedInOurDb(phone_number);
+                }else{
+                    viewModel.setStatus(getResources().getString(R.string.unable_to_process_now));
+                }
                 // ...
             } else {
                 // Sign in failed. If response is null the user canceled the
                 // sign-in flow using the back button. Otherwise check
                 // response.getError().getErrorCode() and handle the error.
                 // ...
+                viewModel.setStatus(getResources().getString(R.string.unknown_error));
             }
         }
     }
@@ -166,7 +176,7 @@ public class PhoneAuthFragment2 extends Fragment {
             @Override
             public void showError(String error) {
                 viewModel.setIsLoading(false);
-                statusText.setText(R.string.unknown_error);
+                viewModel.setStatus(getResources().getString(R.string.unknown_error));
             }
         });
     }
