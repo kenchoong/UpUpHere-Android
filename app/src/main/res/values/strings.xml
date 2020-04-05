@@ -83,6 +83,7 @@
 
     <string name="email_not_registered">Email is not registered</string>
     <string name="unknown_error">Unknown error</string>
+    <string name="verified_phone_number_failed">Failed to verified phone number</string>
     <string name="password_reset_email_sent">Password reset email sent! Please check your email.</string>
     <string name="use_phone_to_reset_password">Use phone number instead?</string>
 
@@ -93,6 +94,11 @@
 
     <string name="successfully_reset_password">Successfully reset password</string>
     <string name="failed_reset_password">Failed to reset password.Try again later</string>
+
+    <string name="phone">Phone</string>
+    <string name="verify_phone_number_button">Verify your phone number</string>
+    <string name="six_digit_code">Enter the 6-digit code we sent to</string>
+    <string name="resend">Resend</string>
 
     <string name="verify_phone_number">First,let us confirm your phone number</string>
     <string name="verify_phone_number_reason">In order to avoid spam and give you the best service,please confirm your identity</string>

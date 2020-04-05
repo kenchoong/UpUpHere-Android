@@ -187,7 +187,8 @@ public class LoginFragment extends Fragment implements LoginViewModel.LoginInter
 
     @Override
     public void onRegisterClick() {
-        NavDirections directions = LoginFragmentDirections.actionLoginFragmentToPhoneAuthFragment2(PhoneAuthFragment2.FROM_LOGIN_FRAGMENT);
+        //NavDirections directions = LoginFragmentDirections.actionLoginFragmentToPhoneAuthFragment2(PhoneAuthFragment2.FROM_LOGIN_FRAGMENT);
+        NavDirections directions = LoginFragmentDirections.actionLoginFragmentToPhoneAuthFragment3(PhoneAuthFragment3.FROM_LOGIN_FRAGMENT);
         Navigation.findNavController(rootView).navigate(directions);
     }
 
