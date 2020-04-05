@@ -11,9 +11,12 @@ import androidx.fragment.app.Fragment;
 
 import android.os.CountDownTimer;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.TextView;
 
 import com.bigbangbutton.editcodeview.EditCodeListener;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -97,6 +100,18 @@ public class PhoneAuthFragment3 extends Fragment implements PhoneAuthViewModel3.
         viewModel.setPhoneAuthInterface(this);
 
         binding.ccp.registerPhoneNumberTextView(binding.phoneNumberEdt);
+
+        binding.phoneNumberEdt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    // do your stuff here
+                    binding.continueButton.performClick();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         setInitialState();
 
