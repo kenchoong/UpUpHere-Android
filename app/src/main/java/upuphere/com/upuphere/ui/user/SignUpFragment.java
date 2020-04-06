@@ -24,7 +24,7 @@ import com.google.firebase.iid.InstanceIdResult;
 import java.util.Objects;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import upuphere.com.upuphere.Interface.StringCallBack;
@@ -59,8 +59,8 @@ public class SignUpFragment extends Fragment implements SignUpViewModel.SignUpIn
                              Bundle savedInstanceState) {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_sign_up, container, false);
-        signUpViewModel = ViewModelProviders.of(requireActivity()).get(SignUpViewModel.class);
-        loginViewModel = ViewModelProviders.of(requireActivity()).get(LoginViewModel.class);
+        signUpViewModel = new ViewModelProvider(requireActivity()).get(SignUpViewModel.class);
+        loginViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
 
         rootView = binding.getRoot();
         binding.setViewModel(signUpViewModel);

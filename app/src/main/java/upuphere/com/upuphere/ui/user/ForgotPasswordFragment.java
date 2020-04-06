@@ -25,7 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Objects;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import upuphere.com.upuphere.Interface.BoolCallBack;
@@ -54,8 +54,8 @@ public class ForgotPasswordFragment extends Fragment implements ForgotPasswordVi
         Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).show();
 
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_forgot_password,container,false);
-        viewModel = ViewModelProviders.of(requireActivity()).get(ForgotPasswordViewModel.class);
-        loginViewModel = ViewModelProviders.of(requireActivity()).get(LoginViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(ForgotPasswordViewModel.class);
+        loginViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
         rootView =binding.getRoot();
         binding.setViewmodel(viewModel);
 
@@ -123,9 +123,6 @@ public class ForgotPasswordFragment extends Fragment implements ForgotPasswordVi
 
     @Override
     public void onUsingPhoneInstead() {
-        //Bundle args = new Bundle();
-        //args.putInt("previous_fragment_code",PhoneAuthFragment.FROM_FORGOT_PASSWORD);
-        //Navigation.findNavController(rootView).navigate(R.id.phoneAuthFragment,args);
         NavDirections directions = ForgotPasswordFragmentDirections.actionForgotPasswordFragmentToPhoneAuthFragment3(PhoneAuthFragment3.FROM_FORGOT_PASSWORD);
         Navigation.findNavController(rootView).navigate(directions);
     }

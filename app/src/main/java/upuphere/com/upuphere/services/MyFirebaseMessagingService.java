@@ -20,7 +20,6 @@ import org.json.JSONObject;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.MainActivity;

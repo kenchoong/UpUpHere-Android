@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Objects;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -86,7 +86,7 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
         Log.d("ROOM ID DISPLAY",roomId);
 
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_display_room,container,false);
-        viewModel = ViewModelProviders.of(requireActivity()).get(DisplayRoomViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(DisplayRoomViewModel.class);
         rootView = binding.getRoot();
         binding.setModel(viewModel);
 
