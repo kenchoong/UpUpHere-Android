@@ -5,8 +5,8 @@ apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.firebase.firebase-perf'
 
 ext.versionMajor = 1
-ext.versionMinor = 0
-ext.versionPatch = 6
+ext.versionMinor = 1
+ext.versionPatch = 0
 ext.versionClassifier = null
 ext.isSnapshot = false
 ext.minimumSdkVersion = 21
@@ -122,6 +122,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:17.2.3'
     implementation 'com.google.firebase:firebase-crashlytics:17.0.0-beta01'
     implementation 'com.google.firebase:firebase-perf:19.0.5'
+
+    implementation 'com.github.joielechong:countrycodepicker:2.4.1'
+    implementation 'com.bigbangbutton:editcodeview:1.0.6'
 
 }
 repositories {

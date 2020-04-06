@@ -93,6 +93,9 @@
             app:destination="@id/phoneAuthFragment2"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/action_loginFragment_to_phoneAuthFragment3"
+            app:destination="@id/phoneAuthFragment3" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -165,6 +168,9 @@
             app:destination="@id/phoneAuthFragment2"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/action_forgotPasswordFragment_to_phoneAuthFragment3"
+            app:destination="@id/phoneAuthFragment3" />
     </fragment>
     <fragment
         android:id="@+id/resetPasswordFragment"
@@ -239,5 +245,20 @@
         <argument
             android:name="agreementType"
             app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/phoneAuthFragment3"
+        android:name="upuphere.com.upuphere.ui.user.PhoneAuthFragment3"
+        android:label="PhoneAuthFragment3" >
+        <argument
+            android:name="previousFragmentCode"
+            app:argType="integer"
+            app:nullable="false" />
+        <action
+            android:id="@+id/action_phoneAuthFragment3_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
+        <action
+            android:id="@+id/action_phoneAuthFragment3_to_resetPasswordFragment"
+            app:destination="@id/resetPasswordFragment" />
     </fragment>
 </navigation>
