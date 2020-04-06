@@ -19,7 +19,7 @@ import android.widget.Toast;
 import java.util.Objects;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.NavOptions;
@@ -69,8 +69,8 @@ public class ResetPasswordFragment extends Fragment implements ResetPasswordView
 
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_reset_password,container,false);
         rootView = binding.getRoot();
-        viewModel = ViewModelProviders.of(requireActivity()).get(ResetPasswordViewModel.class);
-        loginViewModel = ViewModelProviders.of(requireActivity()).get(LoginViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(ResetPasswordViewModel.class);
+        loginViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
         binding.setViewmodel(viewModel);
 
         initializeProgressBar();

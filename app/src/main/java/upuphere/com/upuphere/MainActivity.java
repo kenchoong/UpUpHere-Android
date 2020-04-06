@@ -6,26 +6,19 @@ import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
+
 import androidx.navigation.ui.NavigationUI;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
+
 
 import androidx.appcompat.widget.Toolbar;
 import upuphere.com.upuphere.Interface.CommonCallBack;
@@ -74,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         setupNavigation();
 
-        viewModel = ViewModelProviders.of(this).get(NotificationViewModel.class);
+        viewModel = new ViewModelProvider(this).get(NotificationViewModel.class);
     }
 
     private void setupNavigation() {

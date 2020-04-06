@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
@@ -78,7 +78,7 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_create_post,container,false);
-        viewModel = ViewModelProviders.of(requireActivity()).get(CreatePostViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(CreatePostViewModel.class);
         rootView = binding.getRoot();
         binding.setViewmodel(viewModel);
         setHasOptionsMenu(true);

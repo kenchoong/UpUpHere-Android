@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
@@ -79,7 +79,7 @@ public class CreateRoomFragment extends Fragment implements CreateRoomViewModel.
         prefManager = new PrefManager(getActivity());
         //return inflater.inflate(R.layout.fragment_create_room, container, false);
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_create_room,container,false);
-        viewModel = ViewModelProviders.of(requireActivity()).get(CreateRoomViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(CreateRoomViewModel.class);
         rootView = binding.getRoot();
         binding.setViewmodel(viewModel);
 

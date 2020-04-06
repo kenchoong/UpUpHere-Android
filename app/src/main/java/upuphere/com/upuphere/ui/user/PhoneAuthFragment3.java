@@ -33,7 +33,7 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import java.util.concurrent.TimeUnit;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
@@ -76,7 +76,7 @@ public class PhoneAuthFragment3 extends Fragment implements PhoneAuthViewModel3.
         //return inflater.inflate(R.layout.fragment_phone_auth3, container, false);
 
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_phone_auth3,container,false);
-        viewModel = ViewModelProviders.of(requireActivity()).get(PhoneAuthViewModel3.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(PhoneAuthViewModel3.class);
         rootView = binding.getRoot();
 
         binding.setViewModel(viewModel);

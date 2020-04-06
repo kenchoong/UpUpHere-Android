@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Objects;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
@@ -80,8 +80,8 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
         Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).show();
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_main,container,false);
-        mainViewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel.class);
-        notificationViewModel = ViewModelProviders.of(requireActivity()).get(NotificationViewModel.class);
+        mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
+        notificationViewModel = new ViewModelProvider(requireActivity()).get(NotificationViewModel.class);
         view = binding.getRoot();
         binding.setViewmodel(mainViewModel);
 

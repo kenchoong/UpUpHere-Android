@@ -22,7 +22,7 @@ import com.bumptech.glide.Glide;
 
 import java.util.Objects;
 
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import upuphere.com.upuphere.R;
@@ -55,8 +55,8 @@ public class DisplayPhotoFragment extends Fragment implements DeletePhotoBottomS
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_display_photo, container, false);
 
-        createRoomViewModel = ViewModelProviders.of(requireActivity()).get(CreateRoomViewModel.class);
-        createPostViewModel = ViewModelProviders.of(requireActivity()).get(CreatePostViewModel.class);
+        createRoomViewModel = new ViewModelProvider(requireActivity()).get(CreateRoomViewModel.class);
+        createPostViewModel = new ViewModelProvider(requireActivity()).get(CreatePostViewModel.class);
         selectedImage = rootView.findViewById(R.id.selectedImage);
         setHasOptionsMenu(true);
         return rootView;

@@ -23,7 +23,7 @@ import android.widget.TextView;
 import java.util.Objects;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.NavOptions;
@@ -64,7 +64,7 @@ public class LoginFragment extends Fragment implements LoginViewModel.LoginInter
         prefManager = new PrefManager(getActivity());
         
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_login,container,false);
-        viewModel = ViewModelProviders.of(requireActivity()).get(LoginViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
         rootView = binding.getRoot();
 
         binding.setLoginViewModel(viewModel);
@@ -187,7 +187,6 @@ public class LoginFragment extends Fragment implements LoginViewModel.LoginInter
 
     @Override
     public void onRegisterClick() {
-        //NavDirections directions = LoginFragmentDirections.actionLoginFragmentToPhoneAuthFragment2(PhoneAuthFragment2.FROM_LOGIN_FRAGMENT);
         NavDirections directions = LoginFragmentDirections.actionLoginFragmentToPhoneAuthFragment3(PhoneAuthFragment3.FROM_LOGIN_FRAGMENT);
         Navigation.findNavController(rootView).navigate(directions);
     }

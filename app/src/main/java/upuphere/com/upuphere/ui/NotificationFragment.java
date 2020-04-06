@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -47,7 +47,7 @@ public class NotificationFragment extends Fragment implements NotificationAdapte
         //return inflater.inflate(R.layout.fragment_notification, container, false);
 
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_notification,container,false);
-        viewModel = ViewModelProviders.of(requireActivity()).get(NotificationViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(NotificationViewModel.class);
         rootView = binding.getRoot();
         binding.setViewmodel(viewModel);
         return rootView;

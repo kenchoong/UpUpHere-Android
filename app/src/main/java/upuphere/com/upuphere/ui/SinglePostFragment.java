@@ -24,7 +24,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import upuphere.com.upuphere.Interface.StringCallBack;
@@ -70,7 +70,7 @@ public class SinglePostFragment extends Fragment implements SinglePostViewModel.
 
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_single_post,container,false);
-        viewModel = ViewModelProviders.of(requireActivity()).get(SinglePostViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(SinglePostViewModel.class);
         rootView = binding.getRoot();
         binding.setViewmodel(viewModel);
 
