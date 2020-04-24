@@ -6,8 +6,8 @@ public class AppConfig {
 
     public static String MEDIA_IS_PHOTO ="111";
 
-    //private static String BASE_URL = "http://127.0.0.1:5000";
-    private static String BASE_URL = "http://api.upuphere.com";
+    private static String BASE_URL = "http://127.0.0.1:5000";
+    //private static String BASE_URL = "http://api.upuphere.com";
 
     public static String PHOTO_ENDPOINT = BASE_URL +"/media/photos";
 

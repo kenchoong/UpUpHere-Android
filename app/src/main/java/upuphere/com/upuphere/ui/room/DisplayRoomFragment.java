@@ -1,19 +1,15 @@
 package upuphere.com.upuphere.ui.room;
 
 
-import android.content.Context;
 import android.os.Bundle;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.MenuItemCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
 import android.os.Parcelable;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,6 +19,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -38,18 +41,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import upuphere.com.upuphere.Interface.StringCallBack;
-import upuphere.com.upuphere.MainActivity;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.adapter.PostAdapter;
 import upuphere.com.upuphere.app.AppConfig;
-import upuphere.com.upuphere.app.AppController;
 import upuphere.com.upuphere.databinding.FragmentDisplayRoomBinding;
-import upuphere.com.upuphere.fragment.DisplayPhotoFragmentArgs;
 import upuphere.com.upuphere.fragment.MoreOptionBottomSheetDialogFragment;
 import upuphere.com.upuphere.helper.DecodeToken;
 import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.models.AllRooms;
 import upuphere.com.upuphere.models.Post;
+import upuphere.com.upuphere.models.PostAdsData;
 import upuphere.com.upuphere.viewmodel.DisplayRoomViewModel;
 
 /**
@@ -65,7 +66,7 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
     private View rootView;
     private DisplayRoomViewModel viewModel;
     private RecyclerView recyclerView;
-    private PostAdapter postAdapter;
+    //private PostAdapter postAdapter;
     public String roomId;
     private FragmentDisplayRoomBinding binding;
     String roomName;
@@ -170,6 +171,8 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
             }
         });
 
+        initializeAdmobs();
+
         observeProgressBar();
 
         initializeRecyclerView();
@@ -181,6 +184,14 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
             public void run() {
                 mSwipeRefreshLayout.setRefreshing(true);
                 getPostInRoom(roomId);
+            }
+        });
+    }
+
+    private void initializeAdmobs() {
+        MobileAds.initialize(getActivity(), new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
             }
         });
     }
@@ -211,33 +222,105 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
         });
     }
 
+    PostAdapter postAdapter;
     private void initializeRecyclerView() {
         recyclerView = binding.postRecyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),RecyclerView.VERTICAL,false));
+        //postAdapter = new PostAdapter(this);
         postAdapter = new PostAdapter(this);
         recyclerView.setAdapter(postAdapter);
     }
 
+
     private void getPostInRoom(String roomId) {
         viewModel.getAllPostInRoom(roomId).observe(getViewLifecycleOwner(), new Observer<List<Post>>() {
+
             @Override
             public void onChanged(List<Post> posts) {
-                mSwipeRefreshLayout.setRefreshing(false);
 
-                if(posts != null && posts.size() > 0){
-                    binding.postRecyclerView.setVisibility(View.VISIBLE);
-                    binding.emptyStateContainer.setVisibility(View.GONE);
-                    binding.unblockRoomButton.setVisibility(View.GONE);
-                    fetchedPost.addAll(posts);
-                    postAdapter.setPost(posts);
-                }else if(Objects.requireNonNull(posts).size() == 0){
-                    binding.emptyStateContainer.setVisibility(View.VISIBLE);
-                    binding.postRecyclerView.setVisibility(View.GONE);
+                if(posts != null) {
+                    if (posts.size() > 0) {
+
+                        binding.postRecyclerView.setVisibility(View.VISIBLE);
+                        binding.emptyStateContainer.setVisibility(View.GONE);
+                        binding.unblockRoomButton.setVisibility(View.GONE);
+                        fetchedPost.addAll(posts);
+
+                        loadNativeAds(posts);
+                    }else{
+                        mSwipeRefreshLayout.setRefreshing(false);
+                        binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                        binding.postRecyclerView.setVisibility(View.GONE);
+                    }
                 }
-
-
             }
         });
+    }
+
+    private List<PostAdsData> mergeData(List<Post>posts, List<UnifiedNativeAd> ads){
+        List<PostAdsData> postAdsDataList = new ArrayList<>();
+
+        for(UnifiedNativeAd ad : ads) {
+            PostAdsData data = new PostAdsData();
+            data.ads = ad;
+            data.post = null;
+            data.type = 1;
+            postAdsDataList.add(data);
+        }
+
+
+        for(Post item : posts) {
+            PostAdsData data = new PostAdsData();
+            data.ads = null;
+            data.post = item;
+            data.type = 2;
+            postAdsDataList.add(data);
+        }
+
+        return postAdsDataList;
+    }
+
+    private void displayContent(List<Post> posts,List<UnifiedNativeAd> ads){
+        mSwipeRefreshLayout.setRefreshing(false);
+        List<PostAdsData> postAdsDataForRecyclerView = mergeData(posts,ads);
+        postAdapter.setPostAdsDataList(postAdsDataForRecyclerView);
+    }
+
+    AdLoader adLoader;
+    private List<UnifiedNativeAd> mNativeAds = new ArrayList<>();
+    private void loadNativeAds(final List<Post> posts) {
+
+        AdLoader.Builder builder = new AdLoader.Builder(getActivity(), getResources().getString(R.string.admob_test_ads));
+        adLoader = builder.forUnifiedNativeAd(
+                new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
+                    @Override
+                    public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
+                        // A native ad loaded successfully, check if the ad loader has finished loading
+                        // and if so, insert the ads into the list.
+
+                        if (!adLoader.isLoading()) {
+                            mNativeAds.clear();
+                            mNativeAds.add(unifiedNativeAd);
+
+                            displayContent(posts,mNativeAds);
+                        }
+                    }
+                }).withAdListener(
+                new AdListener() {
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+                        // A native ad failed to load, check if the ad loader has finished loading
+                        // and if so, insert the ads into the list.
+                        Log.e("MainActivity", "The previous native ad failed to load. Attempting to"
+                                + " load another.");
+                        if (!adLoader.isLoading()) {
+                            displayContent(posts,mNativeAds);
+                        }
+                    }
+                }).build();
+
+        // Load the Native ads.
+        adLoader.loadAd(new AdRequest.Builder().build());
     }
 
     @Override
@@ -257,16 +340,16 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
     }
 
     @Override
-    public void onMoreButtonClicked(Post post) {
+    public void onMoreButtonClicked(Post post, int position) {
         Log.d("Display Fragment","MORE BUTTON CLICKED");
         Log.d("DisplayFragment room id",post.getId());
         Log.d("DisplayFragment user id",post.getAuthor());
 
-        showPostMoreOptionMenu(post);
+        showPostMoreOptionMenu(post,position);
     }
 
     private MoreOptionBottomSheetDialogFragment moreOptionBottomSheetDialogFragment;
-    private void showPostMoreOptionMenu(final Post post) {
+    private void showPostMoreOptionMenu(final Post post, final int position) {
         moreOptionBottomSheetDialogFragment = MoreOptionBottomSheetDialogFragment.newInstance();
         moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
             @Override
@@ -325,7 +408,7 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
                             @Override
                             public void success(String item) {
                                 moreOptionBottomSheetDialogFragment.dismiss();
-                                postAdapter.removeHidedPost(post);
+                                postAdapter.removeHidedPost(position);
 
                                 showSnackBar(item,AppConfig.HIDE_POST,post.getId());
                             }
@@ -586,5 +669,12 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
     public void onStop() {
         super.onStop();
         postAdapter.removeAllPost();
+        //postAdapter.postAdsDataList = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        //postAdapter.postAdsDataList = null;
     }
 }
