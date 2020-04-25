@@ -58,7 +58,7 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         }
         postAdsDataList.removeAll(shouldRemove);
-        notifyDataSetChanged();
+        notifyItemRangeRemoved(0,shouldRemove.size());
     }
 
 
@@ -115,13 +115,13 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 break;
             case POST_VIEW:
                 PostViewHolder holder = (PostViewHolder) viewHolder;
-
-                holder.binding.setData(postAdsDataList.get(position).getPost());
+                final int position1 = holder.getAdapterPosition();
+                holder.binding.setData(postAdsDataList.get(position1).getPost());
 
                 holder.binding.commentButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        listener.onCommentClicked(postAdsDataList.get(position).getPost());
+                        listener.onCommentClicked(postAdsDataList.get(position1).getPost());
                     }
                 });
                 /*
@@ -135,7 +135,7 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 holder.binding.moreButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        listener.onMoreButtonClicked(postAdsDataList.get(position).getPost(),position);
+                        listener.onMoreButtonClicked(postAdsDataList.get(position1).getPost(),position);
                     }
                 });
         }

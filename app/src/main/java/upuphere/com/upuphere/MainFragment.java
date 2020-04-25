@@ -1,9 +1,5 @@
 package upuphere.com.upuphere;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -26,6 +22,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -35,7 +35,6 @@ import java.util.Objects;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.NavOptions;
@@ -50,12 +49,12 @@ import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.databinding.FragmentMainBinding;
 import upuphere.com.upuphere.fragment.MoreOptionBottomSheetDialogFragment;
 import upuphere.com.upuphere.helper.DecodeToken;
-import upuphere.com.upuphere.helper.NotificationUtils;
 import upuphere.com.upuphere.helper.SharedPreferenceBooleanLiveData;
 import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.helper.SpacingItemDecoration;
 import upuphere.com.upuphere.models.AllRooms;
 import upuphere.com.upuphere.models.NotificationModel;
+import upuphere.com.upuphere.models.RoomAdsData;
 import upuphere.com.upuphere.viewmodel.MainViewModel;
 import upuphere.com.upuphere.viewmodel.NotificationViewModel;
 
@@ -160,7 +159,17 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
 
     private void initRecyclerView() {
         recyclerView = binding.roomRecyclerView;
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
+        GridLayoutManager.SpanSizeLookup onSpanSizeLookup = new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                return roomAdapter.getItemViewType(position) == RoomAdapter.UNIFIED_ADS ? 2 : 1;
+            }
+        };
+
+        GridLayoutManager mGridLayoutManager = new GridLayoutManager(getActivity(),2);
+        mGridLayoutManager.setSpanSizeLookup(onSpanSizeLookup);
+        recyclerView.setLayoutManager(mGridLayoutManager);
+
         recyclerView.addItemDecoration(new SpacingItemDecoration(3, dpToPx(4), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setNestedScrollingEnabled(false);
@@ -173,17 +182,85 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
         mainViewModel.getRoomList().observe(getViewLifecycleOwner(), new Observer<List<AllRooms>>() {
             @Override
             public void onChanged(List<AllRooms> rooms) {
-                mSwipeRreshLayout.setRefreshing(false);
+                //mSwipeRreshLayout.setRefreshing(false);
                 if(rooms != null && rooms.size() > 0){
-                    roomAdapter.setRoomList(rooms);
+                    //roomAdapter.setRoomList(rooms);
                     binding.roomRecyclerView.setVisibility(View.VISIBLE);
                     binding.emptyStateRoom.setVisibility(View.GONE);
+
+                    loadNativeAds(rooms);
                 }else{
                     binding.roomRecyclerView.setVisibility(View.GONE);
                     binding.emptyStateRoom.setVisibility(View.VISIBLE);
                 }
             }
         });
+    }
+
+    private List<RoomAdsData> mergeData(List<AllRooms>rooms, List<UnifiedNativeAd> ads){
+        List<RoomAdsData> roomAdsDataList = new ArrayList<>();
+
+        for(UnifiedNativeAd ad: ads){
+            RoomAdsData data = new RoomAdsData();
+            data.ads = ad;
+            data.rooms = null;
+            data.type = 1; // 1 for native ads
+
+            roomAdsDataList.add(0,data);
+        }
+
+        for(AllRooms room : rooms){
+            RoomAdsData data = new RoomAdsData();
+            data.ads = null;
+            data.rooms = room;
+            data.type = 2;
+
+            roomAdsDataList.add(data);
+        }
+
+        return roomAdsDataList;
+    }
+
+    private void displayContent(List<AllRooms> rooms, List<UnifiedNativeAd> mNativeAds) {
+        mSwipeRreshLayout.setRefreshing(false);
+        List<RoomAdsData> roomAdsDataForRecyclerView = mergeData(rooms,mNativeAds);
+        roomAdapter.setRoomAdsDataList(roomAdsDataForRecyclerView);
+    }
+
+    AdLoader adLoader;
+    private List<UnifiedNativeAd> mNativeAds = new ArrayList<>();
+    private void loadNativeAds(final List<AllRooms> rooms) {
+        AdLoader.Builder builder = new AdLoader.Builder(getActivity(), getResources().getString(R.string.admob_test_ads));
+        adLoader = builder.forUnifiedNativeAd(
+                new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
+                    @Override
+                    public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
+                        // A native ad loaded successfully, check if the ad loader has finished loading
+                        // and if so, insert the ads into the list.
+
+                        if (!adLoader.isLoading()) {
+                            mNativeAds.clear();
+                            mNativeAds.add(unifiedNativeAd);
+
+                            displayContent(rooms,mNativeAds);
+                        }
+                    }
+                }).withAdListener(
+                new AdListener() {
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+                        // A native ad failed to load, check if the ad loader has finished loading
+                        // and if so, insert the ads into the list.
+                        Log.e("MainActivity", "The previous native ad failed to load. Attempting to"
+                                + " load another.");
+                        if (!adLoader.isLoading()) {
+                            displayContent(rooms,mNativeAds);
+                        }
+                    }
+                }).build();
+
+        // Load the Native ads.
+        adLoader.loadAd(new AdRequest.Builder().build());
     }
 
     private void setUpSwipeRefreshLayout(){
@@ -205,17 +282,17 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
     }
 
     @Override
-    public void onMoreButtonClicked(AllRooms rooms) {
+    public void onMoreButtonClicked(AllRooms rooms,int position) {
         Log.d("Main Fragment","MORE BUTTON CLICKED");
         Log.d("Main Fragment room id",rooms.getId());
         Log.d("Main Fragment user id",rooms.getCreatedBy());
 
-        showRoomMoreOptionMenu(rooms);
+        showRoomMoreOptionMenu(rooms,position);
     }
 
 
     private MoreOptionBottomSheetDialogFragment moreOptionBottomSheetDialogFragment;
-    private void showRoomMoreOptionMenu(final AllRooms rooms) {
+    private void showRoomMoreOptionMenu(final AllRooms rooms, final int position) {
         moreOptionBottomSheetDialogFragment = MoreOptionBottomSheetDialogFragment.newInstance();
         moreOptionBottomSheetDialogFragment.setOnOptionListener(new MoreOptionBottomSheetDialogFragment.OnOptionListener() {
             @Override
@@ -270,7 +347,7 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
                             @Override
                             public void success(String item) {
                                 moreOptionBottomSheetDialogFragment.dismiss();
-                                roomAdapter.removeHidedRoom(rooms);
+                                roomAdapter.removeHidedRoom(position);
                                 //Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
 
                                 showSnackBar(item,AppConfig.HIDE_ROOM,rooms.getId());
@@ -303,7 +380,7 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
                             @Override
                             public void success(String item) {
                                 moreOptionBottomSheetDialogFragment.dismiss();
-                                roomAdapter.removeHidedRoom(rooms);
+                                roomAdapter.removeHidedRoom(position);
                                 //Toast.makeText(getActivity(),item,Toast.LENGTH_SHORT).show();
 
                                 showSnackBar(item,AppConfig.HIDE_ROOM,rooms.getId());
