@@ -23,6 +23,8 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.VideoOptions;
+import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
@@ -52,6 +54,8 @@ import upuphere.com.upuphere.models.AllRooms;
 import upuphere.com.upuphere.models.Post;
 import upuphere.com.upuphere.models.PostAdsData;
 import upuphere.com.upuphere.viewmodel.DisplayRoomViewModel;
+
+import static com.google.android.gms.ads.formats.NativeAdOptions.NATIVE_MEDIA_ASPECT_RATIO_PORTRAIT;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -290,6 +294,15 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
     private List<UnifiedNativeAd> mNativeAds = new ArrayList<>();
     private void loadNativeAds(final List<Post> posts) {
 
+        VideoOptions videoOptions = new VideoOptions.Builder()
+                .setStartMuted(false)
+                .build();
+
+        NativeAdOptions adOptions = new NativeAdOptions.Builder()
+                .setVideoOptions(videoOptions)
+                .setMediaAspectRatio(NATIVE_MEDIA_ASPECT_RATIO_PORTRAIT)
+                .build();
+
         AdLoader.Builder builder = new AdLoader.Builder(getActivity(), getResources().getString(R.string.admob_test_ads));
         adLoader = builder.forUnifiedNativeAd(
                 new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
@@ -317,7 +330,8 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
                             displayContent(posts,mNativeAds);
                         }
                     }
-                }).build();
+                }).withNativeAdOptions(adOptions)
+                .build();
 
         // Load the Native ads.
         adLoader.loadAd(new AdRequest.Builder().build());
