@@ -143,4 +143,8 @@
 
     <string name="unable_to_process_now">Unable to sign up now.Please try again later. If this keep happening,please screenshot this and send to feedback@upuphere.com</string>
 
+    <string name="admob_app_id">ca-app-pub-3213513925256606~8735366142</string>
+    <string name="admob_test_ads">ca-app-pub-3940256099942544/2247696110</string>
+    <string name="admob_post_fragment_native_ads">ca-app-pub-3213513925256606/5424089326</string>
+    <string name="admob_room_fragment_native_ads">ca-app-pub-3213513925256606/8245500265</string>
 </resources>

@@ -1,9 +1,16 @@
 package upuphere.com.upuphere.adapter;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RatingBar;
+import android.widget.TextView;
+
+import com.google.android.gms.ads.formats.NativeAd;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,44 +20,54 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import upuphere.com.upuphere.R;
 import upuphere.com.upuphere.databinding.PostItemRowBinding;
+import upuphere.com.upuphere.helper.UnifiedNativeAdViewHolder;
 import upuphere.com.upuphere.models.Post;
+import upuphere.com.upuphere.models.PostAdsData;
 
-public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
+public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<Post> postList;
+    //private List<Post> postList;
+    public List<PostAdsData> postAdsDataList;
     private LayoutInflater layoutInflater;
-    private PostAdapterListener listener;
+    private PostAdapter.PostAdapterListener listener;
 
-    public PostAdapter(PostAdapterListener listener) {
-        this.listener = listener;
-    }
+    private static final int UNIFIED_ADS_VIEW = 1;
 
-    public void setPost(List<Post> postList){
-        //Log.d("POST HERE","GET CALLED");
-        this.postList = postList;
-        notifyDataSetChanged();
-    }
+    private static final int POST_VIEW = 2;
 
-    public void removeHidedPost(Post post){
-        postList.remove(post);
-        notifyDataSetChanged();
+    public void removeHidedPost(int position){
+        postAdsDataList.remove(position);
+        notifyItemRangeRemoved(position, postAdsDataList.size());
     }
 
     public void removeAllPost(){
-        if (postList != null) {
-            postList.clear();
-            notifyDataSetChanged();
+        if (postAdsDataList != null) {
+            postAdsDataList.clear();
+            notifyItemRangeRemoved(0, postAdsDataList.size());
         }
     }
 
     public void removePostCreatedByBlockedUser(String userId){
-        List<Post> shouldRemovePost = new ArrayList<>();
-        for(Post post : postList){
-            if(post.getAuthorUserId().equals(userId)){
-                shouldRemovePost.add(post);
+        List<PostAdsData> shouldRemove = new ArrayList<>();
+        for(PostAdsData postAdsData : postAdsDataList){
+            if(postAdsData.getPost() != null){
+                if(postAdsData.getPost().getAuthorUserId().equals(userId)){
+                    shouldRemove.add(postAdsData);
+                }
             }
         }
-        postList.removeAll(shouldRemovePost);
+        postAdsDataList.removeAll(shouldRemove);
+        notifyItemRangeRemoved(0,shouldRemove.size());
+    }
+
+
+    public PostAdapter(PostAdapterListener listener) {
+        this.listener = listener;
+        setHasStableIds(true);
+    }
+
+    public void setPostAdsDataList(List<PostAdsData> postAdsData){
+        this.postAdsDataList = postAdsData;
         notifyDataSetChanged();
     }
 
@@ -66,59 +83,144 @@ public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.PostViewHolde
 
     @NonNull
     @Override
-    public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if(layoutInflater == null){
-            layoutInflater = LayoutInflater.from(parent.getContext());
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case UNIFIED_ADS_VIEW:
+                View unifiedNativeLayoutView = LayoutInflater.from(
+                        parent.getContext()).inflate(R.layout.ad_post_fragment,
+                        parent, false);
+                return new UnifiedNativeAdViewHolder(unifiedNativeLayoutView);
+            case POST_VIEW:
+                // Fall through.
+            default:
+                if(layoutInflater == null){
+                    layoutInflater = LayoutInflater.from(parent.getContext());
+                }
+
+                PostItemRowBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.post_item_row,parent,false);
+
+                return new PostViewHolder(binding);
         }
-
-        PostItemRowBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.post_item_row,parent,false);
-
-        return new PostViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PostViewHolder holder, final int position) {
-        holder.binding.setData(postList.get(position));
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int position) {
+        int viewType = getItemViewType(position);
 
-        holder.binding.commentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listener.onCommentClicked(postList.get(position));
-            }
-        });
-        /*
-        holder.binding.shareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listener.onShareClicked(postList.get(position));
-            }
-        });*/
+        switch (viewType){
+            case UNIFIED_ADS_VIEW:
+                UnifiedNativeAd nativeAd = (UnifiedNativeAd) postAdsDataList.get(position).getAds();
+                populateNativeAdView(nativeAd, ((UnifiedNativeAdViewHolder) viewHolder).getAdView());
+                break;
+            case POST_VIEW:
+                PostViewHolder holder = (PostViewHolder) viewHolder;
+                final int position1 = holder.getAdapterPosition();
+                holder.binding.setData(postAdsDataList.get(position1).getPost());
 
-        holder.binding.moreButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listener.onMoreButtonClicked(postList.get(position));
-            }
-        });
+                holder.binding.commentButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        listener.onCommentClicked(postAdsDataList.get(position1).getPost());
+                    }
+                });
+                /*
+                holder.binding.shareButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        listener.onShareClicked(postList.get(position));
+                    }
+                });*/
+
+                holder.binding.moreButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        listener.onMoreButtonClicked(postAdsDataList.get(position1).getPost(),position);
+                    }
+                });
+        }
+    }
+
+    private void populateNativeAdView(UnifiedNativeAd nativeAd, UnifiedNativeAdView adView) {
+        // Some assets are guaranteed to be in every UnifiedNativeAd.
+        ((TextView) adView.getHeadlineView()).setText(nativeAd.getHeadline());
+        ((TextView) adView.getBodyView()).setText(nativeAd.getBody());
+        ((Button) adView.getCallToActionView()).setText(nativeAd.getCallToAction());
+
+        // These assets aren't guaranteed to be in every UnifiedNativeAd, so it's important to
+        // check before trying to display them.
+        NativeAd.Image icon = nativeAd.getIcon();
+
+        if (icon == null) {
+            adView.getIconView().setVisibility(View.INVISIBLE);
+        } else {
+            ((ImageView) adView.getIconView()).setImageDrawable(icon.getDrawable());
+            adView.getIconView().setVisibility(View.VISIBLE);
+        }
+/*
+        if (nativeAd.getPrice() == null) {
+            adView.getPriceView().setVisibility(View.INVISIBLE);
+        } else {
+            adView.getPriceView().setVisibility(View.VISIBLE);
+            ((TextView) adView.getPriceView()).setText(nativeAd.getPrice());
+        }
+*/
+/*
+        if (nativeAd.getStore() == null) {
+            adView.getStoreView().setVisibility(View.INVISIBLE);
+        } else {
+            adView.getStoreView().setVisibility(View.VISIBLE);
+            ((TextView) adView.getStoreView()).setText(nativeAd.getStore());
+        }
+*/
+        if (nativeAd.getStarRating() == null) {
+            adView.getStarRatingView().setVisibility(View.INVISIBLE);
+        } else {
+            ((RatingBar) adView.getStarRatingView())
+                    .setRating(nativeAd.getStarRating().floatValue());
+            adView.getStarRatingView().setVisibility(View.VISIBLE);
+        }
+
+        if (nativeAd.getAdvertiser() == null) {
+            adView.getAdvertiserView().setVisibility(View.INVISIBLE);
+        } else {
+            ((TextView) adView.getAdvertiserView()).setText(nativeAd.getAdvertiser());
+            adView.getAdvertiserView().setVisibility(View.VISIBLE);
+        }
+
+        // Assign native ad object to the native view.
+        adView.setNativeAd(nativeAd);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if(postAdsDataList.get(position).getType() == 1){
+            return UNIFIED_ADS_VIEW;
+        }else{
+            return POST_VIEW;
+        }
     }
 
     @Override
     public int getItemCount() {
-        if (postList != null) {
+        if (postAdsDataList != null) {
             //Log.d("post SIZE",String.valueOf(post.size()));
-            return postList.size();
+            return postAdsDataList.size();
         } else {
             //Log.d("post SIZE","0");
             return 0;
         }
     }
 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
     public interface PostAdapterListener{
         void onCommentClicked(Post post);
 
         void onShareClicked(Post post);
 
-        void onMoreButtonClicked(Post post);
+        void onMoreButtonClicked(Post post,int position);
     }
 }

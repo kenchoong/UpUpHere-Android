@@ -5,7 +5,7 @@ apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.firebase.firebase-perf'
 
 ext.versionMajor = 1
-ext.versionMinor = 1
+ext.versionMinor = 2
 ext.versionPatch = 1
 ext.versionClassifier = null
 ext.isSnapshot = false
@@ -133,6 +133,8 @@ dependencies {
 
     implementation 'com.github.joielechong:countrycodepicker:2.4.1'
     implementation 'com.bigbangbutton:editcodeview:1.0.6'
+
+    implementation 'com.google.android.gms:play-services-ads:19.1.0'
 
 }
 repositories {
