@@ -23,6 +23,7 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.ads.VideoOptions;
 import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
@@ -32,6 +33,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -175,7 +177,6 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
             }
         });
 
-        initializeAdmobs();
 
         observeProgressBar();
 
@@ -192,13 +193,6 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
         });
     }
 
-    private void initializeAdmobs() {
-        MobileAds.initialize(getActivity(), new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
-        });
-    }
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private void setUpSwipeRefreshLayout() {
@@ -303,7 +297,7 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
                 .setMediaAspectRatio(NATIVE_MEDIA_ASPECT_RATIO_PORTRAIT)
                 .build();
 
-        AdLoader.Builder builder = new AdLoader.Builder(getActivity(), getResources().getString(R.string.admob_test_ads));
+        AdLoader.Builder builder = new AdLoader.Builder(getActivity(), getResources().getString(R.string.admob_post_fragment_native_ads));
         adLoader = builder.forUnifiedNativeAd(
                 new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
                     @Override

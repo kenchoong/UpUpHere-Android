@@ -15,6 +15,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -33,6 +34,10 @@ import upuphere.com.upuphere.repositories.UserRepo;
 import upuphere.com.upuphere.ui.onboarding.AgreementFragment;
 import upuphere.com.upuphere.viewmodel.NotificationViewModel;
 
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
@@ -40,6 +45,8 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -67,7 +74,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         setupNavigation();
 
+        initializeAdmob();
+
         viewModel = new ViewModelProvider(this).get(NotificationViewModel.class);
+    }
+
+    private void initializeAdmob() {
+        if(BuildConfig.DEBUG) {
+            Log.d("NOW IS","DEBUG");
+            List<String> testDeviceIds = Arrays.asList("F06871E55E94CE9D1DBAF1B7AF921A42");
+            RequestConfiguration configuration =
+                    new RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build();
+            MobileAds.setRequestConfiguration(configuration);
+        }
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
     }
 
     private void setupNavigation() {
