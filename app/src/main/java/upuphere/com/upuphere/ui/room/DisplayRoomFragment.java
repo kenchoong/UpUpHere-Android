@@ -284,6 +284,8 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
         postAdapter.setPostAdsDataList(postAdsDataForRecyclerView);
     }
 
+
+
     AdLoader adLoader;
     private List<UnifiedNativeAd> mNativeAds = new ArrayList<>();
     private void loadNativeAds(final List<Post> posts) {
@@ -320,6 +322,8 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
                         // and if so, insert the ads into the list.
                         Log.e("MainActivity", "The previous native ad failed to load. Attempting to"
                                 + " load another.");
+                        displayContent(posts,mNativeAds);
+
                         if (!adLoader.isLoading()) {
                             displayContent(posts,mNativeAds);
                         }

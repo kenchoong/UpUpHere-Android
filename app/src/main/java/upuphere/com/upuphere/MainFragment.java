@@ -266,6 +266,8 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
                         // and if so, insert the ads into the list.
                         Log.e("MainActivity", "The previous native ad failed to load. Attempting to"
                                 + " load another.");
+                        displayContent(rooms,mNativeAds);
+
                         if (!adLoader.isLoading()) {
                             displayContent(rooms,mNativeAds);
                         }
