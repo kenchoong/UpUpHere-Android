@@ -243,7 +243,7 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
                 .setMediaAspectRatio(NATIVE_MEDIA_ASPECT_RATIO_PORTRAIT)
                 .build();
 
-        AdLoader.Builder builder = new AdLoader.Builder(getActivity(), getResources().getString(R.string.admob_test_ads));
+        AdLoader.Builder builder = new AdLoader.Builder(getActivity(), getResources().getString(R.string.admob_room_fragment_native_ads));
         adLoader = builder.forUnifiedNativeAd(
                 new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
                     @Override
