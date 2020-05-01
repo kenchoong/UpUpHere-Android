@@ -196,6 +196,7 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
                     loadNativeAds();
 
                 }else{
+                    mSwipeRreshLayout.setRefreshing(false);
                     binding.roomRecyclerView.setVisibility(View.GONE);
                     binding.emptyStateRoom.setVisibility(View.VISIBLE);
                 }
