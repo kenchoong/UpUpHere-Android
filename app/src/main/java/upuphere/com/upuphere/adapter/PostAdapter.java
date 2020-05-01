@@ -40,6 +40,28 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyItemRangeRemoved(position, postAdsDataList.size());
     }
 
+    public void removeAllAdsInRecyclerView(){
+        List<PostAdsData> shouldRemove = new ArrayList<>();
+        for(PostAdsData postAdsData : postAdsDataList){
+            if(postAdsData.getType() == 1){
+                shouldRemove.add(postAdsData);
+            }
+        }
+
+        postAdsDataList.removeAll(shouldRemove);
+        notifyItemRangeRemoved(0,shouldRemove.size());
+    }
+
+    public void insertAdsToRecyclerView(UnifiedNativeAd ad){
+        PostAdsData adsData = new PostAdsData();
+        adsData.post = null;
+        adsData.ads = ad;
+        adsData.type = 1;
+
+        postAdsDataList.add(0,adsData);
+        notifyItemInserted(0);
+    }
+
     public void removeAllPost(){
         if (postAdsDataList != null) {
             postAdsDataList.clear();

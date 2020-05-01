@@ -66,7 +66,7 @@
     <fragment
         android:id="@+id/commentFragment"
         android:name="upuphere.com.upuphere.ui.CommentFragment"
-        android:label="fragment_comment"
+        android:label="@string/comment"
         tools:layout="@layout/fragment_comment" />
     <fragment
         android:id="@+id/loginFragment"

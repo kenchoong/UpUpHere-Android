@@ -6,7 +6,7 @@ apply plugin: 'com.google.firebase.firebase-perf'
 
 ext.versionMajor = 1
 ext.versionMinor = 2
-ext.versionPatch = 1
+ext.versionPatch = 2
 ext.versionClassifier = null
 ext.isSnapshot = false
 ext.minimumSdkVersion = 21
@@ -66,7 +66,7 @@ android {
                 // Set this flag to 'false' to disable @AddTrace annotation processing and
                 // automatic HTTP/S network request monitoring
                 // for a specific build variant at compile time.
-                instrumentationEnabled true
+                instrumentationEnabled false
             }
         }
     }
@@ -76,7 +76,7 @@ android {
         resolutionStrategy.force "org.antlr:antlr4-tool:4.7.1"
     }
 }
-true
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.2.0-beta01'

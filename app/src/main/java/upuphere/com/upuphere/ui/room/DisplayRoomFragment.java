@@ -244,7 +244,8 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
                         binding.unblockRoomButton.setVisibility(View.GONE);
                         fetchedPost.addAll(posts);
 
-                        loadNativeAds(posts);
+                        displayContent(posts);
+                        loadNativeAds();
                     }else{
                         mSwipeRefreshLayout.setRefreshing(false);
                         binding.emptyStateContainer.setVisibility(View.VISIBLE);
@@ -255,17 +256,10 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
         });
     }
 
-    private List<PostAdsData> mergeData(List<Post>posts, List<UnifiedNativeAd> ads){
+
+    private void displayContent(List<Post> posts){
+        mSwipeRefreshLayout.setRefreshing(false);
         List<PostAdsData> postAdsDataList = new ArrayList<>();
-
-        for(UnifiedNativeAd ad : ads) {
-            PostAdsData data = new PostAdsData();
-            data.ads = ad;
-            data.post = null;
-            data.type = 1;
-            postAdsDataList.add(data);
-        }
-
 
         for(Post item : posts) {
             PostAdsData data = new PostAdsData();
@@ -275,20 +269,14 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
             postAdsDataList.add(data);
         }
 
-        return postAdsDataList;
-    }
-
-    private void displayContent(List<Post> posts,List<UnifiedNativeAd> ads){
-        mSwipeRefreshLayout.setRefreshing(false);
-        List<PostAdsData> postAdsDataForRecyclerView = mergeData(posts,ads);
-        postAdapter.setPostAdsDataList(postAdsDataForRecyclerView);
+        postAdapter.setPostAdsDataList(postAdsDataList);
     }
 
 
 
     AdLoader adLoader;
     private List<UnifiedNativeAd> mNativeAds = new ArrayList<>();
-    private void loadNativeAds(final List<Post> posts) {
+    private void loadNativeAds() {
 
         VideoOptions videoOptions = new VideoOptions.Builder()
                 .setStartMuted(false)
@@ -308,10 +296,9 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
                         // and if so, insert the ads into the list.
 
                         if (!adLoader.isLoading()) {
-                            mNativeAds.clear();
-                            mNativeAds.add(unifiedNativeAd);
-
-                            displayContent(posts,mNativeAds);
+                            postAdapter.removeAllAdsInRecyclerView();
+                            postAdapter.insertAdsToRecyclerView(unifiedNativeAd);
+                            recyclerView.smoothScrollToPosition(0);
                         }
                     }
                 }).withAdListener(
@@ -322,11 +309,7 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
                         // and if so, insert the ads into the list.
                         Log.e("MainActivity", "The previous native ad failed to load. Attempting to"
                                 + " load another.");
-                        displayContent(posts,mNativeAds);
 
-                        if (!adLoader.isLoading()) {
-                            displayContent(posts,mNativeAds);
-                        }
                     }
                 }).withNativeAdOptions(adOptions)
                 .build();
