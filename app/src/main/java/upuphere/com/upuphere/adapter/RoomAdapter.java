@@ -45,6 +45,28 @@ public class RoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyDataSetChanged();
     }
 
+    public void removeAllAdsInRecyclerView(){
+        List<RoomAdsData> shouldRemove = new ArrayList<>();
+        for(RoomAdsData roomAdsData: roomAdsDataList){
+            if(roomAdsData.getType() == 1){
+                shouldRemove.add(roomAdsData);
+            }
+        }
+
+        roomAdsDataList.removeAll(shouldRemove);
+        notifyItemRangeRemoved(0,shouldRemove.size());
+    }
+
+    public void insertAdsToRecyclerView(UnifiedNativeAd ad){
+        RoomAdsData adsData = new RoomAdsData();
+        adsData.rooms = null;
+        adsData.ads = ad;
+        adsData.type = 1;
+
+        roomAdsDataList.add(0,adsData);
+        notifyItemInserted(0);
+    }
+
     public void removeHidedRoom(int position) {
         roomAdsDataList.remove(position);
         notifyItemRemoved(position);

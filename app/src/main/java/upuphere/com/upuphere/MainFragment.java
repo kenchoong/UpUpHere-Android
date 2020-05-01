@@ -192,7 +192,9 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
                     binding.roomRecyclerView.setVisibility(View.VISIBLE);
                     binding.emptyStateRoom.setVisibility(View.GONE);
 
-                    loadNativeAds(rooms);
+                    displayContent(rooms);
+                    loadNativeAds();
+
                 }else{
                     binding.roomRecyclerView.setVisibility(View.GONE);
                     binding.emptyStateRoom.setVisibility(View.VISIBLE);
@@ -201,17 +203,9 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
         });
     }
 
-    private List<RoomAdsData> mergeData(List<AllRooms>rooms, List<UnifiedNativeAd> ads){
+    private void displayContent(List<AllRooms> rooms) {
+        mSwipeRreshLayout.setRefreshing(false);
         List<RoomAdsData> roomAdsDataList = new ArrayList<>();
-
-        for(UnifiedNativeAd ad: ads){
-            RoomAdsData data = new RoomAdsData();
-            data.ads = ad;
-            data.rooms = null;
-            data.type = 1; // 1 for native ads
-
-            roomAdsDataList.add(0,data);
-        }
 
         for(AllRooms room : rooms){
             RoomAdsData data = new RoomAdsData();
@@ -222,18 +216,11 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
             roomAdsDataList.add(data);
         }
 
-        return roomAdsDataList;
-    }
-
-    private void displayContent(List<AllRooms> rooms, List<UnifiedNativeAd> mNativeAds) {
-        mSwipeRreshLayout.setRefreshing(false);
-        List<RoomAdsData> roomAdsDataForRecyclerView = mergeData(rooms,mNativeAds);
-        roomAdapter.setRoomAdsDataList(roomAdsDataForRecyclerView);
+        roomAdapter.setRoomAdsDataList(roomAdsDataList);
     }
 
     AdLoader adLoader;
-    private List<UnifiedNativeAd> mNativeAds = new ArrayList<>();
-    private void loadNativeAds(final List<AllRooms> rooms) {
+    private void loadNativeAds() {
         VideoOptions videoOptions = new VideoOptions.Builder()
                 .setStartMuted(false)
                 .build();
@@ -252,10 +239,9 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
                         // and if so, insert the ads into the list.
 
                         if (!adLoader.isLoading()) {
-                            mNativeAds.clear();
-                            mNativeAds.add(unifiedNativeAd);
-
-                            displayContent(rooms,mNativeAds);
+                            roomAdapter.removeAllAdsInRecyclerView();
+                            roomAdapter.insertAdsToRecyclerView(unifiedNativeAd);
+                            recyclerView.smoothScrollToPosition(0);
                         }
                     }
                 }).withAdListener(
@@ -266,11 +252,7 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
                         // and if so, insert the ads into the list.
                         Log.e("MainActivity", "The previous native ad failed to load. Attempting to"
                                 + " load another.");
-                        displayContent(rooms,mNativeAds);
 
-                        if (!adLoader.isLoading()) {
-                            displayContent(rooms,mNativeAds);
-                        }
                     }
                 }).withNativeAdOptions(adOptions)
                 .build();
