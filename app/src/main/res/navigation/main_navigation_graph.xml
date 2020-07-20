@@ -206,4 +206,9 @@
             android:id="@+id/action_phoneAuthFragment3_to_resetPasswordFragment"
             app:destination="@id/resetPasswordFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/personalFeedFragment"
+        android:name="upuphere.com.upuphere.ui.PersonalFeedFragment"
+        android:label="fragment_personal_feed"
+        tools:layout="@layout/fragment_personal_feed" />
 </navigation>

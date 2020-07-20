@@ -88,7 +88,7 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
         view = binding.getRoot();
         binding.setViewmodel(mainViewModel);
 
-        setHasOptionsMenu(true);
+        //setHasOptionsMenu(true);
         return view;
     }
 

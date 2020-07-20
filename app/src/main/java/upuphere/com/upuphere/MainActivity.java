@@ -40,6 +40,7 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
@@ -95,19 +96,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    BottomNavigationView bottomNavigationView;
     private void setupNavigation() {
 
-        drawerLayout = findViewById(R.id.drawer_layout);
+        //drawerLayout = findViewById(R.id.drawer_layout);
 
-        navigationView = findViewById(R.id.nav_view);
+        //navigationView = findViewById(R.id.nav_view);
+
+        bottomNavigationView = findViewById(R.id.bottom_navigation_view);
 
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
 
-        NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout);
+        //NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout);
 
-        NavigationUI.setupWithNavController(toolbar,navController,drawerLayout);
+        //NavigationUI.setupWithNavController(toolbar,navController,drawerLayout);
 
-        navigationView.setNavigationItemSelectedListener(this);
+        NavigationUI.setupWithNavController(bottomNavigationView,navController);
+
+        //navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
