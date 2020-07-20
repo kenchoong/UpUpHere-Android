@@ -51,6 +51,7 @@ public class SignUpViewModel extends ViewModel {
         void onUsernameValid(Boolean validOrNot);
         void onUsernameTaken(Boolean takenOrNot);
         void onEmailTaken(Boolean takenOrNot);
+        void onSkipSignUp();
     }
 
 
@@ -60,6 +61,10 @@ public class SignUpViewModel extends ViewModel {
 
     public void OnClickCreateAccountButton(View view){
         signUpInterface.onStartSignUp();
+    }
+
+    public void onSkipButtonClicked(View view){
+        signUpInterface.onSkipSignUp();
     }
 
     public void afterUsernameChanged(Editable e){

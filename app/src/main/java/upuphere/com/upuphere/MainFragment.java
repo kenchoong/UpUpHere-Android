@@ -106,12 +106,6 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
         setUpSwipeRefreshLayout();
 
         prefManager = new PrefManager(getActivity());
-        if(!prefManager.isUserAgreeTerm()){
-            NavDirections directions = MainFragmentDirections.actionMainFragmentToWelcomeFragment();
-            NavOptions options = new NavOptions.Builder().setPopUpTo(R.id.mainFragment,true).build();
-            Navigation.findNavController(view).navigate(directions,options);
-
-        }
 
         SharedPreferences sharedPreferences = prefManager.getPref();
         SharedPreferenceBooleanLiveData sharedPreferenceBooleanLiveData = new SharedPreferenceBooleanLiveData(sharedPreferences, PrefManager.IS_LOGGED_IN, false);
@@ -121,9 +115,19 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
             public void onChanged(Boolean isLoggedIn) {
                 Log.d("LOGIN 2", String.valueOf(isLoggedIn));
                 if (!isLoggedIn) {
-                    NavController navController = Navigation.findNavController(view);
-                    navController.popBackStack(R.id.mainFragment,true);
-                    navController.navigate(R.id.loginFragment);
+                    if(!prefManager.isSkipSignedUp()) {
+                        NavController navController = Navigation.findNavController(view);
+                        navController.popBackStack(R.id.mainFragment, true);
+                        navController.navigate(R.id.signUpFragment);
+                    }else{
+                        mSwipeRreshLayout.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mSwipeRreshLayout.setRefreshing(true);
+                                getRoomList();
+                            }
+                        });
+                    }
                 }else{
                     mSwipeRreshLayout.post(new Runnable() {
                         @Override

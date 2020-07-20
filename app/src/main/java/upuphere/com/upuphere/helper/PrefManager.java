@@ -19,6 +19,7 @@ public class PrefManager {
     private static final String IS_USER_AGREED_TERM = "UserAgreedTerm";
 
     public static final String IS_LOGGED_IN = "IsLoggedIn";
+    public static final String IS_SKIP_SIGNED_UP = "IsSkipSignUp";
 
     private static final String USER_ID= "user_id";
     private static final String USERNAME = "username";
@@ -56,6 +57,15 @@ public class PrefManager {
 
     public boolean isLoggedIn(){
         return pref.getBoolean(IS_LOGGED_IN,false);
+    }
+
+    public boolean isSkipSignedUp(){
+        return pref.getBoolean(IS_SKIP_SIGNED_UP,false);
+    }
+
+    public void setIsSkipSignedUp(boolean isSkipSignedUp){
+        editor.putBoolean(IS_SKIP_SIGNED_UP,isSkipSignedUp);
+        editor.commit();
     }
 
     public void setUserAccessToken(String accessToken){

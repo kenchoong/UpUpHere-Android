@@ -11,21 +11,27 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
 import android.text.TextUtils;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.R;
@@ -34,7 +40,10 @@ import upuphere.com.upuphere.databinding.FragmentSignUpBinding;
 import upuphere.com.upuphere.helper.KeyboardHelper;
 import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.helper.SharedPreferenceBooleanLiveData;
+import upuphere.com.upuphere.helper.SpannableStringHelper;
 import upuphere.com.upuphere.repositories.UserRepo;
+import upuphere.com.upuphere.ui.onboarding.AgreementFragment;
+import upuphere.com.upuphere.ui.onboarding.WelcomeFragmentDirections;
 import upuphere.com.upuphere.viewmodel.LoginViewModel;
 import upuphere.com.upuphere.viewmodel.SignUpViewModel;
 
@@ -64,7 +73,50 @@ public class SignUpFragment extends Fragment implements SignUpViewModel.SignUpIn
 
         rootView = binding.getRoot();
         binding.setViewModel(signUpViewModel);
+
+        createSpannableTextViewAndButton();
+        makeLinks();
+
         return rootView;
+    }
+
+    private void makeLinks() {
+        List<String> stringToClick = new ArrayList<>();
+        stringToClick.add(getResources().getString(R.string.term_of_use));
+        stringToClick.add(getResources().getString(R.string.privacy_policy));
+
+        ClickableSpan goToTerms = new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View widget) {
+                Bundle bundle = new Bundle();
+                bundle.putInt("agreementType", AgreementFragment.TERM_OF_USE);
+                Navigation.findNavController(rootView).navigate(R.id.agreementFragment, bundle);
+            }
+        };
+
+        ClickableSpan goToPrivacyPolicy = new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View widget) {
+                Bundle bundle = new Bundle();
+                bundle.putInt("agreementType", AgreementFragment.PRIVACY_POLICY);
+                Navigation.findNavController(rootView).navigate(R.id.agreementFragment, bundle);
+            }
+        };
+
+        List<ClickableSpan>clickableActions = new ArrayList<>();
+        clickableActions.add(goToTerms);
+        clickableActions.add(goToPrivacyPolicy);
+
+        SpannableStringHelper.makeLinks(binding.termAndPrivacyPolicy, getResources().getString(R.string.term_and_policy),  stringToClick, clickableActions);
+    }
+
+    private void createSpannableTextViewAndButton() {
+        SpannableStringHelper.createSpannableTextButton(binding.redirectLoginText, getResources().getString(R.string.redirect_sign_in), "Login", new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View widget) {
+                Toast.makeText(getActivity(),"Login",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -78,7 +130,7 @@ public class SignUpFragment extends Fragment implements SignUpViewModel.SignUpIn
         observeSignUpStatus();
 
         phoneNumber = Objects.requireNonNull(getArguments()).getString("phone_number");
-        Log.d("PHONE_NUMBER", Objects.requireNonNull(phoneNumber));
+        //Log.d("PHONE_NUMBER", Objects.requireNonNull(phoneNumber));
 
         prefManager = new PrefManager(getActivity());
 
@@ -143,6 +195,14 @@ public class SignUpFragment extends Fragment implements SignUpViewModel.SignUpIn
     @Override
     public void onBackToLogin() {
         Navigation.findNavController(rootView).navigate(R.id.loginFragment);
+    }
+
+    @Override
+    public void onSkipSignUp() {
+        prefManager.setIsSkipSignedUp(true);
+        NavController navController = Navigation.findNavController(rootView);
+        navController.popBackStack(R.id.signUpFragment, true);
+        navController.navigate(R.id.mainFragment);
     }
 
     PrefManager prefManager;

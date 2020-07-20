@@ -12,6 +12,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
 import android.text.TextUtils;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Objects;
 
@@ -35,6 +37,7 @@ import upuphere.com.upuphere.helper.SharedPreferenceBooleanLiveData;
 import upuphere.com.upuphere.databinding.FragmentLoginBinding;
 import upuphere.com.upuphere.helper.PrefManager;
 
+import upuphere.com.upuphere.helper.SpannableStringHelper;
 import upuphere.com.upuphere.viewmodel.LoginViewModel;
 
 
@@ -68,7 +71,17 @@ public class LoginFragment extends Fragment implements LoginViewModel.LoginInter
         rootView = binding.getRoot();
 
         binding.setLoginViewModel(viewModel);
+        createSpannableTextViewAndButton();
         return rootView;
+    }
+
+    private void createSpannableTextViewAndButton() {
+        SpannableStringHelper.createSpannableTextButton(binding.redirectText, getResources().getString(R.string.direct_to_sign_up), "Sign Up", new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View widget) {
+                Toast.makeText(getActivity(),"Login",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -187,8 +200,8 @@ public class LoginFragment extends Fragment implements LoginViewModel.LoginInter
 
     @Override
     public void onRegisterClick() {
-        NavDirections directions = LoginFragmentDirections.actionLoginFragmentToPhoneAuthFragment3(PhoneAuthFragment3.FROM_LOGIN_FRAGMENT);
-        Navigation.findNavController(rootView).navigate(directions);
+        //NavDirections directions = LoginFragmentDirections.actionLoginFragmentToPhoneAuthFragment3(PhoneAuthFragment3.FROM_LOGIN_FRAGMENT);
+        Navigation.findNavController(rootView).navigate(R.id.signUpFragment);
     }
 
     @Override

@@ -5,7 +5,7 @@
     <string name="login_hint">Email or Username</string>
     <string name="password_hint">Enter your password</string>
     <string name="login_button_text">Login</string>
-    <string name="direct_to_sign_up">Don\'t have account? Create one for Free</string>
+    <string name="direct_to_sign_up">Don\'t have account? Sign Up</string>
 
     <string name="phone_number_hint">Enter your Phone Number</string>
     <string name="OTP_hint">Enter 6-digit number</string>
@@ -13,12 +13,22 @@
     <string name="verify_button">Verify</string>
     <string name="resend_button">Resend</string>
 
+    <string name="sign_up_title">Sign up</string>
+    <string name="sign_up_instruction">Create an account to join the community</string>
+    <string name="login_title">Welcome back!</string>
+    <string name="login_instruction">Sign in to your account</string>
+
     <string name="set_email_hint">Set your email</string>
     <string name="set_username_hint">Choose Username</string>
     <string name="set_password_hint">Set your password</string>
     <string name="reenter_password_hint">Re-Enter your password</string>
     <string name="create_account_text">Create Account</string>
-    <string name="redirect_sign_in">Have an account? Login</string>
+    <string name="redirect_sign_in">Already have an account?   Login</string>
+    <string name="skip_for_now">Skip</string>
+    <string name="sign_up_term">By signing up,you agree to our</string>
+    <string name="term_and_policy">Terms of Use and Privacy Policy</string>
+    <string name="term_of_use">Terms of Use</string>
+    <string name="privacy_policy">Privacy Policy</string>
 
     <string name="logut_button_text">Logout</string>
 
@@ -137,8 +147,6 @@
     <string name="undo">Undo</string>
 
     <string name="welcome_text">Tap \"Agree and continue\" to use UpUpHere</string>
-    <string name="term_of_use">Terms of use</string>
-    <string name="privacy_policy">Privacy Policy</string>
     <string name="agree_continue">Agree &amp; Continue</string>
 
     <string name="unable_to_process_now">Unable to sign up now.Please try again later. If this keep happening,please screenshot this and send to feedback@upuphere.com</string>
