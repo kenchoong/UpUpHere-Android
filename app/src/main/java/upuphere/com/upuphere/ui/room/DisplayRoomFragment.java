@@ -115,8 +115,8 @@ public class DisplayRoomFragment extends Fragment implements PostAdapter.PostAda
         viewModel.setDisplayRoomInterface(new DisplayRoomViewModel.DisplayRoomInterface() {
             @Override
             public void onFabClick() {
-                NavDirections action = DisplayRoomFragmentDirections.actionRoomFragmentToCreatePostFragment(roomId);
-                Navigation.findNavController(view).navigate(action);
+                //NavDirections action = DisplayRoomFragmentDirections.actionRoomFragmentToCreatePostFragment(roomId);
+                Navigation.findNavController(view).navigate(R.id.create_post);
             }
 
             @Override

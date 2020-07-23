@@ -1,6 +1,7 @@
 package upuphere.com.upuphere;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuCompat;
@@ -9,6 +10,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 
@@ -19,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 
 import androidx.appcompat.widget.Toolbar;
@@ -114,6 +117,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationUI.setupWithNavController(bottomNavigationView,navController);
 
         //navigationView.setNavigationItemSelectedListener(this);
+
+        navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
+            @Override
+            public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
+                if(destination.getId() == R.id.mainFragment || destination.getId() == R.id.personalFeedFragment ||
+                        destination.getId() == R.id.notificationFragment || destination.getId() == R.id.profileFragment){
+                    bottomNavigationView.setVisibility(View.VISIBLE);
+                }else {
+                    bottomNavigationView.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     @Override
@@ -123,11 +138,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
+        /*
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
+
+         */
     }
 
     @Override
