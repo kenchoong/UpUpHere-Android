@@ -116,6 +116,8 @@ dependencies {
     //permission
     implementation 'com.master.android:permissionhelper:2.1'
 
+    implementation 'pub.devrel:easypermissions:3.0.0'
+
     // room
     def room_version = "2.2.5"
     implementation "androidx.room:room-runtime:$room_version"

@@ -37,7 +37,11 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:background="@color/grey"
-            app:menu="@menu/bottom_navigation_menu" />
+            android:elevation="4dp"
+            app:itemIconTint="@color/bottom_nav_color"
+            app:itemTextColor="@color/bottom_nav_color"
+            app:menu="@menu/bottom_navigation_menu"
+            app:labelVisibilityMode="unlabeled"/>
 
     </RelativeLayout>
 

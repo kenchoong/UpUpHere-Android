@@ -90,12 +90,12 @@
     <fragment
         android:id="@+id/profileFragment"
         android:name="upuphere.com.upuphere.ProfileFragment"
-        android:label="fragment_profile"
+        android:label="Profile"
         tools:layout="@layout/fragment_profile" />
     <fragment
         android:id="@+id/createPostFragment"
         android:name="upuphere.com.upuphere.ui.room.CreatePostFragment"
-        android:label="Share your thought"
+        android:label="New Post"
         tools:layout="@layout/fragment_create_post">
         <action
             android:id="@+id/action_createPostFragment_to_displayPhotoFragment"
@@ -104,9 +104,9 @@
             app:exitAnim="@anim/fui_slide_out_left" />
         <argument
             android:name="roomId"
+            android:defaultValue="null"
             app:argType="string"
-            app:nullable="true"
-            android:defaultValue="null" />
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/displayPhotoFragment"
@@ -128,6 +128,9 @@
             android:name="phone_number"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_signUpFragment_to_onboardingFragment"
+            app:destination="@id/onboardingFragment" />
     </fragment>
     <fragment
         android:id="@+id/forgotPasswordFragment"
@@ -196,11 +199,11 @@
     <fragment
         android:id="@+id/phoneAuthFragment3"
         android:name="upuphere.com.upuphere.ui.user.PhoneAuthFragment3"
-        android:label="PhoneAuthFragment3" >
+        android:label="PhoneAuthFragment3"
+        tools:layout="@layout/fragment_phone_auth3">
         <argument
             android:name="previousFragmentCode"
-            app:argType="integer"
-            app:nullable="false" />
+            app:argType="integer" />
         <action
             android:id="@+id/action_phoneAuthFragment3_to_signUpFragment"
             app:destination="@id/signUpFragment" />
@@ -211,6 +214,57 @@
     <fragment
         android:id="@+id/personalFeedFragment"
         android:name="upuphere.com.upuphere.ui.PersonalFeedFragment"
-        android:label="fragment_personal_feed"
+        android:label="Feed"
         tools:layout="@layout/fragment_personal_feed" />
+    <fragment
+        android:id="@+id/onboardingFragment"
+        android:name="upuphere.com.upuphere.ui.onboardquestion.OnboardingFragment"
+        android:label="fragment_onboarding"
+        tools:layout="@layout/fragment_onboarding" >
+        <action
+            android:id="@+id/action_onboardingFragment_to_genderFragment"
+            app:destination="@id/genderFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/genderFragment"
+        android:name="upuphere.com.upuphere.ui.onboardquestion.GenderFragment"
+        android:label="fragment_gender"
+        tools:layout="@layout/fragment_gender" >
+        <action
+            android:id="@+id/action_genderFragment_to_dobFragment"
+            app:destination="@id/dobFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/dobFragment"
+        android:name="upuphere.com.upuphere.ui.onboardquestion.DobFragment"
+        android:label="fragment_dob"
+        tools:layout="@layout/fragment_dob" >
+        <action
+            android:id="@+id/action_dobFragment_to_preferencesFragment"
+            app:destination="@id/preferencesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/preferencesFragment"
+        android:name="upuphere.com.upuphere.ui.onboardquestion.PreferencesFragment"
+        android:label="fragment_preferences"
+        tools:layout="@layout/fragment_preferences" />
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="upuphere.com.upuphere.ui.SearchFragment"
+        tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/selectPhotoFragment"
+        android:name="upuphere.com.upuphere.ui.SelectPhotoFragment"
+        android:label="fragment_select_photo"
+        tools:layout="@layout/fragment_select_photo" />
+    <fragment
+        android:id="@+id/onBoardingFragment"
+        android:name="upuphere.com.upuphere.ui.onboardquestion.OnBoardingFragment"
+        android:label="fragment_onboarding"
+        tools:layout="@layout/fragment_onboarding" />
+    <fragment
+        android:id="@+id/exploreGroupFragment"
+        android:name="upuphere.com.upuphere.ui.ExploreGroupFragment"
+        android:label="fragment_explore_group"
+        tools:layout="@layout/fragment_explore_group" />
 </navigation>

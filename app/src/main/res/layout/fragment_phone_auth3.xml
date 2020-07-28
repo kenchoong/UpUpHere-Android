@@ -28,9 +28,8 @@
                 android:id="@+id/textView5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/verify_phone_number"
-                android:textAlignment="center"
-                android:textSize="18sp"
+                android:text="@string/verify_phone_number_button"
+                android:textSize="24dp"
                 android:textStyle="bold" />
 
             <TextView
@@ -39,7 +38,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="@string/verify_phone_number_reason"
-                android:textAlignment="center" />
+                android:textAlignment="textStart"
+                android:textSize="18sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -64,12 +64,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
+                    android:afterTextChanged="@{viewModel::afterPhoneNumberChanged}"
                     android:hint="@string/phone"
+                    android:imeOptions="actionDone"
                     android:importantForAutofill="no"
                     android:inputType="phone"
-                    android:imeOptions="actionDone"
-                    android:text="@={viewModel.phoneNumber}"
-                    android:afterTextChanged="@{viewModel::afterPhoneNumberChanged}"/>
+                    android:text="@={viewModel.phoneNumber}" />
             </LinearLayout>
 
             <TextView
@@ -90,11 +90,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:background="@color/colorPrimaryDark"
+                android:background="@drawable/pill_background"
                 android:onClick="@{viewModel::onVerifyButtonClicked}"
-                android:text="@string/verify_phone_number_button"
+                android:text="@string/verify_button"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                android:textColor="@color/background_color" />
+                android:textColor="@color/secondaryTextColor" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
@@ -120,9 +120,9 @@
                 android:id="@+id/textView6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/verify_phone_number_button"
+                android:text="@string/otp_verification"
                 android:textAlignment="center"
-                android:textSize="18sp"
+                android:textSize="24dp"
                 android:textStyle="bold" />
 
             <TextView
@@ -131,6 +131,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="@string/six_digit_code"
+                android:textAlignment="center"
                 android:textColor="@color/secondaryTextColor"
                 android:textSize="18sp" />
 
@@ -139,6 +140,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:textAlignment="center"
                 android:textColor="@color/redirect_color"
                 android:textStyle="bold" />
 
@@ -163,10 +165,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:alpha="0.5"
-                android:background="@color/colorPrimaryDark"
+                android:background="@drawable/pill_background"
                 android:enabled="false"
                 android:text="@string/verify_button"
-                android:textColor="@color/background_color" />
+                android:textAllCaps="false"
+                android:textColor="@color/secondaryTextColor" />
 
             <TextView
                 android:id="@+id/verificationStatus"
@@ -174,17 +177,25 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:textAlignment="center"
-                tools:visibility="gone" />
+                tools:visibility="visible" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/didnt_receive_code"
+                android:textAlignment="center" />
 
             <Button
                 android:id="@+id/resendButton"
                 style="@style/FirebaseUI.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:background="@null"
                 android:enabled="false"
-                android:text="@string/resend" />
+                android:text="@string/resend"
+                android:textAllCaps="false" />
         </LinearLayout>
 
 

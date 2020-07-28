@@ -116,6 +116,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
+                android:background="@null"
                 android:fontFamily="@font/open_sans"
                 android:onClick="@{loginViewModel::onForgotPassword}"
                 android:text="@string/forgot_password"
@@ -126,9 +127,11 @@
 
             <Button
                 android:id="@+id/redirectText"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+                style="@style/Widget.AppCompat.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@null"
+                android:textAllCaps="false"
                 android:fontFamily="@font/open_sans"
                 android:onClick="@{loginViewModel::onRedirectTextClick}"
                 android:text="@string/direct_to_sign_up"

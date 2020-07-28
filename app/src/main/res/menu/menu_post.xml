@@ -4,5 +4,7 @@
 
     <item android:title="@string/post"
         android:id="@+id/create_post"
+        app:actionLayout="@layout/button_layout"
         app:showAsAction="always"/>
+
 </menu>

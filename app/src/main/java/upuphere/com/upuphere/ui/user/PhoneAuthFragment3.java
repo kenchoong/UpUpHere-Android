@@ -228,7 +228,8 @@ public class PhoneAuthFragment3 extends Fragment implements PhoneAuthViewModel3.
 
     private void proceedToNextStep(String phoneNumberString,int previousFragmentCode) {
         stopTimer();
-
+        Navigation.findNavController(rootView).navigateUp();
+/*
         Bundle args = new Bundle();
         args.putString("phone_number", phoneNumberString);
         NavOptions options = new
@@ -242,6 +243,8 @@ public class PhoneAuthFragment3 extends Fragment implements PhoneAuthViewModel3.
                 Navigation.findNavController(rootView).navigate(R.id.resetPasswordFragment,args,options);
                 break;
         }
+
+ */
     }
 
     private void sendVerificationCode(){
@@ -257,6 +260,8 @@ public class PhoneAuthFragment3 extends Fragment implements PhoneAuthViewModel3.
         viewModel.phoneNumberExisted.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean isExisted) {
+                sendVerificationCode();
+                /*
                 switch (previousFragmentCode){
                     case FROM_LOGIN_FRAGMENT:
                         if(isExisted){
@@ -286,6 +291,8 @@ public class PhoneAuthFragment3 extends Fragment implements PhoneAuthViewModel3.
                         }
                         break;
                 }
+
+                 */
             }
         });
     }
@@ -309,7 +316,7 @@ public class PhoneAuthFragment3 extends Fragment implements PhoneAuthViewModel3.
                 binding.resendButton.setText("Resend at " + (remainedSecs % 60) + " seconds");
             }
             public void onFinish() {
-                binding.resendButton.setText("Resend");
+                binding.resendButton.setText(getResources().getString(R.string.resend));
                 binding.resendButton.setEnabled(true);
                 binding.resendButton.setTextColor(getResources().getColor(R.color.redirect_color));
                 binding.resendButton.setOnClickListener(new View.OnClickListener() {

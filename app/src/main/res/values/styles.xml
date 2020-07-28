@@ -3,14 +3,44 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/grey</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/secondaryTextColor</item>
+        <item name="android:textColorSecondary">@color/secondaryTextColor</item>
+        <item name="toolbarStyle">@style/CustomToolBarStyle</item>
+        <item name="drawerArrowStyle">@style/DrawerIconStyle</item>
+        <item name="searchViewStyle">@style/SearchViewStyle</item>
+        <item name="colorControlNormal">@color/secondaryTextColor</item>
+        <item name="android:elevation">10dp</item>
     </style>
+
+    <style name="CustomToolBarStyle" parent="@style/Widget.AppCompat.Toolbar">
+        <item name="titleTextColor">@color/secondaryTextColor</item>
+
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="DrawerIconStyle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="color">@color/secondaryTextColor</item>
+    </style>
+
+    <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView.ActionBar">
+        <item name="editTextColor">#000000</item>
+        <item name="android:searchIcon">@drawable/ic_search</item>
+        <item name="android:colorControlNormal">@color/secondaryTextColor</item>
+    </style>
+
 
     <style name="AppThemeNoActionBar" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="WhiteActionBarWithBoxShadow" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/grey</item>
+        <item name="android:background">@color/grey</item>
+        <item name="android:elevation">4dp</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

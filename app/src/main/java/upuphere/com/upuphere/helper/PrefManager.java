@@ -20,6 +20,7 @@ public class PrefManager {
 
     public static final String IS_LOGGED_IN = "IsLoggedIn";
     public static final String IS_SKIP_SIGNED_UP = "IsSkipSignUp";
+    public static final String IS_PHONE_VERIFIED = "IsPhoneVerified";
 
     private static final String USER_ID= "user_id";
     private static final String USERNAME = "username";
@@ -65,6 +66,15 @@ public class PrefManager {
 
     public void setIsSkipSignedUp(boolean isSkipSignedUp){
         editor.putBoolean(IS_SKIP_SIGNED_UP,isSkipSignedUp);
+        editor.commit();
+    }
+
+    public boolean isPhoneVerified(){
+        return pref.getBoolean(IS_PHONE_VERIFIED,false);
+    }
+
+    public void setIsPhoneVerified(boolean isPhoneVerified){
+        editor.putBoolean(IS_PHONE_VERIFIED,isPhoneVerified);
         editor.commit();
     }
 

@@ -238,7 +238,7 @@ public class SignUpFragment extends Fragment implements SignUpViewModel.SignUpIn
                 if(isLoggedIn){
                     NavController navController = Navigation.findNavController(rootView);
                     navController.popBackStack(R.id.signUpFragment,true);
-                    navController.navigate(R.id.mainFragment);
+                    navController.navigate(R.id.onboardingFragment);
                 }
             }
         });

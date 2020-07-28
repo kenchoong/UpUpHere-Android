@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/nameCardOption"
+        android:icon="@drawable/ic_name_card"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/moreSettingOption"
+        android:icon="@drawable/ic_menu"
+        android:title="@string/more_content_description"
+        app:showAsAction="always" />
+</menu>

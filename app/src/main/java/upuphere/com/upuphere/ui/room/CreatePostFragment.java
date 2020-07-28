@@ -11,6 +11,8 @@ import android.os.Bundle;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
@@ -26,12 +28,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.master.permissionhelper.PermissionHelper;
 
 import java.io.IOException;
+import java.security.Key;
 import java.util.Objects;
 
 import androidx.lifecycle.Observer;
@@ -46,9 +51,12 @@ import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.databinding.FragmentCreatePostBinding;
 import upuphere.com.upuphere.fragment.DisplayPhotoFragment;
 import upuphere.com.upuphere.fragment.PhotoBottomSheetDialogFragment;
+import upuphere.com.upuphere.fragment.SignUpBottomSheet;
 import upuphere.com.upuphere.helper.DecodeToken;
 import upuphere.com.upuphere.helper.KeyboardHelper;
+import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.repositories.PostRepo;
+import upuphere.com.upuphere.ui.onboarding.AgreementFragment;
 import upuphere.com.upuphere.viewmodel.CreatePostViewModel;
 import upuphere.com.upuphere.viewmodel.CreateRoomViewModel;
 
@@ -72,6 +80,7 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
     String roomId;
 
     MenuItem create;
+    PrefManager prefManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,6 +91,23 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
         rootView = binding.getRoot();
         binding.setViewmodel(viewModel);
         setHasOptionsMenu(true);
+
+        prefManager = new PrefManager(getActivity());
+
+        // todo:: clean this code in a function
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        KeyboardHelper.showKeyboard(getActivity());
+        Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        /*
+        binding.toolbar.setNavigationIcon(R.drawable.ic_back_arrow);
+        binding.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(rootView).navigateUp();
+            }
+        });
+        */
+
         return rootView;
     }
 
@@ -94,20 +120,9 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
 
         roomId = CreatePostFragmentArgs.fromBundle(getArguments()).getRoomId();
 
-        viewModel.getSelectedPhoto().observe(getViewLifecycleOwner(), new Observer<Bitmap>() {
-            @Override
-            public void onChanged(Bitmap bitmap) {
-                if(bitmap != null) {
-                    selectedPhoto = bitmap;
-                    binding.chooseImageButton.setVisibility(View.GONE);
-                    binding.chosenImageShown.setVisibility(View.VISIBLE);
-                    Glide.with(getActivity()).load(bitmap).into(binding.chosenImageShown);
-                }else{
-                    binding.chosenImageShown.setVisibility(View.GONE);
-                    binding.chooseImageButton.setVisibility(View.VISIBLE);
-                }
-            }
-        });
+
+
+
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
@@ -124,6 +139,7 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
 
     private static final int CAMERA_PROCESS = 100;
     private static final int GALLERY_PROCESS = 200;
+    private static final int LOCATION_PROCESS = 300;
 
     private void requestPermission(String[] permissionString, final int requestCode){
         PermissionHelper permissionHelper = new PermissionHelper(this, permissionString, requestCode);
@@ -140,6 +156,10 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
                     case GALLERY_PROCESS:
                         Log.d("PHOTO"," CHOOSE PHOTO PERMISSION OK");
                         choosePhotoFromGallery();
+                        break;
+                    case LOCATION_PROCESS:
+                        Log.d("LOCATION", "Permission granted");
+                        //todo :: get the name of the location he in
                         break;
                 }
             }
@@ -171,15 +191,39 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
         startActivityForResult(intent, CAMERA_PROCESS);
     }
 
+    Button postButton;
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        /*
         inflater.inflate(R.menu.menu_post,menu);
         create = menu.findItem(R.id.create_post);
 
         initializeProgressBar();
         super.onCreateOptionsMenu(menu, inflater);
-    }
+         */
+        //MenuInflater menuInflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_post, menu);
 
+        MenuItem getItem = menu.findItem(R.id.create_post);
+        if (getItem != null) {
+
+            postButton = (Button) getItem.getActionView();
+            disablePostButton();
+            postButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("CREATE POST", "Create post clicked");
+                    Log.d("Status String", viewModel.statusText.getValue() );
+                    //createPostToServer();
+                    viewModel.postInterface.onPostButtonClicked();
+                }
+            });
+
+        }
+        observeStatus();
+        obServerPhoto();
+    }
+/*
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if(item.getItemId() == R.id.create_post){
@@ -203,7 +247,7 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
 
         return super.onOptionsItemSelected(item);
     }
-
+*/
     Bitmap photo = null;
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -261,7 +305,98 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
         photoBottomSheetDialogFragment.show(Objects.requireNonNull(getFragmentManager()),PhotoBottomSheetDialogFragment.TAG);
     }
 
+    @Override
+    public void onLocationClicked() {
+        requestPermission(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},LOCATION_PROCESS);
+    }
 
+    private void enablePostButton(){
+        postButton.setEnabled(true);
+        postButton.setBackground(getResources().getDrawable(R.drawable.pill_background));
+    }
+
+    private void disablePostButton(){
+        postButton.setEnabled(false);
+        postButton.setBackgroundColor(getResources().getColor(R.color.secondaryTextColor));
+    }
+
+    @Override
+    public void onPostButtonClicked() {
+
+        if(!prefManager.isLoggedIn()){
+            hideKeyBoard();
+            showSignUpBottomSheet();
+        }else{
+            if(!prefManager.isPhoneVerified()){
+                Bundle bundle = new Bundle();
+                bundle.putInt("previousFragmentCode",0);
+                Navigation.findNavController(rootView).navigate(R.id.phoneAuthFragment3,bundle);
+            }else{
+                createPost();
+            }
+        }
+    }
+
+    @Override
+    public void onStatusTextInserted() {
+        if(TextUtils.isEmpty(binding.statusField.getText().toString())){
+            disablePostButton();
+        }
+        enablePostButton();
+    }
+
+    private void createPost(){
+        DecodeToken decodeToken = DecodeToken.newInstance();
+        decodeToken.setOnTokenListener(new DecodeToken.onTokenListener() {
+            @Override
+            public void onTokenValid() {
+                Toast.makeText(getActivity(),"EVERYTHING IS OK",Toast.LENGTH_LONG).show();
+
+                createPostToServer();
+            }
+
+            @Override
+            public void onTokenAllInvalid() {
+
+            }
+        });
+
+        decodeToken.checkAccessTokenRefreshTokenIfExpired(getActivity());
+    }
+
+    private void showSignUpBottomSheet(){
+        final SignUpBottomSheet signUpBottomSheet = SignUpBottomSheet.newInstance();
+        signUpBottomSheet.setOnSignUpSheetInterface(new SignUpBottomSheet.OnSignUpSheetInterface() {
+            @Override
+            public void onCreateButtonClicked() {
+                signUpBottomSheet.dismiss();
+                Navigation.findNavController(rootView).navigate(R.id.signUpFragment);
+            }
+
+            @Override
+            public void onTermClicked() {
+                signUpBottomSheet.dismiss();
+                Bundle bundle = new Bundle();
+                bundle.putInt("agreementType", AgreementFragment.TERM_OF_USE);
+                Navigation.findNavController(rootView).navigate(R.id.agreementFragment, bundle);
+            }
+
+            @Override
+            public void onLoginClicked() {
+                signUpBottomSheet.dismiss();
+                Navigation.findNavController(rootView).navigate(R.id.loginFragment);
+            }
+
+            @Override
+            public void onPrivacyClicked() {
+                signUpBottomSheet.dismiss();
+                Bundle bundle = new Bundle();
+                bundle.putInt("agreementType", AgreementFragment.PRIVACY_POLICY);
+                Navigation.findNavController(rootView).navigate(R.id.agreementFragment, bundle);
+            }
+        });
+        signUpBottomSheet.show(getActivity().getSupportFragmentManager(), SignUpBottomSheet.TAG);
+    }
 
     @Override
     public void onChosenImageClick() {
@@ -271,7 +406,9 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
 
     @Override
     public void onChooseImage() {
-        showBottomSheet();
+        hideKeyBoard();
+        //showBottomSheet();
+        Navigation.findNavController(rootView).navigate(R.id.selectPhotoFragment);
     }
 
     private boolean isLoadingNow = false;
@@ -307,10 +444,10 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
         if(binding.chosenImageShown.getVisibility() == View.VISIBLE){
             binding.chosenImageShown.setClickable(true);
         }
-
+/*
         if(binding.chooseImageButton.getVisibility() == View.VISIBLE){
             binding.chooseImageButton.setClickable(true);
-        }
+        }*/
     }
 
     private void disableAllUI() {
@@ -318,10 +455,10 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
         if(binding.chosenImageShown.getVisibility() == View.VISIBLE){
             binding.chosenImageShown.setClickable(false);
         }
-
+/*
         if(binding.chooseImageButton.getVisibility() == View.VISIBLE){
             binding.chooseImageButton.setClickable(false);
-        }
+        }*/
     }
 
     private void disableMenuItem(MenuItem menuItem) {
@@ -339,11 +476,45 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
         s.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.background_color)), 0, s.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE); // provide whatever color you want here.
         menuItem.setTitle(s);
     }
+    private void observeStatus(){
+        viewModel.statusText.observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String status) {
+                if(TextUtils.isEmpty(status)){
+                    disablePostButton();
+                }else{
+                    enablePostButton();
+                }
+            }
+        });
+    }
+
+    private void obServerPhoto(){
+        viewModel.getSelectedPhoto().observe(getViewLifecycleOwner(), new Observer<Bitmap>() {
+            @Override
+            public void onChanged(Bitmap bitmap) {
+                if(bitmap != null) {
+                    selectedPhoto = bitmap;
+                    //binding.chooseImageButton.setVisibility(View.GONE);
+                    binding.chosenImageShown.setVisibility(View.VISIBLE);
+                    Glide.with(getActivity()).load(bitmap).into(binding.chosenImageShown);
+                    enablePostButton();
+                }else{
+                    binding.chosenImageShown.setVisibility(View.GONE);
+                    //binding.chooseImageButton.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
 
     private void createPostToServer() {
-
+        if(viewModel.statusText.getValue().equals("")){
+            Log.d("status string 123", "no value");
+        }
+        Log.d("status string 123", viewModel.statusText.getValue());
+        Log.d("photo string 123", String.valueOf(photo));
         //todo:: MAKE API call
-        viewModel.createPost(roomId, viewModel.statusText, photo, AppConfig.MEDIA_IS_PHOTO,
+        viewModel.createPost(roomId, viewModel.statusText.getValue() , photo, AppConfig.MEDIA_IS_PHOTO,
                 new StringCallBack() {
                     @Override
                     public void success(String item) {
@@ -365,6 +536,12 @@ public class CreatePostFragment extends Fragment implements CreatePostViewModel.
     public void onStop() {
         super.onStop();
         clearState();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
     }
 
     private void hideKeyBoard(){

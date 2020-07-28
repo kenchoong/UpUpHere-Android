@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:text="@string/sign_up_to_create_post" />
+
+    <Button
+        android:id="@+id/signUpButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="20dp"
+        android:fontFamily="@font/open_sans"
+        android:textAllCaps="false"
+        android:background="@drawable/pill_background"
+        android:text="@string/create_account_text" />
+
+    <TextView
+        android:id="@+id/redirect_login_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:textSize="16dp"
+        android:text="@string/redirect_sign_in"
+        android:layout_marginBottom="10dp"/>
+
+    <TextView
+        android:id="@+id/termOfUse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:textSize="14dp"
+        android:layout_marginBottom="5dp"
+        android:text="@string/sign_up_term" />
+
+    <TextView
+        android:id="@+id/termAndPrivacyPolicy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:textSize="14dp"
+        android:text="@string/term_and_policy"
+        android:layout_marginBottom="20dp"/>
+
+</LinearLayout>

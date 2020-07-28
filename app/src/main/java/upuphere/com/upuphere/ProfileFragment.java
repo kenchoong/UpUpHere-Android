@@ -3,12 +3,17 @@ package upuphere.com.upuphere;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -17,6 +22,7 @@ import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.helper.DecodeToken;
 import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.repositories.UserRepo;
+import upuphere.com.upuphere.ui.onboarding.AgreementFragment;
 
 
 /**
@@ -36,6 +42,15 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         view =  inflater.inflate(R.layout.fragment_profile, container, false);
         prefManager = new PrefManager(getActivity());
+        setHasOptionsMenu(true);
+        return  view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        navController = Navigation.findNavController(view);
 
         view.findViewById(R.id.logoutButton).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,13 +59,41 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        return  view;
+        view.findViewById(R.id.feedbackButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putInt("agreementType", AgreementFragment.FEEDBACK_FORM);
+                navController.navigate(R.id.agreementFragment, bundle);
+            }
+        });
     }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_profile,menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.nameCardOption:
+                Log.d("PROFILE", "NAME CARD");
+                break;
+            case R.id.moreSettingOption:
+                Log.d("PROFILE", "MORE SETTING");
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     PrefManager prefManager;
     NavController navController;
 
     private void logoutUser() {
-        navController = Navigation.findNavController(view);
+
         prefManager = new PrefManager(getActivity());
 
         String accessToken = prefManager.getUserAccessToken();

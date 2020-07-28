@@ -1,5 +1,8 @@
 package upuphere.com.upuphere;
 
+import android.app.SearchManager;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -7,6 +10,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuItemCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
@@ -88,7 +92,7 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
         view = binding.getRoot();
         binding.setViewmodel(mainViewModel);
 
-        //setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
         return view;
     }
 
@@ -96,6 +100,8 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        getActivity().setTitle(R.string.app_name);
 
         prefManager = new PrefManager(getActivity());
 
@@ -148,6 +154,12 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
                 Navigation.findNavController(view).navigate(action);
             }
         });
+
+        Intent intent = getActivity().getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            Log.d("Search", "query");
+        }
 
     }
 
@@ -448,9 +460,9 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
 
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_notification,menu);
-
+    public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_search,menu);
+/*
         final MenuItem menuItem = menu.findItem(R.id.action_notification);
 
         View actionView = MenuItemCompat.getActionView(menuItem);
@@ -464,6 +476,31 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
                 onOptionsItemSelected(menuItem);
             }
         });
+
+ */
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+        final MenuItem myActionMenuItem = menu.findItem( R.id.action_search);
+        final SearchView searchView = (SearchView) myActionMenuItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // Toast like print
+                Log.d( "SearchOnQueryTextSubmit: " , query);
+                if( ! searchView.isIconified()) {
+                    searchView.setIconified(true);
+                }
+                myActionMenuItem.collapseActionView();
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String s) {
+                Log.d( "SearchOnQueryTextSubmit: " , s);
+                return false;
+            }
+        });
+
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -488,6 +525,10 @@ public class MainFragment extends Fragment implements RoomAdapter.RoomAdapterLis
                 NavDirections action = MainFragmentDirections.actionMainFragmentToNotificationFragment();
                 Navigation.findNavController(view).navigate(action);
                 return  true;
+            case R.id.action_explore_group:
+                Log.d("EXPLORE","EXPLORE GROUP");
+                Navigation.findNavController(view).navigate(R.id.exploreGroupFragment);
+                break;
         }
 
         return super.onOptionsItemSelected(item);

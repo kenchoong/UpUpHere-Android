@@ -2,6 +2,7 @@ package upuphere.com.upuphere.viewmodel;
 
 import android.app.Application;
 import android.graphics.Bitmap;
+import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,8 +22,10 @@ import upuphere.com.upuphere.repositories.PostRepo;
 
 public class CreatePostViewModel extends AndroidViewModel {
 
-    public String statusText;
+    //public String statusText;
     PostRepo postRepo;
+
+    public MutableLiveData<String> statusText = new MutableLiveData<>("");
 
     public CreatePostViewModel(@NonNull Application application) {
         super(application);
@@ -32,9 +35,12 @@ public class CreatePostViewModel extends AndroidViewModel {
     public interface CreatePostInterface{
         void onChosenImageClick();
         void onChooseImage();
+        void onLocationClicked();
+        void onPostButtonClicked();
+        void onStatusTextInserted();
     }
 
-    private CreatePostInterface postInterface;
+    public CreatePostInterface postInterface;
 
     public void setCreatePostStateInterface(CreatePostInterface stateInterface){
         this.postInterface = stateInterface;
@@ -60,6 +66,14 @@ public class CreatePostViewModel extends AndroidViewModel {
         postInterface.onChosenImageClick();
     }
 
+    public void onLocationClicked(View view){
+        postInterface.onLocationClicked();
+    }
+
+    public void onPostButtonClicked(View view){
+        postInterface.onPostButtonClicked();
+    }
+
     public void createPost(String roomId, String statusText, Bitmap bitmap,String mediaType, final StringCallBack callBack){
         setIsLoading(true);
         postRepo.createPost(roomId, statusText, bitmap, mediaType, new StringCallBack() {
@@ -76,6 +90,10 @@ public class CreatePostViewModel extends AndroidViewModel {
             }
         });
 
+    }
+
+    public void afterStatusTextChanged(Editable e){
+        postInterface.onStatusTextInserted();
     }
 
     public MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);

@@ -2,6 +2,10 @@
     <string name="app_name">UpUpHere</string>
     <string name="logo">Logo</string>
 
+    <!-- title -->
+    <string name="create_post_title">Create a post</string>
+
+    <string name="search_hint">Search</string>
     <string name="login_hint">Email or Username</string>
     <string name="password_hint">Enter your password</string>
     <string name="login_button_text">Login</string>
@@ -10,7 +14,7 @@
     <string name="phone_number_hint">Enter your Phone Number</string>
     <string name="OTP_hint">Enter 6-digit number</string>
     <string name="send_otp_button">Send OTP</string>
-    <string name="verify_button">Verify</string>
+    <string name="verify_button">Verify Now</string>
     <string name="resend_button">Resend</string>
 
     <string name="sign_up_title">Sign up</string>
@@ -32,6 +36,19 @@
 
     <string name="logut_button_text">Logout</string>
 
+    <string name="tell_us_about_yourself">Tell us something about yourself</string>
+    <string name="what_gender">What\'s your gender?</string>
+    <string name="gender_explain">Cause Male and Female see the different world</string>
+
+    <string name="set_your_birthday">Your birthday</string>
+    <string name="birthday_explain">Providing your date of birth help us confirm that you have the right to use UpUpHere services and help us personalize your in app experience.</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="rather_not_to_say">I rather not to say</string>
+
+    <string name="choose_topic">Choose topic you interested</string>
+
+    <string name="sign_up_to_create_post">Sign up to connect to the world</string>
     <string name="add_group">Add</string>
 
     <!-- TODO: Remove or change this placeholder text -->
@@ -50,6 +67,7 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
 
+    <string name="login">Login</string>
     <string name="profile">Profile</string>
     <string name="logout">Logout</string>
     <string name="feedback">Feedback</string>
@@ -82,6 +100,10 @@
     <string name="post">POST</string>
     <string name="comment_hint">Comment...</string>
 
+    <string name="photo">Photo/Video</string>
+    <string name="link">Link</string>
+    <string name="location">Location</string>
+
     <string name="delete_this_photo">Delete this photo?</string>
     <string name="crete_post_hint">What\'s in your mind?</string>
 
@@ -108,9 +130,11 @@
     <string name="phone">Phone</string>
     <string name="verify_phone_number_button">Verify your phone number</string>
     <string name="six_digit_code">Enter the 6-digit code we sent to</string>
-    <string name="resend">Resend</string>
+    <string name="resend">Re-send Code</string>
+    <string name="didnt_receive_code">Didn\'t receive any code?</string>
 
-    <string name="verify_phone_number">First,let us confirm your phone number</string>
+    <string name="verify_phone_number">Verify your phone number</string>
+    <string name="otp_verification">OTP Verification</string>
     <string name="verify_phone_number_reason">In order to avoid spam and give you the best service,please confirm your identity</string>
     <string name="forgot_password_instruction">Enter phone number of your account</string>
     <string name="continue_process">Continue</string>
@@ -125,6 +149,9 @@
     <string name="default_notification_channel_id">DISCOUNT AND DEALS</string>
     <string name="discussion_channel">Discussion You Join</string>
     <string name="fcm_message">FCM TESTING</string>
+
+    <string name="view_photo">View all your photos and videos here</string>
+    <string name="granted_access">Grant access</string>
 
     <string name="notification">Notification</string>
     <string name="empty_state_post">Be the first one to start discussion!</string>

@@ -14,14 +14,17 @@ import androidx.navigation.NavDestination;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 
+import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 
 import androidx.appcompat.widget.Toolbar;
@@ -29,11 +32,13 @@ import upuphere.com.upuphere.Interface.CommonCallBack;
 import upuphere.com.upuphere.Interface.StringCallBack;
 import upuphere.com.upuphere.app.AppConfig;
 import upuphere.com.upuphere.app.AppController;
+import upuphere.com.upuphere.fragment.SignUpBottomSheet;
 import upuphere.com.upuphere.helper.DecodeToken;
 import upuphere.com.upuphere.helper.NotificationUtils;
 import upuphere.com.upuphere.helper.PrefManager;
 import upuphere.com.upuphere.models.NotificationModel;
 import upuphere.com.upuphere.repositories.UserRepo;
+import upuphere.com.upuphere.ui.SinglePostFragment;
 import upuphere.com.upuphere.ui.onboarding.AgreementFragment;
 import upuphere.com.upuphere.viewmodel.NotificationViewModel;
 
@@ -100,32 +105,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     BottomNavigationView bottomNavigationView;
+    AppBarConfiguration appBarConfiguration;
     private void setupNavigation() {
-
-        //drawerLayout = findViewById(R.id.drawer_layout);
-
-        //navigationView = findViewById(R.id.nav_view);
 
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
 
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
 
-        //NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout);
-
-        //NavigationUI.setupWithNavController(toolbar,navController,drawerLayout);
-
         NavigationUI.setupWithNavController(bottomNavigationView,navController);
 
-        //navigationView.setNavigationItemSelectedListener(this);
+        appBarConfiguration = new AppBarConfiguration.Builder(R.id.mainFragment,R.id.personalFeedFragment, R.id.notificationFragment,R.id.profileFragment).build();
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
         navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
             @Override
             public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
+
                 if(destination.getId() == R.id.mainFragment || destination.getId() == R.id.personalFeedFragment ||
                         destination.getId() == R.id.notificationFragment || destination.getId() == R.id.profileFragment){
                     bottomNavigationView.setVisibility(View.VISIBLE);
                 }else {
                     bottomNavigationView.setVisibility(View.GONE);
+                }
+
+                if(destination.getId() == R.id.profileFragment){
+                    if(!prefManager.isLoggedIn()){
+                        navController.navigate(R.id.loginFragment);
+                    }
                 }
             }
         });
@@ -133,7 +139,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onSupportNavigateUp() {
-        return NavigationUI.navigateUp(Navigation.findNavController(this,R.id.nav_host_fragment),drawerLayout);
+        return NavigationUI.navigateUp(navController, appBarConfiguration)
+                || super.onSupportNavigateUp();
     }
 
     @Override
@@ -198,6 +205,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
 
     }
+
+
 
 
     private void logoutUser() {
